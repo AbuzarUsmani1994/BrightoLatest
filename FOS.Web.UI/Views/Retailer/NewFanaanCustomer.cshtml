@@ -1,0 +1,524 @@
+﻿@model FOS.Shared.RetailerData
+@{
+    ViewBag.Title = "Retailer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #map-canvas {
+        width: 100%;
+        height: 474px;
+    }
+
+    .panel-container {
+        margin-bottom: 20px;
+    }
+
+    .panel-heading {
+        cursor: pointer;
+        padding: 10px 15px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 5px;
+    }
+
+        .panel-heading:hover {
+            background-color: #e8e8e8;
+        }
+
+        .panel-heading .toggle-icon {
+            float: right;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+    .panel-content {
+        border: 1px solid #ddd;
+        border-top: none;
+        padding: 15px;
+        border-radius: 0 0 4px 4px;
+        background-color: #fff;
+    }
+
+    .hidden-panel {
+        display: none;
+    }
+
+    .dropdown-container {
+        margin-bottom: 15px;
+    }
+
+        .dropdown-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .dropdown-container select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+    .btn-save {
+        background-color: #5cb85c;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+        .btn-save:hover {
+            background-color: #4cae4c;
+        }
+</style>
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Customer</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">New Brighto Services Customer</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <!-- Collapsible Panels Container -->
+        <div class="panel-container">
+            <!-- Panel 1: Add New Customer -->
+            <div class="panel">
+                <div class="panel-heading" onclick="togglePanel('panel1')">
+                    <span><i class="fa fa-plus-circle" style="margin-right: 8px;"></i>Add New Brighto Services Customer</span>
+                    <span class="toggle-icon" id="panel1-icon">+</span>
+                </div>
+                <div class="panel-content hidden-panel" id="panel1">
+                    <!-- BEGIN EXAMPLE TABLE widget-->
+                    <div class="widget green">
+                        <div class="widget-body" style="">
+                            <div>
+                                <div class="clearfix">
+                                    <div class="btn-group pull-right"></div>
+                                </div>
+                                @using (Ajax.BeginForm("NewUpdateFannanRetailer", "Retailer", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal form-label-left", @style = "margin-top: -16px;" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true)
+
+                                    <div class="form-group">
+                                        <div class="span12">
+                                            <div class="span3" style="margin-top: 0px;">
+                                                <div class="control-group" style="margin-bottom: 0px">
+                                                    <label class="control-label" style="">Contact Person Name</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        @Html.EditorFor(model => model.Name)
+                                                        @Html.ValidationMessageFor(model => model.Name)
+                                                        @Html.HiddenFor(model => model.ID)
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+                                                    <label class="control-label" style="">Site Name *</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        @Html.EditorFor(model => model.ShopName)
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="margin-bottom: 0px">
+                                                    <label class="control-label" style="">Site Code</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        @Html.EditorFor(model => model.RetailerCode)
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+                                                    <label class="control-label" style="">Address</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "control-label", @style = "width:200px;resize: none;height:55px;color: #333;" })
+                                                        @Html.ValidationMessageFor(model => model.Address)
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="margin-bottom: 0px">
+                                                    <label class="control-label" style="">CNIC</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        <span style="font-size: 10px;color: #cc514f;float: right;margin-right: 52px;margin-top: -20px;"></span>
+                                                        @Html.EditorFor(model => model.CNIC)
+                                                        @Html.ValidationMessageFor(model => model.CNIC)
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+                                                    <label class="control-label" style="">Email</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        @Html.EditorFor(model => model.Email)
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="span3" style="margin-top: 0px;">
+                                                <div class="control-group" style="margin-bottom: 0px;">
+                                                    <label class="control-label" style="width: 130px">Phone 1</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        <span style="font-size: 10px; color: #cc514f; float: right; margin-right: 52px; margin-top: 10px;"></span>
+                                                        @Html.EditorFor(model => model.Phone1)
+                                                        @Html.ValidationMessageFor(model => model.Phone1)
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+                                                    <label class="control-label" style="width: 130px">Phone 2</label>
+                                                    <div class="controls" style="margin-left: 0px">
+                                                        <span style="font-size: 10px; color: #cc514f; float: right; margin-right: 52px; margin-top: 10px;"></span>
+                                                        @Html.EditorFor(model => model.Phone2)
+                                                        @Html.ValidationMessageFor(model => model.Phone2)
+                                                    </div>
+                                                </div>
+
+                                                <!-- Buttons -->
+                                                <div class="control-group" style="margin-top: -25px">
+                                                    <div class="form-actions" style="float: right; padding-left: 0px; padding-right: 45px; margin-top: 40px;">
+                                                        <button type="submit" id="btnNew" class="btn btn-primary" style="margin-right: 8px; width: 100px;">
+                                                            <span id="create">Save</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END EXAMPLE TABLE widget-->
+                </div>
+            </div>
+
+            <!-- Panel 2: Assign Customers to Sale Officers -->
+            <div class="panel" style="margin-top: 10px;">
+                <div class="panel-heading" onclick="togglePanel('panel2')">
+                    <span><i class="fa fa-handshake-o" style="margin-right: 8px;"></i>Assign Customers to Sale Officers</span>
+                    <span class="toggle-icon" id="panel2-icon">+</span>
+                </div>
+                <div class="panel-content hidden-panel" id="panel2">
+                    <div class="widget green">
+                        <div class="widget-body">
+                            @using (Ajax.BeginForm("AssignSaleOfficer", "Retailer", new AjaxOptions { OnSuccess = "OnAssignSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal", id = "assignForm" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <div class="dropdown-container">
+                                            <label for="existingCustomers">
+                                                <i class="fa fa-users" style="margin-right: 5px; color: #5cb85c;"></i>
+                                                Select Existing Customer:
+                                            </label>
+                                            <select id="existingCustomers" name="CustomerId" class="form-control" required>
+                                                <option value="">-- Select Customer --</option>
+                                                <!-- Options will be populated from server -->
+                                            </select>
+                                        </div>
+
+                                        <div class="dropdown-container" style="margin-top: 15px;">
+                                            <label for="saleOfficers">
+                                                <i class="fa fa-user-md" style="margin-right: 5px; color: #f0ad4e;"></i>
+                                                Select Sale Officer:
+                                            </label>
+                                            <select id="saleOfficers" name="SaleOfficerId" class="form-control" required>
+                                                <option value="">-- Select Sale Officer --</option>
+                                                <!-- Options will be populated from server -->
+                                            </select>
+                                        </div>
+
+                                        <div class="form-actions" style="margin-top: 20px;">
+                                            <button type="submit" class="btn btn-success" id="btnAssign" style="padding: 8px 20px;">
+                                                <i class="fa fa-check" style="margin-right: 5px;"></i>
+                                                Save Assignment
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+    /* Simple Panel Styling */
+    .panel {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        background: white;
+    }
+
+    .panel-heading {
+        padding: 12px 15px;
+        background: #f5f5f5;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        border-bottom: 1px solid #ddd;
+        transition: background 0.2s;
+    }
+
+    .panel-heading:hover {
+        background: #e8e8e8;
+    }
+
+    .toggle-icon {
+        font-size: 18px;
+        font-weight: bold;
+        color: #666;
+    }
+
+    .panel-content {
+        padding: 15px;
+        background: white;
+    }
+
+    .hidden-panel {
+        display: none;
+    }
+
+    /* Dropdown styling */
+    .dropdown-container label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .dropdown-container select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .dropdown-container select:focus {
+        border-color: #66afe9;
+        outline: none;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    }
+
+    /* Button styling */
+    .btn-success {
+        background-color: #5cb85c;
+        border: 1px solid #4cae4c;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-success:hover {
+        background-color: #4cae4c;
+    }
+
+    /* Add Font Awesome if not already included */
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
+        </style>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7X3GhN_ShrwYqU1Wc0gJbX3CMOMPZIs4"></script>
+
+<script>
+    // Toggle panel function
+    function togglePanel(panelId) {
+        var panel = document.getElementById(panelId);
+        var icon = document.getElementById(panelId + '-icon');
+
+        if (panel.classList.contains('hidden-panel')) {
+            panel.classList.remove('hidden-panel');
+            icon.innerHTML = '-';
+
+            // Load data only when panel is opened
+            if (panelId === 'panel2') {
+                loadExistingCustomers();
+                loadSaleOfficers();
+            }
+        } else {
+            panel.classList.add('hidden-panel');
+            icon.innerHTML = '+';
+        }
+    }
+
+    $(function () {
+        $('#form0').submit(function () {
+            if ($("#Phone1").val() != "" && $("#Phone2").val() != "") {
+                if ($("#Phone1").val() === $("#Phone2").val()) {
+                    alertify.error("Phone No 1 & Phone No 2 Are Same");
+                    return false;
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $("#liRetailer,#liManageRetailer").addClass("active");
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            $("#btnNew").attr("disabled", true);
+            $("#btnAssign").attr("disabled", true);
+        }
+
+
+        // Validate assignment form
+        $('#assignForm').submit(function(e) {
+            if ($('#existingCustomers').val() === '') {
+                alertify.error('Please select a customer');
+                return false;
+            }
+            if ($('#saleOfficers').val() === '') {
+                alertify.error('Please select a sale officer');
+                return false;
+            }
+        });
+    });
+
+    // Function to load existing customers
+    function loadExistingCustomers() {
+        $.ajax({
+            url: '@Url.Action("GetExistingCustomers", "Retailer")',
+            type: 'GET',
+            success: function(data) {
+                var dropdown = $("#existingCustomers");
+                var selectedValue = dropdown.val();
+                dropdown.empty();
+                dropdown.append($('<option>', {
+                    value: '',
+                    text: '-- Select Customer --'
+                }));
+
+                $.each(data, function(index, customer) {
+                    dropdown.append($('<option>', {
+                        value: customer.ID,
+                        text: customer.ShopName + ' - ' + customer.Name
+                    }));
+                });
+
+                dropdown.val(selectedValue);
+            },
+            error: function() {
+                alertify.error("Error loading customers");
+            }
+        });
+    }
+
+    // Function to load sale officers
+    function loadSaleOfficers() {
+        $.ajax({
+            url: '@Url.Action("GetSaleOfficers", "Retailer")',
+            type: 'GET',
+            success: function(data) {
+                var dropdown = $("#saleOfficers");
+                var selectedValue = dropdown.val();
+                dropdown.empty();
+                dropdown.append($('<option>', {
+                    value: '',
+                    text: '-- Select Sale Officer --'
+                }));
+
+                $.each(data, function(index, officer) {
+                    dropdown.append($('<option>', {
+                        value: officer.ID,
+                        text: officer.Name
+                    }));
+                });
+
+                dropdown.val(selectedValue);
+            },
+            error: function() {
+                alertify.error("Error loading sale officers");
+            }
+        });
+    }
+
+
+
+    function ClearForm() {
+        $('#Name').val('');
+        $('#ShopName').val('');
+        $('#LocationMargin').val('');
+        $('#Phone1').val('');
+        $('#Phone2').val('');
+        $('#ID').val(0);
+        $('#BankName2').val('');
+        $('#Account2').val('');
+        $('#Address').val('');
+        $('#RetailerCode').val('');
+        $('#LandLineNo').val('');
+    }
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Retailer Saved Successfully");
+            ClearForm();
+            $('.close').trigger('click');
+        }
+        else if (response == "2") {
+            alertify.error("Phone Number Already Exist.");
+        }
+        else if (response == "3") {
+            alertify.error("CNIC Already Exist");
+        }
+        else if (response == "4") {
+            alertify.error("Account No Already Exist");
+        }
+        else if (response == "5") {
+            alertify.error("Card No Already Exist");
+        }
+        else {
+            alertify.error("Unable To Save");
+        }
+    }
+
+    function OnAssignSuccess(response) {
+        if (response == "1") {
+            alertify.success("Sale Officer Assigned Successfully");
+            // Reset form
+            $('#assignForm')[0].reset();
+            $("#customerInfo").hide();
+        }
+        else if (response == "2") {
+            alertify.error("Assignment already exists");
+        }
+        else {
+            alertify.error("Unable to assign sale officer");
+        }
+    }
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+</script>

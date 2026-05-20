@@ -1,0 +1,280 @@
+﻿@model FOS.Shared.SchemeData
+@{
+    ViewBag.Title = "Scheme Info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- BEGIN PAGE HEADER-->
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Setup</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Manage Scheme Information</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+@using (Ajax.BeginForm("AddUpdateCity", "Setup", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true)
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="">
+                <div class="widget-title">
+                    <h4>Manage Scheme</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body">
+                    <!-- BEGIN FORM-->
+                    <!--Start Logo -->
+                    <!--End Logo -->
+                    <div class="control-group">
+                        <label class="control-label">Scheme Info *</label>
+                        <div class="controls">
+                            @Html.TextBoxFor(model => model.SchemeInfo, new { @class = "" })
+                            @Html.ValidationMessageFor(model => model.SchemeInfo)
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-bottom: 14px;">
+                        <label class="control-label">Date From  *</label>
+                        <div class="controls">
+                            <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                        </div>
+                    </div>
+
+                    <div class="control-group" style="margin-bottom: 14px;">
+                        <label class="control-label">Date To *</label>
+                        <div class="controls">
+                            <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-bottom: 14px;">
+                        <label class="control-label">Range *</label>
+                        <div class="controls">
+                            @Html.DropDownListFor(model => model.RangeID, new SelectList(Model.RangeData, "MainCategID", "MainCategDesc"), new { @class = "" })
+                            @Html.ValidationMessageFor(model => model.RangeID)
+                            @Html.HiddenFor(model => model.RangeID)
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>
+    </div>
+}
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid"  id="dv">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Detail</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                <button id="editable-sample_new" class="btn green">
+                                    Add New <i class="icon-plus"></i>
+                                </button>
+                            </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab" style="width: 100%;">
+                        <thead>
+                            <tr>
+                               <th hidden="hidden">ItemId</th>
+                                <th style="width:  10%!important">Sr #</th>
+                                
+                                <th style="width:  20%!important">
+                                   Item Name
+                                </th>
+                                <th style="width:10% !important">
+                                    Packing
+                                </th>
+                                <th style="width:10% !important">
+                                   Trade Price
+                                </th>
+                                <th style="width:10% !important">Scheme Quantity</th>
+                                <th style="width:10% !important">Scheme Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+<div class="control-group" style="border-top: 1px solid #e5e5e5;">
+    <div class="form-actions" style="padding-left: 238px;">
+        <button type="submit" id="btnNew" class="btn btn-primary">
+            <i class="icon-ok icon-white" style="padding-right:8px"></i><span id="create">Create</span>
+        </button>
+        <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right:8px"></i>Reset</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $("#dv").hide();
+        $('#StartingDate1').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+    });
+    function getalltaskdata() {
+        debugger;
+        var tbl = document.getElementById('datatab');
+       
+        var newrows = tbl.rows.length;
+        var data = [];
+        for(var i=1 ; i<newrows ; i++){ 
+            var ItemPacking = $("tr:nth-child(" + i + ") td:nth-child(4)").html();
+            var itemName = $("tr:nth-child(" + i + ") td:nth-child(3)").html();
+            var ItemPrice = $("tr:nth-child(" + i + ") td:nth-child(5)").html();
+            var Scheme = $("tr:nth-child(" + i + ") td:nth-child(6)").find('input').val()
+            var SchemePrice = $("tr:nth-child(" + i + ") td:nth-child(7)").find('input').val()
+            var ItemID = $("tr:nth-child(" + i + ") td:nth-child(1)").html();
+
+
+            var alldata = {
+                'ItemID': ItemID,
+                'ItemName': itemName,
+                'ItemPacking': ItemPacking,
+                'ItemPrice': ItemPrice,
+                'Scheme': Scheme,
+                'SchemePrice': SchemePrice,
+
+            }
+
+            var test = data.push(alldata);
+
+        }
+        console.log(data);
+        return data;
+    }
+    $('#btnNew').click(function () {
+        getalltaskdata();
+        debugger;
+        var itemdata = new Object();
+        itemdata.rangeID =          $("#RangeID").val();
+        itemdata.SchemeDateFrom =   $("#StartingDate1").val();
+        itemdata.SchemeDateTo =     $("#StartingDate2").val();
+        itemdata.SchemeInfo =       $("#SchemeInfo").val();
+        var data = JSON.stringify(getalltaskdata());
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: '@Url.Action("SubmitItem", "Setup")',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ 'cont': data, tas: itemdata }),
+            success: function (response) {
+
+                if (response == "1") {
+                    alertify.success("Scheme Info  Saved Successfully.");
+                    $('#create').text('Create');
+                   
+                    clearform();
+                }
+                else if (response == "0") {
+                    alertify.error("Unable To Save City.");
+                }
+                else if (response == "2") {
+                    alertify.error("City Code Already Exist");
+                }
+                else {
+                    alertify.error(response);
+                }
+
+            
+            }
+        });
+
+
+
+    });
+
+    $("#RangeID").change(function () {
+        debugger;
+        $("#tblbody").html("");
+        GenerateDetailGrid();
+
+    });
+    function GenerateDetailGrid() {
+        debugger;
+        $("#dv").show();
+        var RangeID = $('#RangeID').val();
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: '@Url.Action("ItemDataHandler", "Setup")',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ RangeID: RangeID }),
+            success: function (json) {
+                $("#tblbody").html("");
+                debugger;
+                var i=0;
+                $.each(json, function (value, key) {
+                    i++;
+                    $("#datatab tbody").append("<tr ><td hidden='hidden'>" + key.ID + "</td><td>"+i+"</td><td>" + key.ItemName +
+                        "</td><td>" + key.ItemPacking + "</td><td>" + key.ItemPrice + "</td><td><input Type='Number' height='20' value='' name='textbox'</td></td><td><input Type='Number' height='20' value='' name='textbox'</td></tr>");
+
+                });
+            }
+        });
+    }
+
+    function clearform() {
+        $("#RangeID").val("0");
+        $("#StartingDate1").val("");
+        $("#StartingDate2").val("");
+        $("#SchemeInfo").val("");
+        $("#tblbody").html("");
+    }
+</script>

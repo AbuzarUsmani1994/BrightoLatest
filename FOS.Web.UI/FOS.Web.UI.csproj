@@ -1,0 +1,2643 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props" Condition="Exists('..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DF0BAF3C-60DD-4D6C-A2D9-3A59892323B4}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FOS.Web.UI</RootNamespace>
+    <AssemblyName>FOS.Web.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
+    <TargetFrameworkProfile />
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerLaunchUrl>http://{ServiceIPAddress}</DockerLaunchUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Azure.Core, Version=1.38.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Core.1.38.0\lib\net472\Azure.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Azure.Identity, Version=1.11.4.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\Azure.Identity.1.11.4\lib\netstandard2.0\Azure.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="CrystalDecisions.CrystalReports.Engine, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <HintPath>..\packages\CrystalDecisions.CrystalReports.Engine.1.0.0\lib\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CrystalDecisions.ReportSource, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <HintPath>..\packages\CrystalDecisions.ReportSource.1.0.0\lib\CrystalDecisions.ReportSource.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CrystalDecisions.Shared, Version=13.0.2000.0, Culture=neutral, PublicKeyToken=692fbea5521e1304, processorArchitecture=MSIL">
+      <HintPath>..\packages\CrystalDecisions.Shared.1.0.0\lib\CrystalDecisions.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Excel">
+      <HintPath>..\dll\Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation, Version=6.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.2.1.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="itextsharp.xmlworker, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itextsharp.xmlworker.5.5.13\lib\itextsharp.xmlworker.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.Cryptography, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Cryptography.8.0.0\lib\net462\Microsoft.Bcl.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.SqlClient, Version=6.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.SqlClient.6.0.1\lib\net462\Microsoft.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Caching.Memory, Version=8.0.0.1, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.8.0.1\lib\net462\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.8.0.2\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.2\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.8.0.2\lib\net462\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.8.0.0\lib\net462\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Identity.Client, Version=4.61.3.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.4.61.3\lib\net462\Microsoft.Identity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Identity.Client.Extensions.Msal, Version=4.61.3.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.Extensions.Msal.4.61.3\lib\netstandard2.0\Microsoft.Identity.Client.Extensions.Msal.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.7.5.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.7.5.0\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.7.5.0\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.7.5.0\lib\net472\Microsoft.IdentityModel.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.7.5.0\lib\net472\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.7.5.0\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>dll\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebDesign, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.WebDesign.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.140.1.291.2731477-rc\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog.Web">
+      <HintPath>..\packages\NLog.Web.4.2.1\lib\net35\NLog.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="OFFICE, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>dll\OFFICE.DLL</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ClientModel, Version=1.0.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ClientModel.1.0.0\lib\netstandard2.0\System.ClientModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.1\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=7.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.7.5.0\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.AccessControl.5.0.0\lib\net461\System.IO.FileSystem.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory.Data, Version=1.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.Data.1.0.2\lib\net461\System.Memory.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.5.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Pkcs, Version=8.0.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Pkcs.8.0.1\lib\net462\System.Security.Cryptography.Pkcs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.ProtectedData, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.ProtectedData.4.7.0\lib\net461\System.Security.Cryptography.ProtectedData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=6.0.0.10, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.6.0.10\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.OData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.4.0.30506\lib\net40\System.Web.Http.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Mvc.FixedDisplayModes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.FixedDisplayModes.1.0.0\lib\net40\Microsoft.Web.Mvc.FixedDisplayModes.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.0.0\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20715.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebMatrix.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.2.0.20710.0\lib\net40\WebMatrix.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebPages.OAuth, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.OAuth.2.0.20710.0\lib\net40\Microsoft.Web.WebPages.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.WebData.2.0.20710.0\lib\net40\WebMatrix.WebData.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.AspNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DotNetOpenAuth.AspNet.4.1.4.12333\lib\net45-full\DotNetOpenAuth.AspNet.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.Core, Version=4.1.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DotNetOpenAuth.Core.4.1.4.12333\lib\net45-full\DotNetOpenAuth.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OAuth.Consumer, Version=4.1.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DotNetOpenAuth.OAuth.Consumer.4.1.4.12333\lib\net45-full\DotNetOpenAuth.OAuth.Consumer.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OAuth, Version=4.1.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DotNetOpenAuth.OAuth.Core.4.1.4.12333\lib\net45-full\DotNetOpenAuth.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OpenId, Version=4.1.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.Core.4.1.4.12333\lib\net45-full\DotNetOpenAuth.OpenId.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetOpenAuth.OpenId.RelyingParty, Version=4.1.0.0, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\DotNetOpenAuth.OpenId.RelyingParty.4.1.4.12333\lib\net45-full\DotNetOpenAuth.OpenId.RelyingParty.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Data.Edm.5.2.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Data.OData.5.2.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Spatial, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\System.Spatial.5.2.0\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.3.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.3.0\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbsentSO.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AbsentSO.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="AllData.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AllData.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="AllPurpose.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AllPurpose.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="AllPurposeVisit.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AllPurposeVisit.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\AuthConfig.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="brand.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>brand.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrandGridInRpt.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrandGridInRpt.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrandMMC.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrandMMC.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Brandwise.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Brandwise.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrandWiseSummary.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrandWiseSummary.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoChemDSR.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoChemDSR.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoChemDSRDataset.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoChemDSRDataset.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoClaimsSummary.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoClaimsSummary.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoUAEUnifiedDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoUAEUnifiedDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoVisits.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoVisits.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BrightoVisitsCount.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BrightoVisitsCount.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="CalForReport.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CalForReport.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="CityWiseItemSummary.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CityWiseItemSummary.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="ClaimsReportDataset.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClaimsReportDataset.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="ClaimSummaryReportCategoryWise.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClaimSummaryReportCategoryWise.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Common\CacheManager.cs" />
+    <Compile Include="Common\CurrentUser.cs" />
+    <Compile Include="Common\CustomerAttributes\CustomAuthorize.cs" />
+    <Compile Include="Common\NumberCheck.cs" />
+    <Compile Include="Common\Result.cs" />
+    <Compile Include="Common\ResultType.cs" />
+    <Compile Include="Common\RetailerChecks.cs" />
+    <Compile Include="Common\SessionManager.cs" />
+    <Compile Include="Common\Settings.cs" />
+    <Compile Include="Common\Token\TokenAttribute.cs" />
+    <Compile Include="Common\UserManager.cs" />
+    <Compile Include="CompititorMMC.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompititorMMC.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\API\AllPurposeVisitController.cs" />
+    <Compile Include="Controllers\API\ChemicalCustomerRegistrationController.cs" />
+    <Compile Include="Controllers\API\BusinessAffiliatesVisitsController.cs" />
+    <Compile Include="Controllers\API\BusinessAffiliatesVisitListController.cs" />
+    <Compile Include="Controllers\API\BusinessAffiliatesDSRReportController.cs" />
+    <Compile Include="Controllers\API\ComplaintProgressController.cs" />
+    <Compile Include="Controllers\API\ComplaintsPDFController.cs" />
+    <Compile Include="Controllers\API\CoverageDSRReportController.cs" />
+    <Compile Include="Controllers\API\ChemicalDSRReportController.cs" />
+    <Compile Include="Controllers\API\CoverageListController.cs" />
+    <Compile Include="Controllers\API\CoorporateVisitController.cs" />
+    <Compile Include="Controllers\API\DeleteBusinessAffiliatesListController.cs" />
+    <Compile Include="Controllers\API\DeleteChemSalesController.cs" />
+    <Compile Include="Controllers\API\DeleteHousingImagesController.cs" />
+    <Compile Include="Controllers\API\GetBusinessExpertiseRealtedToBusinessTypeController.cs" />
+    <Compile Include="Controllers\API\GetBrightoServicesCustomersController.cs" />
+    <Compile Include="Controllers\API\GetChemicalCustomersController.cs" />
+    <Compile Include="Controllers\API\GetBusinessAffiliatesRealtedToBusinessTypeController.cs" />
+    <Compile Include="Controllers\API\GetChemicalCustomersForEditController.cs" />
+    <Compile Include="Controllers\API\GetCustomerCallDetailController.cs" />
+    <Compile Include="Controllers\API\GetProductListTypeWiseController.cs" />
+    <Compile Include="Controllers\API\GetChemicalProductDetailController.cs" />
+    <Compile Include="Controllers\API\GetPartiesRelatedToSegmentController.cs" />
+    <Compile Include="Controllers\API\GetQualityReviewAgainstComplaintController.cs" />
+    <Compile Include="Controllers\API\GetTradersRelatedtoSOController.cs" />
+    <Compile Include="Controllers\API\HousingVisitsPicUploadController.cs" />
+    <Compile Include="Controllers\API\DeleteApprovalListController.cs" />
+    <Compile Include="Controllers\API\DeleteClaimController.cs" />
+    <Compile Include="Controllers\API\GetNotificationRelatedToSOController.cs" />
+    <Compile Include="Controllers\API\GetBusinessTypesRelatedToSegmentController.cs" />
+    <Compile Include="Controllers\API\GetAttendanceRelatedToSOController.cs" />
+    <Compile Include="Controllers\API\GetCustomersForEditController.cs" />
+    <Compile Include="Controllers\API\GetApprovalsListController.cs" />
+    <Compile Include="Controllers\API\GetSalesClaimDeleteController.cs" />
+    <Compile Include="Controllers\API\GetSOTargetsController.cs" />
+    <Compile Include="Controllers\API\GetVisitsDeleteController.cs" />
+    <Compile Include="Controllers\API\HousingVerificationController.cs" />
+    <Compile Include="Controllers\API\HousingVisitsController.cs" />
+    <Compile Include="Controllers\API\HousingVisitsOldController.cs" />
+    <Compile Include="Controllers\API\ApproveClaimsController.cs" />
+    <Compile Include="Controllers\API\ClaimDetailsController.cs" />
+    <Compile Include="Controllers\API\ChemicalSalesListController.cs" />
+    <Compile Include="Controllers\API\MyComplaintsSOWiseController.cs" />
+    <Compile Include="Controllers\API\MyLastVisitController.cs" />
+    <Compile Include="Controllers\API\MyClaimsSOWiseController.cs" />
+    <Compile Include="Controllers\API\FannanAttendanceSOWiseController.cs" />
+    <Compile Include="Controllers\API\MyVisitsSOWiseController.cs" />
+    <Compile Include="Controllers\API\ClaimReportController.cs" />
+    <Compile Include="Controllers\API\BusinessAffiliatesRegistrationController.cs" />
+    <Compile Include="Controllers\API\ChemicalRetailerEditController.cs" />
+    <Compile Include="Controllers\API\FannanSODirectionController.cs" />
+    <Compile Include="Controllers\API\SaveBrightoServicesCustomerController.cs" />
+    <Compile Include="Controllers\API\SaveComplaintController.cs" />
+    <Compile Include="Controllers\API\SubmitSiteAllocationController.cs" />
+    <Compile Include="Controllers\API\SubmitCoverageController.cs" />
+    <Compile Include="Controllers\API\SubmitChemSalesController.cs" />
+    <Compile Include="Controllers\API\SalesClaimController.cs" />
+    <Compile Include="Controllers\API\SOPaymentsController.cs" />
+    <Compile Include="Controllers\API\AllPurposeVisitOldController.cs" />
+    <Compile Include="Controllers\API\SubmitClaimApprovalsController.cs" />
+    <Compile Include="Controllers\API\TradeVisitController.cs" />
+    <Compile Include="Controllers\API\TradeVisitOldController.cs" />
+    <Compile Include="Controllers\API\DashboardDataController.cs" />
+    <Compile Include="Controllers\API\GetCurrentRouteOfSOController.cs" />
+    <Compile Include="Controllers\API\GetRetailersRelatedToSegmentController.cs" />
+    <Compile Include="Controllers\API\GetSOListAsPerDistributorController.cs" />
+    <Compile Include="Controllers\API\LastThreeCurrentStockController.cs" />
+    <Compile Include="Controllers\API\LastThreeVisitsController.cs" />
+    <Compile Include="Controllers\API\OrderForExcelForDistributorController.cs" />
+    <Compile Include="Controllers\API\CoorporateVisitOldController.cs" />
+    <Compile Include="Controllers\API\RSMSummaryController.cs" />
+    <Compile Include="Controllers\API\RSMOrderVisitController.cs" />
+    <Compile Include="Controllers\API\SOOrderVisitController.cs" />
+    <Compile Include="Controllers\API\RouteSelectionController.cs" />
+    <Compile Include="Controllers\API\SOReportsController.cs" />
+    <Compile Include="Controllers\API\SOAttendanceController.cs" />
+    <Compile Include="Controllers\API\DeleteRetailerController.cs" />
+    <Compile Include="Controllers\API\GetDistributorRelatedToRegionForRangeBController.cs" />
+    <Compile Include="Controllers\API\GetRetailersRelatedToRegionIDController.cs" />
+    <Compile Include="Controllers\API\RegionRelatedToSOController.cs" />
+    <Compile Include="Controllers\API\RetailerOrderTakingController.cs" />
+    <Compile Include="Controllers\API\RetailerTransferController.cs" />
+    <Compile Include="Controllers\API\UpdateComplaintController.cs" />
+    <Compile Include="Controllers\NationalUserController.cs" />
+    <Compile Include="Controllers\API\AllDataDistributorController.cs" />
+    <Compile Include="Controllers\API\AllDataRetailerController.cs" />
+    <Compile Include="Controllers\API\DailyActivityForDistributorOfflineController.cs" />
+    <Compile Include="Controllers\API\DailyActivityOfflineController.cs" />
+    <Compile Include="Controllers\API\DistributorOrderListSummerySOWiseController.cs" />
+    <Compile Include="Controllers\API\GetRetailersForEditController.cs" />
+    <Compile Include="Controllers\API\GetDistributorForEditController.cs" />
+    <Compile Include="Controllers\API\GetRetailersRelatedToCitiesFinalController.cs" />
+    <Compile Include="Controllers\API\GetStockDeleteController.cs" />
+    <Compile Include="Controllers\API\GetOrdersDeleteController.cs" />
+    <Compile Include="Controllers\API\MonthlyTotalOrdersController.cs" />
+    <Compile Include="Controllers\API\MyOrderListSummerySOWiseController.cs" />
+    <Compile Include="Controllers\API\PasswordEditController.cs" />
+    <Compile Include="Controllers\API\DailyActivityForDistributorController.cs" />
+    <Compile Include="Controllers\API\GetDistributorRelatedToCitiesController.cs" />
+    <Compile Include="Controllers\API\GetOrdersEditController.cs" />
+    <Compile Include="Controllers\API\GetStockDetailAccToStockIDController.cs" />
+    <Compile Include="Controllers\API\GetRetailersRelatedToCitiesController.cs" />
+    <Compile Include="Controllers\API\DistributorOrderListSummeryController.cs" />
+    <Compile Include="Controllers\API\GetDistributorsRelatedToSOController.cs" />
+    <Compile Include="Controllers\API\DistributorOrderEditController.cs" />
+    <Compile Include="Controllers\API\RetailerOrderEditController.cs" />
+    <Compile Include="Controllers\API\SOAbsentDummyController.cs" />
+    <Compile Include="Controllers\API\SOAbsentTodayController.cs" />
+    <Compile Include="Controllers\API\SOPresentTodayController.cs" />
+    <Compile Include="Controllers\API\StockTakingEditController.cs" />
+    <Compile Include="Controllers\API\StocktakingDetailController.cs" />
+    <Compile Include="Controllers\API\StockTakingSummeryController.cs" />
+    <Compile Include="Controllers\API\ResetLatLongForDistributors.cs" />
+    <Compile Include="Controllers\API\Top10RetailersOrdersController.cs" />
+    <Compile Include="Controllers\API\Top10DistributorOrdersController.cs" />
+    <Compile Include="Controllers\API\SOAbsentController.cs" />
+    <Compile Include="Controllers\API\SOPresentController.cs" />
+    <Compile Include="Controllers\API\MyOrderListDetailController.cs" />
+    <Compile Include="Controllers\API\RetailerEditController.cs" />
+    <Compile Include="Controllers\API\DistributorEditController .cs" />
+    <Compile Include="Controllers\API\GetDistributorRelatedtoSOController.cs" />
+    <Compile Include="Controllers\API\GetRetailerRelatedtoSOController.cs" />
+    <Compile Include="Controllers\API\GetDistributorRelatedToRegionController.cs" />
+    <Compile Include="Controllers\API\GetRetailersRelatedToRegionController.cs" />
+    <Compile Include="Controllers\API\OrderForExcelController.cs" />
+    <Compile Include="Controllers\API\StockTakingController.cs" />
+    <Compile Include="Controllers\API\GetAreasRelatedtoRegionController.cs" />
+    <Compile Include="Controllers\API\AreasController.cs" />
+    <Compile Include="Controllers\API\GetCitiesRelatedToRegionController.cs" />
+    <Compile Include="Controllers\API\MyOrderListSummeryController.cs" />
+    <Compile Include="Controllers\API\DistributorValidateLatLong.cs" />
+    <Compile Include="Controllers\API\VisitDetailMapViewController .cs" />
+    <Compile Include="Controllers\API\VisitDetailController .cs" />
+    <Compile Include="Controllers\API\SubCategoryAController.cs" />
+    <Compile Include="Controllers\API\ItemController.cs" />
+    <Compile Include="Controllers\API\GetCitiesController .cs" />
+    <Compile Include="Controllers\API\GetRetailersRelatedToSOController .cs" />
+    <Compile Include="Controllers\API\SubCategoryController.cs" />
+    <Compile Include="Controllers\API\CommonController.cs" />
+    <Compile Include="Controllers\API\ComplaintController.cs" />
+    <Compile Include="Controllers\API\QrController.cs" />
+    <Compile Include="Controllers\API\LoginController.cs" />
+    <Compile Include="Controllers\API\RetailerRegistrationController.cs" />
+    <Compile Include="Controllers\API\DailyActivityController.cs" />
+    <Compile Include="Controllers\API\ResetLatLong.cs" />
+    <Compile Include="Controllers\API\ValidateLatLong.cs" />
+    <Compile Include="Controllers\API\DistributorRegistrationController.cs" />
+    <Compile Include="Controllers\API\TodoController.cs" />
+    <Compile Include="Controllers\API\DealerController.cs" />
+    <Compile Include="Controllers\API\JobsController.cs" />
+    <Compile Include="Controllers\API\RetailerController.cs" />
+    <Compile Include="Controllers\API\SalesOfficerController.cs" />
+    <Compile Include="Controllers\RetailerOrdersController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\ComplaintController.cs" />
+    <Compile Include="Controllers\QRController.cs" />
+    <Compile Include="Controllers\Item.cs" />
+    <Compile Include="Controllers\TodoController.cs" />
+    <Compile Include="Controllers\SalesController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\PainterController.cs" />
+    <Compile Include="Controllers\JobController.cs" />
+    <Compile Include="Controllers\DealerAPIController.cs" />
+    <Compile Include="Controllers\DealerController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RegionalHeadController.cs" />
+    <Compile Include="Controllers\ResponseType.cs" />
+    <Compile Include="Controllers\RetailerController.cs" />
+    <Compile Include="Controllers\SaleOfficerController.cs" />
+    <Compile Include="Controllers\SetupController.cs" />
+    <Compile Include="Controllers\AdminPanelController.cs" />
+    <Compile Include="CorporatePDF.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CorporatePDF.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="CorporateVisits.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CorporateVisits.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="CoverageDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoverageDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="CoveragePDFDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoveragePDFDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DailySOPDF.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DailySOPDF.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataForAll.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataForAll.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSet1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSet2.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSet2.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DataSets\rptDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>rptDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DistributorOrders.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DistributorOrders.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="DistributorWise.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DistributorWise.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
+    <Compile Include="FinalOrder.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FinalOrder.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="FollowupRangeA.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FollowupRangeA.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="FollowUpReasonsDSR.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FollowUpReasonsDSR.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="FOS_WallCoatDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FOS_WallCoatDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="GPSalesForceAppDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GPSalesForceAppDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="HousingDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HousingDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="HousingPDF.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HousingPDF.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="HousingPDFData.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HousingPDFData.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="HousingVisitPDF.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>HousingVisitPDF.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="ItemRegionSummary.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ItemRegionSummary.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Itemwise.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Itemwise.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="KPIVSClaims.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KPIVSClaims.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCDailyDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCDailyDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCFollowUp.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCFollowUp.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCOrder.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCOrder.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCOrdersFinalReport.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCOrdersFinalReport.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCPDFDaily.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCPDFDaily.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="MMCStock.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MMCStock.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MVCDatatableApp.cs" />
+    <Compile Include="Monthly.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Monthly.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Onlineoffline.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Onlineoffline.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="OnvsOff.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OnvsOff.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="OrderForExcelDaily.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OrderForExcelDaily.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="OrderInExcel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OrderInExcel.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="OrdersInMMC.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>OrdersInMMC.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="PDFORDER.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PDFORDER.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="PDFORDERMMC.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PDFORDERMMC.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\RegionalHeadViewModel.cs" />
+    <Compile Include="regionwiseordersandfollowups.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>regionwiseordersandfollowups.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Reports\CityFosWise.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CityFosWise.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CityMktRtlrWise.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CityMktRtlrWise.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CityMonthWiseRpt.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CityMonthWiseRpt.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CityRetailerWiseInfo.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CityRetailerWiseInfo.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CityWisePaintersReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CityWisePaintersReport1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CityWisePaintersReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\CityDateWiseIntakeReport.cs">
+      <DependentUpon>CityDateWiseIntakeReport.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\CityMonthWiseIntakeReport.cs">
+      <DependentUpon>CityMonthWiseIntakeReport.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\CrystalReport1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CrystalReport1.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\FosMonthWiseIntakeReport.cs">
+      <DependentUpon>FosMonthWiseIntakeReport.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\FosDateWiseIntake.cs">
+      <DependentUpon>FosDateWiseIntake.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\FosDateWise.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FosDateWise.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\FosMonthWiseRpt.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FosMonthWiseRpt.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\FOSPlanning.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FOSPlanning.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\MarketInformation.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MarketInformation.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\PosAvailabilityReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\PosAvailabilityReport1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PosAvailabilityReport.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\RetailerInfo.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RetailerInfo.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\RetailerPointSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\RetailerPointSummary1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RetailerPointSummary.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\RetailerReport1.cs">
+      <DependentUpon>RetailerReport1.rpt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <SubType>Component</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Reports\ShopBrandWiseDisplay.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShopBrandWiseDisplay.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\ShopDateWise.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShopDateWise.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\ShopMonthWiseRpt.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShopMonthWiseRpt.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\ShopVisitSummeryOneLiner.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShopVisitSummeryOneLiner.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\ShopVisit_Detail.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShopVisit_Detail.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reports\ShopVisit_Summary.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ShopVisit_Summary.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RSMOrdersDailyPDF.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RSMOrdersDailyPDF.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="SOWise.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SOWise.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="StockPositions.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StockPositions.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="TestReport.aspx.cs">
+      <DependentUpon>TestReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TestReport.aspx.designer.cs">
+      <DependentUpon>TestReport.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TradeDataset.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TradeDataset.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="TradePDF.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TradePDF.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="TraderWiseSummary.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TraderWiseSummary.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="TradeVisit.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TradeVisit.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="TradeVisitPDFDaily.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TradeVisitPDFDaily.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="ValidationRepositoryFilter\ValidationErrorHandlerFilterAttribute.cs" />
+    <Compile Include="Views\Reports\PrintReport.cs" />
+    <Compile Include="VisitsCount.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VisitsCount.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="WeeklyReport.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>WeeklyReport.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap-forCal.min.css" />
+    <Content Include="Content\bootstrap-year-calendar.css" />
+    <Content Include="Content\bootstrap-year-calendar.min.css" />
+    <Content Include="Content\dropdownliststyle.css" />
+    <Content Include="Content\Font\fontawesome-webfont.svg" />
+    <Content Include="Content\Font\myriadprolight.svg" />
+    <Content Include="Content\Font\myriadproregular.svg" />
+    <Content Include="Content\images\ajax-loader.gif" />
+    <Content Include="Content\images\sort_asc.png" />
+    <Content Include="Content\images\sort_both.png" />
+    <Content Include="Content\images\sort_desc.png" />
+    <Content Include="Content\images\spin.gif" />
+    <Content Include="Content\img\avatar-mini.png" />
+    <Content Include="Content\img\avatar1_small.jpg" />
+    <Content Include="Content\img\logo.png" />
+    <Content Include="Content\img\sort_asc.png" />
+    <Content Include="Content\img\sort_both.png" />
+    <Content Include="Content\img\sort_desc.png" />
+    <Content Include="Content\multiple-select.css" />
+    <Content Include="Content\multiple-select.png" />
+    <Content Include="Content\StyleLogin\normalize.css" />
+    <Content Include="Content\StyleLogin\set2.css" />
+    <Content Include="Content\Style\alertify.css" />
+    <Content Include="Content\Style\bootstrap-datetimepicker.css" />
+    <Content Include="Content\Style\bootstrap-fileupload.css" />
+    <Content Include="Content\Style\bootstrap-responsive.min.css" />
+    <Content Include="Content\Style\bootstrap-toggle-buttons.css" />
+    <Content Include="Content\Style\bootstrap.min.css" />
+    <Content Include="Content\Style\chosen.css" />
+    <Content Include="Content\Style\colorpicker.css" />
+    <Content Include="Content\Style\datepicker.css" />
+    <Content Include="Content\Style\DT_bootstrap.css" />
+    <Content Include="Content\Style\font-awesome.css" />
+    <Content Include="Content\Style\fullcalendar.min.css" />
+    <Content Include="Content\Style\fullcalendar.print.min.css" />
+    <Content Include="Content\Style\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\Style\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\Style\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\Style\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\Style\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\Style\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\Style\inputTag.css" />
+    <Content Include="Content\Style\jasny-bootstrap.min.css" />
+    <Content Include="Content\Style\jquery-ui.min.css" />
+    <Content Include="Content\Style\jquery-ui.min.js" />
+    <Content Include="Content\Style\jquery.dataTables.css" />
+    <Content Include="Content\Style\jquery.dataTables.min.css" />
+    <Content Include="Content\Style\jquery.fancybox.css" />
+    <Content Include="Content\Style\jquery.gritter.css" />
+    <Content Include="Content\Style\login1.css" />
+    <Content Include="Content\Style\morris.css" />
+    <Content Include="Content\Style\style-default.css" />
+    <Content Include="Content\Style\style-gray.css" />
+    <Content Include="Content\Style\style-green.css" />
+    <Content Include="Content\Style\style-purple.css" />
+    <Content Include="Content\Style\style-red.css" />
+    <Content Include="Content\Style\style-responsive.css" />
+    <Content Include="Content\Style\style.css" />
+    <Content Include="Content\Style\timepicker.css" />
+    <Content Include="Content\Style\uniform.default.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="Content\themes\base\jquery.ui.all.css" />
+    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="Content\themes\base\jquery.ui.base.css" />
+    <Content Include="Content\themes\base\jquery.ui.button.css" />
+    <Content Include="Content\themes\base\jquery.ui.core.css" />
+    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="Content\themes\base\jquery.ui.slider.css" />
+    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\minified\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.accordion.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.button.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.core.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.datepicker.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.dialog.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.progressbar.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.resizable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.selectable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Font\myriadprolight.eot" />
+    <Content Include="Content\Font\myriadprolight.ttf" />
+    <Content Include="Content\Font\myriadprolight.woff" />
+    <Content Include="Content\Font\fontawesome-webfont.eot" />
+    <Content Include="Content\Font\fontawesome-webfont.ttf" />
+    <Content Include="Content\Font\fontawesome-webfont.woff" />
+    <Content Include="Content\Font\myriadproregular.eot" />
+    <Content Include="Content\Font\myriadproregular.ttf" />
+    <Content Include="Content\Font\myriadproregular.woff" />
+    <Content Include="Images\accent.png" />
+    <Content Include="Images\banner_big.jpg" />
+    <Content Include="Images\brighto.jpeg" />
+    <Content Include="Images\brightofev.jpg" />
+    <Content Include="Images\BrightologoNew.png" />
+    <Content Include="Images\bullet.png" />
+    <Content Include="Images\e8e1be93-0bcb-4b54-a2a5-7744d9b33839.jpg" />
+    <Content Include="Images\GoldenPearl.jpg" />
+    <Content Include="Images\GPC_Banner.bmp" />
+    <Content Include="Images\heroAccent.png" />
+    <Content Include="Images\jbd.bmp" />
+    <Content Include="Images\JBD_Banner.jpg" />
+    <Content Include="Images\JBD_LOGO.jpg" />
+    <Content Include="Images\Logo.jpg" />
+    <Content Include="Images\Logo1.gif" />
+    <Content Include="Images\logo2.png" />
+    <Content Include="Images\NoImage.jpg" />
+    <Content Include="Images\orderedList0.png" />
+    <Content Include="Images\orderedList1.png" />
+    <Content Include="Images\orderedList2.png" />
+    <Content Include="Images\orderedList3.png" />
+    <Content Include="Images\orderedList4.png" />
+    <Content Include="Images\orderedList5.png" />
+    <Content Include="Images\orderedList6.png" />
+    <Content Include="Images\orderedList7.png" />
+    <Content Include="Images\orderedList8.png" />
+    <Content Include="Images\orderedList9.png" />
+    <Content Include="Images\Panda-Logo-with-cap.png" />
+    <Content Include="Images\pin.png" />
+    <Content Include="Images\RetailerJobImages\1724KhizarButt25-27-2017032703.jpg" />
+    <Content Include="Images\RetailerJobImages\1724KhizarButt25-33-2017033355.jpg" />
+    <Content Include="Images\RetailerJobImages\2693ret09-13-2018011308.jpg" />
+    <Content Include="Images\RetailerJobImages\2750ret10-05-2018080552.jpg" />
+    <Content Include="Images\RetailerJobImages\2753ret10-18-2018071820.jpg" />
+    <Content Include="Images\RetailerJobImages\3807ret09-01-2018020144.jpg" />
+    <Content Include="Images\RetailerJobImages\381AfzalTrader16-35-2017063552.jpg" />
+    <Content Include="Images\RetailerJobImages\5020ret09-19-2018011917.jpg" />
+    <Content Include="Images\RetailerJobImages\5020ret09-19-2018011919.jpg" />
+    <Content Include="Images\RetailerJobImages\School13-30-2018023040.jpg" />
+    <Content Include="Images\RetailerJobImages\School13-38-2018023851.jpg" />
+    <Content Include="Images\SchoolPictures\School03-01-2018120119.jpg" />
+    <Content Include="Images\SchoolPictures\School03-05-2018120548.jpg" />
+    <Content Include="Images\SchoolPictures\School13-09-2018030904.jpg" />
+    <Content Include="Images\SchoolPictures\School13-09-2018030952.jpg" />
+    <Content Include="Images\SchoolPictures\School13-10-2018031028.jpg" />
+    <Content Include="Images\Servislogo.jpeg" />
+    <Content Include="Images\shell_large.jpg" />
+    <Content Include="Images\UserImages\11059668_10153919969241011_3297493721568984608_n.jpg" />
+    <Content Include="Images\UserImages\12418023_1021983467899412_1895152289259641402_n.jpg" />
+    <Content Include="Images\UserImages\12528137_1681733318781078_1475179628_n.jpg" />
+    <Content Include="Images\UserImages\12622429_944886065565057_6539369391053902928_o.jpg" />
+    <Content Include="Images\UserImages\12645099_1021983351232757_3982245613306640049_n.jpg" />
+    <Content Include="Images\UserImages\12661745_1021983401232752_5329974416226080818_n.jpg" />
+    <Content Include="Images\UserImages\1915325_10154491127201840_7287174597877936812_n.jpg" />
+    <Content Include="Images\UserImages\camera.png" />
+    <Content Include="Images\UserImages\Khizar.jpg" />
+    <Content Include="Images\UserImages\Untitled-1.png" />
+    <Content Include="Images\UserImages\user.png" />
+    <Content Include="Images\WhatsApp Image 2022-02-16 at 7.34.17 PM.jpeg" />
+    <Content Include="Images\Whitening_REpairing_Cream__10736.1413186187.500.750.jpg" />
+    <Content Include="LOGO16.ico" />
+    <Content Include="favicon.ico" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="FOS_WallCoatDataSet.xsc">
+      <DependentUpon>FOS_WallCoatDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="DataSets\rptDataSet.xsc">
+      <DependentUpon>rptDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="DataSet1.xsc">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Content>
+    <Content Include="AbsentSO.xsc">
+      <DependentUpon>AbsentSO.xsd</DependentUpon>
+    </Content>
+    <None Include="AbsentSO.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AbsentSO.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="AbsentSO.xss">
+      <DependentUpon>AbsentSO.xsd</DependentUpon>
+    </Content>
+    <Content Include="Brandwise.xsc">
+      <DependentUpon>Brandwise.xsd</DependentUpon>
+    </Content>
+    <Content Include="brand.xsc">
+      <DependentUpon>brand.xsd</DependentUpon>
+    </Content>
+    <Content Include="AllData.xsc">
+      <DependentUpon>AllData.xsd</DependentUpon>
+    </Content>
+    <None Include="AllData.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AllData.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="AllData.xss">
+      <DependentUpon>AllData.xsd</DependentUpon>
+    </Content>
+    <Content Include="AllPurpose.xsc">
+      <DependentUpon>AllPurpose.xsd</DependentUpon>
+    </Content>
+    <None Include="AllPurpose.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AllPurpose.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="AllPurpose.xss">
+      <DependentUpon>AllPurpose.xsd</DependentUpon>
+    </Content>
+    <Content Include="AllPurposeVisit.xsc">
+      <DependentUpon>AllPurposeVisit.xsd</DependentUpon>
+    </Content>
+    <None Include="AllPurposeVisit.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AllPurposeVisit.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="AllPurposeVisit.xss">
+      <DependentUpon>AllPurposeVisit.xsd</DependentUpon>
+    </Content>
+    <None Include="brand.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>brand.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="brand.xss">
+      <DependentUpon>brand.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrandMMC.xsc">
+      <DependentUpon>BrandMMC.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrandGridInRpt.xsc">
+      <DependentUpon>BrandGridInRpt.xsd</DependentUpon>
+    </Content>
+    <None Include="BrandGridInRpt.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrandGridInRpt.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrandGridInRpt.xss">
+      <DependentUpon>BrandGridInRpt.xsd</DependentUpon>
+    </Content>
+    <None Include="BrandMMC.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrandMMC.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrandMMC.xss">
+      <DependentUpon>BrandMMC.xsd</DependentUpon>
+    </Content>
+    <None Include="Brandwise.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Brandwise.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Brandwise.xss">
+      <DependentUpon>Brandwise.xsd</DependentUpon>
+    </Content>
+    <Content Include="CalForReport.xsc">
+      <DependentUpon>CalForReport.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrandWiseSummary.xsc">
+      <DependentUpon>BrandWiseSummary.xsd</DependentUpon>
+    </Content>
+    <None Include="BrandWiseSummary.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrandWiseSummary.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrandWiseSummary.xss">
+      <DependentUpon>BrandWiseSummary.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoVisitsCount.xsc">
+      <DependentUpon>BrightoVisitsCount.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoVisits.xsc">
+      <DependentUpon>BrightoVisits.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoDataSet.xsc">
+      <DependentUpon>BrightoDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoClaimsSummary.xsc">
+      <DependentUpon>BrightoClaimsSummary.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoChemDSR.xsc">
+      <DependentUpon>BrightoChemDSR.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoChemDSR.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoChemDSR.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoChemDSR.xss">
+      <DependentUpon>BrightoChemDSR.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoChemDSRDataset.xsc">
+      <DependentUpon>BrightoChemDSRDataset.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoChemDSRDataset.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoChemDSRDataset.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoChemDSRDataset.xss">
+      <DependentUpon>BrightoChemDSRDataset.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoClaimsSummary.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoClaimsSummary.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoClaimsSummary.xss">
+      <DependentUpon>BrightoClaimsSummary.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoDataSet.xss">
+      <DependentUpon>BrightoDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="BrightoUAEUnifiedDataSet.xsc">
+      <DependentUpon>BrightoUAEUnifiedDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoUAEUnifiedDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoUAEUnifiedDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoUAEUnifiedDataSet.xss">
+      <DependentUpon>BrightoUAEUnifiedDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoVisits.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoVisits.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoVisits.xss">
+      <DependentUpon>BrightoVisits.xsd</DependentUpon>
+    </Content>
+    <None Include="BrightoVisitsCount.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BrightoVisitsCount.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BrightoVisitsCount.xss">
+      <DependentUpon>BrightoVisitsCount.xsd</DependentUpon>
+    </Content>
+    <None Include="CalForReport.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CalForReport.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CalForReport.xss">
+      <DependentUpon>CalForReport.xsd</DependentUpon>
+    </Content>
+    <Content Include="DataForAll.xsc">
+      <DependentUpon>DataForAll.xsd</DependentUpon>
+    </Content>
+    <Content Include="CityWiseItemSummary.xsc">
+      <DependentUpon>CityWiseItemSummary.xsd</DependentUpon>
+    </Content>
+    <None Include="CityWiseItemSummary.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CityWiseItemSummary.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CityWiseItemSummary.xss">
+      <DependentUpon>CityWiseItemSummary.xsd</DependentUpon>
+    </Content>
+    <Content Include="CompititorMMC.xsc">
+      <DependentUpon>CompititorMMC.xsd</DependentUpon>
+    </Content>
+    <Content Include="ClaimsReportDataset.xsc">
+      <DependentUpon>ClaimsReportDataset.xsd</DependentUpon>
+    </Content>
+    <None Include="ClaimsReportDataset.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ClaimsReportDataset.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="ClaimsReportDataset.xss">
+      <DependentUpon>ClaimsReportDataset.xsd</DependentUpon>
+    </Content>
+    <Content Include="ClaimSummaryReportCategoryWise.xsc">
+      <DependentUpon>ClaimSummaryReportCategoryWise.xsd</DependentUpon>
+    </Content>
+    <None Include="ClaimSummaryReportCategoryWise.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ClaimSummaryReportCategoryWise.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="ClaimSummaryReportCategoryWise.xss">
+      <DependentUpon>ClaimSummaryReportCategoryWise.xsd</DependentUpon>
+    </Content>
+    <None Include="CompititorMMC.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CompititorMMC.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CompititorMMC.xss">
+      <DependentUpon>CompititorMMC.xsd</DependentUpon>
+    </Content>
+    <Content Include="DailySOPDF.xsc">
+      <DependentUpon>DailySOPDF.xsd</DependentUpon>
+    </Content>
+    <Content Include="CorporateVisits.xsc">
+      <DependentUpon>CorporateVisits.xsd</DependentUpon>
+    </Content>
+    <Content Include="CorporatePDF.xsc">
+      <DependentUpon>CorporatePDF.xsd</DependentUpon>
+    </Content>
+    <None Include="CorporatePDF.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CorporatePDF.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CorporatePDF.xss">
+      <DependentUpon>CorporatePDF.xsd</DependentUpon>
+    </Content>
+    <None Include="CorporateVisits.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CorporateVisits.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CorporateVisits.xss">
+      <DependentUpon>CorporateVisits.xsd</DependentUpon>
+    </Content>
+    <Content Include="CoverageDataSet.xsc">
+      <DependentUpon>CoverageDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="CoverageDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CoverageDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CoverageDataSet.xss">
+      <DependentUpon>CoverageDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="CoveragePDFDataSet.xsc">
+      <DependentUpon>CoveragePDFDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="CoveragePDFDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>CoveragePDFDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="CoveragePDFDataSet.xss">
+      <DependentUpon>CoveragePDFDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="DailySOPDF.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DailySOPDF.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="DailySOPDF.xss">
+      <DependentUpon>DailySOPDF.xsd</DependentUpon>
+    </Content>
+    <None Include="DataForAll.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataForAll.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="DataForAll.xss">
+      <DependentUpon>DataForAll.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSet1.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSet1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="DataSet1.xss">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Content>
+    <Content Include="DataSet2.xsc">
+      <DependentUpon>DataSet2.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSet2.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSet2.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="DataSet2.xss">
+      <DependentUpon>DataSet2.xsd</DependentUpon>
+    </Content>
+    <None Include="DataSets\rptDataSet.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>rptDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="DataSets\rptDataSet.xss">
+      <DependentUpon>rptDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="DistributorOrders.xsc">
+      <DependentUpon>DistributorOrders.xsd</DependentUpon>
+    </Content>
+    <None Include="DistributorOrders.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DistributorOrders.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="DistributorOrders.xss">
+      <DependentUpon>DistributorOrders.xsd</DependentUpon>
+    </Content>
+    <Content Include="DistributorWise.xsc">
+      <DependentUpon>DistributorWise.xsd</DependentUpon>
+    </Content>
+    <None Include="DistributorWise.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DistributorWise.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="DistributorWise.xss">
+      <DependentUpon>DistributorWise.xsd</DependentUpon>
+    </Content>
+    <Content Include="FollowupRangeA.xsc">
+      <DependentUpon>FollowupRangeA.xsd</DependentUpon>
+    </Content>
+    <Content Include="FinalOrder.xsc">
+      <DependentUpon>FinalOrder.xsd</DependentUpon>
+    </Content>
+    <None Include="FinalOrder.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>FinalOrder.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="FinalOrder.xss">
+      <DependentUpon>FinalOrder.xsd</DependentUpon>
+    </Content>
+    <None Include="FollowupRangeA.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>FollowupRangeA.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="FollowupRangeA.xss">
+      <DependentUpon>FollowupRangeA.xsd</DependentUpon>
+    </Content>
+    <Content Include="FollowUpReasonsDSR.xsc">
+      <DependentUpon>FollowUpReasonsDSR.xsd</DependentUpon>
+    </Content>
+    <None Include="FollowUpReasonsDSR.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>FollowUpReasonsDSR.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="FollowUpReasonsDSR.xss">
+      <DependentUpon>FollowUpReasonsDSR.xsd</DependentUpon>
+    </Content>
+    <None Include="FOS_WallCoatDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>FOS_WallCoatDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="FOS_WallCoatDataSet.xss">
+      <DependentUpon>FOS_WallCoatDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="GPSalesForceAppDataSet.xsc">
+      <DependentUpon>GPSalesForceAppDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="GPSalesForceAppDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>GPSalesForceAppDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="GPSalesForceAppDataSet.xss">
+      <DependentUpon>GPSalesForceAppDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="Monthly.xsc">
+      <DependentUpon>Monthly.xsd</DependentUpon>
+    </Content>
+    <Content Include="Itemwise.xsc">
+      <DependentUpon>Itemwise.xsd</DependentUpon>
+    </Content>
+    <Content Include="ItemRegionSummary.xsc">
+      <DependentUpon>ItemRegionSummary.xsd</DependentUpon>
+    </Content>
+    <Content Include="HousingVisitPDF.xsc">
+      <DependentUpon>HousingVisitPDF.xsd</DependentUpon>
+    </Content>
+    <Content Include="HousingPDFData.xsc">
+      <DependentUpon>HousingPDFData.xsd</DependentUpon>
+    </Content>
+    <Content Include="HousingPDF.xsc">
+      <DependentUpon>HousingPDF.xsd</DependentUpon>
+    </Content>
+    <Content Include="HousingDataSet.xsc">
+      <DependentUpon>HousingDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="HousingDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>HousingDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="HousingDataSet.xss">
+      <DependentUpon>HousingDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="HousingPDF.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>HousingPDF.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="HousingPDF.xss">
+      <DependentUpon>HousingPDF.xsd</DependentUpon>
+    </Content>
+    <None Include="HousingPDFData.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>HousingPDFData.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="HousingPDFData.xss">
+      <DependentUpon>HousingPDFData.xsd</DependentUpon>
+    </Content>
+    <None Include="HousingVisitPDF.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>HousingVisitPDF.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="HousingVisitPDF.xss">
+      <DependentUpon>HousingVisitPDF.xsd</DependentUpon>
+    </Content>
+    <None Include="ItemRegionSummary.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ItemRegionSummary.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="ItemRegionSummary.xss">
+      <DependentUpon>ItemRegionSummary.xsd</DependentUpon>
+    </Content>
+    <None Include="Itemwise.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Itemwise.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Itemwise.xss">
+      <DependentUpon>Itemwise.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCOrder.xsc">
+      <DependentUpon>MMCOrder.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCFollowUp.xsc">
+      <DependentUpon>MMCFollowUp.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCDataSet.xsc">
+      <DependentUpon>MMCDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCDailyDataSet.xsc">
+      <DependentUpon>MMCDailyDataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="KPIVSClaims.xsc">
+      <DependentUpon>KPIVSClaims.xsd</DependentUpon>
+    </Content>
+    <None Include="KPIVSClaims.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>KPIVSClaims.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="KPIVSClaims.xss">
+      <DependentUpon>KPIVSClaims.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCDailyDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCDailyDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCDailyDataSet.xss">
+      <DependentUpon>MMCDailyDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCDataSet.xss">
+      <DependentUpon>MMCDataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCFollowUp.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCFollowUp.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCFollowUp.xss">
+      <DependentUpon>MMCFollowUp.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCOrder.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCOrder.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCOrder.xss">
+      <DependentUpon>MMCOrder.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCStock.xsc">
+      <DependentUpon>MMCStock.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCOrdersFinalReport.xsc">
+      <DependentUpon>MMCOrdersFinalReport.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCOrdersFinalReport.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCOrdersFinalReport.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCOrdersFinalReport.xss">
+      <DependentUpon>MMCOrdersFinalReport.xsd</DependentUpon>
+    </Content>
+    <Content Include="MMCPDFDaily.xsc">
+      <DependentUpon>MMCPDFDaily.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCPDFDaily.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCPDFDaily.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCPDFDaily.xss">
+      <DependentUpon>MMCPDFDaily.xsd</DependentUpon>
+    </Content>
+    <None Include="MMCStock.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MMCStock.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="MMCStock.xss">
+      <DependentUpon>MMCStock.xsd</DependentUpon>
+    </Content>
+    <None Include="Monthly.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Monthly.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Monthly.xss">
+      <DependentUpon>Monthly.xsd</DependentUpon>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Models\Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Models\Scripts\jquery.reset.js" />
+    <Content Include="Models\Scripts\gridmvc.js" />
+    <Content Include="Models\Scripts\gridmvc.lang.ru.js" />
+    <Content Include="Models\Scripts\gridmvc.min.js" />
+    <Content Include="Models\Scripts\jquery-1.8.2.js" />
+    <Content Include="Models\Scripts\jquery-1.8.2.min.js" />
+    <None Include="Models\Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Models\Scripts\jquery-ui-1.8.24.js" />
+    <Content Include="Models\Scripts\jquery-ui-1.8.24.min.js" />
+    <Content Include="Models\Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Models\Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Models\Scripts\jquery.validate.js" />
+    <Content Include="Models\Scripts\jquery.validate.min.js" />
+    <Content Include="Models\Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Models\Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Models\Scripts\js\alertify.js" />
+    <Content Include="Models\Scripts\js\bootstrap-colorpicker.js" />
+    <Content Include="Models\Scripts\js\bootstrap-datepicker.js" />
+    <Content Include="Models\Scripts\js\bootstrap-datetimepicker.js" />
+    <Content Include="Models\Scripts\js\bootstrap-fileupload.js" />
+    <Content Include="Models\Scripts\js\bootstrap-timepicker.js" />
+    <Content Include="Models\Scripts\js\bootstrap.min.js" />
+    <Content Include="Models\Scripts\js\chosen.jquery.min.js" />
+    <Content Include="Models\Scripts\js\classie.js" />
+    <Content Include="Models\Scripts\js\common-scripts.js" />
+    <Content Include="Models\Scripts\js\dataTables.scroller.js" />
+    <Content Include="Models\Scripts\js\dataTables.scroller.min.js" />
+    <Content Include="Models\Scripts\js\DT_bootstrap.js" />
+    <Content Include="Models\Scripts\js\dynamic-table.js" />
+    <Content Include="Models\Scripts\js\editable-table.js" />
+    <Content Include="Models\Scripts\js\form-component.js" />
+    <Content Include="Models\Scripts\js\form-wizard.js" />
+    <Content Include="Models\Scripts\js\gmaps-scripts.js" />
+    <Content Include="Models\Scripts\js\gmaps.js" />
+    <Content Include="Models\Scripts\js\jasny-bootstrap.min.js" />
+    <Content Include="Models\Scripts\js\jquery-1.8.3.min.js" />
+    <Content Include="Models\Scripts\js\jquery.blockui.js" />
+    <Content Include="Models\Scripts\js\jquery.bootstrap.wizard.min.js" />
+    <Content Include="Models\Scripts\js\jquery.dataTables.js" />
+    <Content Include="Models\Scripts\js\jquery.dataTables.min.js" />
+    <Content Include="Models\Scripts\js\jquery.gritter.min.js" />
+    <Content Include="Models\Scripts\js\jquery.lazyload.js" />
+    <Content Include="Models\Scripts\js\jquery.nicescroll.js" />
+    <Content Include="Models\Scripts\js\jquery.scrollstop.js" />
+    <Content Include="Models\Scripts\js\jquery.scrollTo.min.js" />
+    <Content Include="Models\Scripts\js\jquery.uniform.min.js" />
+    <Content Include="Models\Scripts\js\loadash.js" />
+    <Content Include="Models\Scripts\js\moment.min.js" />
+    <Content Include="Models\Scripts\js\morris.js" />
+    <Content Include="Models\Scripts\js\raphael-min.js" />
+    <Content Include="Models\Scripts\js\sugar.min.js" />
+    <Content Include="Models\Scripts\js\vmaps-scripts.js" />
+    <Content Include="Models\Scripts\knockout-2.2.0.debug.js" />
+    <Content Include="Models\Scripts\knockout-2.2.0.js" />
+    <Content Include="Models\Scripts\modernizr-2.6.2.js" />
+    <Content Include="Models\Scripts\multiple-select.js" />
+    <Content Include="OrderInExcel.xsc">
+      <DependentUpon>OrderInExcel.xsd</DependentUpon>
+    </Content>
+    <Content Include="Onlineoffline.xsc">
+      <DependentUpon>Onlineoffline.xsd</DependentUpon>
+    </Content>
+    <None Include="Onlineoffline.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Onlineoffline.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Onlineoffline.xss">
+      <DependentUpon>Onlineoffline.xsd</DependentUpon>
+    </Content>
+    <Content Include="OnvsOff.xsc">
+      <DependentUpon>OnvsOff.xsd</DependentUpon>
+    </Content>
+    <None Include="OnvsOff.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>OnvsOff.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="OnvsOff.xss">
+      <DependentUpon>OnvsOff.xsd</DependentUpon>
+    </Content>
+    <Content Include="OrderForExcelDaily.xsc">
+      <DependentUpon>OrderForExcelDaily.xsd</DependentUpon>
+    </Content>
+    <None Include="OrderForExcelDaily.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>OrderForExcelDaily.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="OrderForExcelDaily.xss">
+      <DependentUpon>OrderForExcelDaily.xsd</DependentUpon>
+    </Content>
+    <None Include="OrderInExcel.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>OrderInExcel.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="OrderInExcel.xss">
+      <DependentUpon>OrderInExcel.xsd</DependentUpon>
+    </Content>
+    <Content Include="OrdersInMMC.xsc">
+      <DependentUpon>OrdersInMMC.xsd</DependentUpon>
+    </Content>
+    <None Include="OrdersInMMC.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>OrdersInMMC.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="OrdersInMMC.xss">
+      <DependentUpon>OrdersInMMC.xsd</DependentUpon>
+    </Content>
+    <Content Include="PDFORDER.xsc">
+      <DependentUpon>PDFORDER.xsd</DependentUpon>
+    </Content>
+    <None Include="PDFORDER.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>PDFORDER.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="PDFORDER.xss">
+      <DependentUpon>PDFORDER.xsd</DependentUpon>
+    </Content>
+    <Content Include="PDFORDERMMC.xsc">
+      <DependentUpon>PDFORDERMMC.xsd</DependentUpon>
+    </Content>
+    <None Include="PDFORDERMMC.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>PDFORDERMMC.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="PDFORDERMMC.xss">
+      <DependentUpon>PDFORDERMMC.xsd</DependentUpon>
+    </Content>
+    <None Include="Properties\PublishProfiles\WallCoatFOS.pubxml" />
+    <Content Include="regionwiseordersandfollowups.xsc">
+      <DependentUpon>regionwiseordersandfollowups.xsd</DependentUpon>
+    </Content>
+    <None Include="regionwiseordersandfollowups.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>regionwiseordersandfollowups.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="regionwiseordersandfollowups.xss">
+      <DependentUpon>regionwiseordersandfollowups.xsd</DependentUpon>
+    </Content>
+    <Content Include="RSMOrdersDailyPDF.xsc">
+      <DependentUpon>RSMOrdersDailyPDF.xsd</DependentUpon>
+    </Content>
+    <None Include="RSMOrdersDailyPDF.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>RSMOrdersDailyPDF.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="RSMOrdersDailyPDF.xss">
+      <DependentUpon>RSMOrdersDailyPDF.xsd</DependentUpon>
+    </Content>
+    <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Scripts\bootstrap-popover.js" />
+    <Content Include="Scripts\bootstrap-year-calendar.js" />
+    <Content Include="Scripts\bootstrap-year-calendar.min.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery-1.8.2.js" />
+    <Content Include="Scripts\jquery-1.8.2.min.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\jquery-ui-1.8.24.js" />
+    <Content Include="Scripts\jquery-ui-1.8.24.min.js" />
+    <Content Include="Scripts\jquery.reset.js" />
+    <Content Include="Scripts\jquery.sumoselect.js" />
+    <Content Include="Scripts\jquery.sumoselect.min.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\js\alertify.js" />
+    <Content Include="Scripts\js\bootstrap-colorpicker.js" />
+    <Content Include="Scripts\js\bootstrap-datepicker.js" />
+    <Content Include="Scripts\js\bootstrap-datetimepicker.js" />
+    <Content Include="Scripts\js\bootstrap-fileupload.js" />
+    <Content Include="Scripts\js\bootstrap-timepicker.js" />
+    <Content Include="Scripts\js\bootstrap.min.js" />
+    <Content Include="Scripts\js\chosen.jquery.min.js" />
+    <Content Include="Scripts\js\classie.js" />
+    <Content Include="Scripts\js\common-scripts.js" />
+    <Content Include="Scripts\js\dataTables.scroller.js" />
+    <Content Include="Scripts\js\dataTables.scroller.min.js" />
+    <Content Include="Scripts\js\DT_bootstrap.js" />
+    <Content Include="Scripts\js\dynamic-table.js" />
+    <Content Include="Scripts\js\editable-table.js" />
+    <Content Include="Scripts\js\form-component.js" />
+    <Content Include="Scripts\js\form-wizard.js" />
+    <Content Include="Scripts\js\gmaps-scripts.js" />
+    <Content Include="Scripts\js\gmaps.js" />
+    <Content Include="Scripts\js\jasny-bootstrap.min.js" />
+    <Content Include="Scripts\js\jquery-1.8.3.min.js" />
+    <Content Include="Scripts\js\jquery.blockui.js" />
+    <Content Include="Scripts\js\jquery.bootstrap.wizard.min.js" />
+    <Content Include="Scripts\js\jquery.dataTables.js" />
+    <Content Include="Scripts\js\jquery.dataTables.min.js" />
+    <Content Include="Scripts\js\jquery.fileDownload.js" />
+    <Content Include="Scripts\js\jquery.gritter.min.js" />
+    <Content Include="Scripts\js\jquery.lazyload.js" />
+    <Content Include="Scripts\js\jquery.nicescroll.js" />
+    <Content Include="Scripts\js\jquery.scrollstop.js" />
+    <Content Include="Scripts\js\jquery.scrollTo.min.js" />
+    <Content Include="Scripts\js\jquery.uniform.min.js" />
+    <Content Include="Scripts\js\loadash.js" />
+    <Content Include="Scripts\js\moment.min.js" />
+    <Content Include="Scripts\js\morris.js" />
+    <Content Include="Scripts\js\preview.js" />
+    <Content Include="Scripts\js\raphael-min.js" />
+    <Content Include="Scripts\js\sugar.min.js" />
+    <Content Include="Scripts\js\vmaps-scripts.js" />
+    <Content Include="Scripts\knockout-2.2.0.debug.js" />
+    <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_diagonals-thick_90_eeeeee_40x40.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_glass_100_e4f1fb_1x400.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_glass_50_3baae3_1x400.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_glass_80_d7ebf9_1x400.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_highlight-hard_100_f2f5f7_1x100.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_highlight-hard_70_000000_1x100.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_highlight-soft_100_deedf7_1x100.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-bg_highlight-soft_25_ffef8f_1x100.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-icons_2694e8_256x240.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-icons_3d80b3_256x240.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-icons_72a7cf_256x240.png" />
+    <Content Include="Scripts\lib\cupertino\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Scripts\lib\cupertino\jquery-ui.min.css" />
+    <Content Include="Scripts\lib\fullcalendar.min.js" />
+    <Content Include="Scripts\lib\jquery-ui.min.js" />
+    <Content Include="Scripts\lib\jquery.min.js" />
+    <Content Include="Scripts\lib\moment.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\multiple-select.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="TestReport.aspx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Content\Site.css" />
+    <Content Include="Models\Scripts\_references.js" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Home.cshtml" />
+    <Content Include="Views\AdminPanel\Login.cshtml" />
+    <Content Include="Views\AdminPanel\Users.cshtml" />
+    <Content Include="Views\Setup\Region.cshtml" />
+    <Content Include="Views\Setup\City.cshtml" />
+    <Content Include="Views\Setup\Area.cshtml" />
+    <Content Include="Views\AdminPanel\Role.cshtml" />
+    <Content Include="Views\Dealer\Dealer.cshtml" />
+    <Content Include="Views\SaleOfficer\SaleOfficer.cshtml" />
+    <Content Include="Views\RegionalHead\RegionalHead.cshtml" />
+    <Content Include="Views\Reports\Retailer\Retailer.cshtml" />
+    <Content Include="Views\Reports\Retailer\PendingRetailer.cshtml" />
+    <Content Include="Views\Home\GetCount.cshtml" />
+    <Content Include="Views\Job\MonthlyJobWork.cshtml" />
+    <Content Include="Views\Job\DoneJob.cshtml" />
+    <Content Include="Views\Reports\Retailer\RetailerMapView.cshtml" />
+    <Content Include="Views\AdminPanel\UserMenu.cshtml" />
+    <Content Include="Views\Painter\Painter.cshtml" />
+    <Content Include="Views\Painter\PainterTest.cshtml" />
+    <Content Include="Views\Job\B2BJob.cshtml" />
+    <Content Include="Views\Reports\Retailer\NewRetailer.cshtml" />
+    <Content Include="Views\Reports\Retailer\RetailerReport.cshtml" />
+    <Content Include="Views\Reports\Retailer\RetailerMonthlyReport.cshtml" />
+    <Content Include="Views\Reports\Retailer\FosMonthWiseReport.cshtml" />
+    <Content Include="Views\Reports\Retailer\ShopMonthWiseReport.cshtml" />
+    <Content Include="Views\Reports\Retailer\CityWiseFosReport.cshtml" />
+    <Content Include="Views\Reports\Retailer\CityMktRtlrWiseReport.cshtml" />
+    <Content Include="Views\Sales\ManualSales.cshtml" />
+    <Content Include="Views\Painter\ReportsInputBkp.cshtml" />
+    <Content Include="Views\Painter\ReportsInputB.cshtml" />
+    <Content Include="Views\Painter\ReportsInput.cshtml" />
+    <Content Include="Views\Reports\FosDateWiseReport.cshtml" />
+    <Content Include="Views\Reports\FosDateMonthWiseIntakeReport.cshtml" />
+    <Content Include="Views\Reports\CityDateWiseRetailerReport.cshtml" />
+    <Content Include="Views\Reports\CityDateMonthWiseIntakeReport.cshtml" />
+    <Content Include="Views\Reports\RetailerShopDateWiseReport.cshtml" />
+    <Content Include="Views\Reports\RetailerShopDateMonthWiseIntakeReport.cshtml" />
+    <Content Include="Views\Reports\CityWiseFosReport.cshtml" />
+    <Content Include="Views\Reports\CityMktRtlrWiseReport.cshtml" />
+    <Content Include="Views\Home\UserHome.cshtml" />
+    <Content Include="Views\Job\ShowJob.cshtml" />
+    <Content Include="Views\Job\DailyJobWork.cshtml" />
+    <Content Include="Views\Job\WeeklyJobWork.cshtml" />
+    <Content Include="Views\Job\Upload.cshtml" />
+    <Content Include="Views\Todo\List.cshtml" />
+    <Content Include="Views\Complaint\List.cshtml" />
+    <Content Include="Views\QR\List.cshtml" />
+    <Content Include="Views\QR\SOList.cshtml" />
+    <Content Include="Views\Reports\Retailer\UpdateApproval.cshtml" />
+    <Content Include="Views\Reports\Retailer\ProposedAddApproval.cshtml" />
+    <Content Include="Views\Reports\Retailer\ResetLocApproval.cshtml" />
+    <Content Include="Views\Reports\Retailer\UpdateLocApproval.cshtml" />
+    <Content Include="Views\Dealer\Plan.cshtml" />
+    <Content Include="Views\Job\BeatPlan.cshtml" />
+    <Content Include="Views\Job\ShowPlans.cshtml" />
+    <Content Include="Views\Job\Consolidate.cshtml" />
+    <Content Include="Views\Job\ShowFullYearCal.cshtml" />
+    <Content Include="Views\Dealer\DealerCities.cshtml" />
+    <Content Include="Views\Job\SendSMS.cshtml" />
+    <Content Include="Views\Reports\MarketInfo.cshtml" />
+    <Content Include="Views\Reports\RetailerInfo.cshtml" />
+    <Content Include="Views\Reports\ShopVisitDetail.cshtml" />
+    <Content Include="Views\Reports\ShopVisitSummery.cshtml" />
+    <Content Include="Views\Reports\ShopVisitSummeryOneLine.cshtml" />
+    <Content Include="Views\Reports\ShopBrandWiseDisplay.cshtml" />
+    <Content Include="Views\Reports\CityRetailerWiseReport.cshtml" />
+    <Content Include="Views\Reports\FOSPlanning.cshtml" />
+    <Content Include="Views\Item\MainCategory.cshtml" />
+    <Content Include="Views\Item\SubCategory.cshtml" />
+    <Content Include="Views\Item\SubCategoryA.cshtml" />
+    <Content Include="Views\Setup\ActivityPurpose.cshtml" />
+    <Content Include="Views\Job\StockTaking.cshtml" />
+    <Content Include="Views\RetailerOrders\GetRetailerOrders.cshtml" />
+    <Content Include="Views\RetailerOrders\ShowRetailerOrders.cshtml" />
+    <Content Include="Views\Dealer\NewDealer.cshtml" />
+    <Content Include="Views\Dealer\DistributorMapView.cshtml" />
+    <Content Include="Views\Reports\DealerInfo.cshtml" />
+    <Content Include="Views\Reports\RetailerOrdersDetail.cshtml" />
+    <Content Include="Views\Reports\StockTakingDetail.cshtml" />
+    <Content Include="Views\AdminPanel\Access.cshtml" />
+    <Content Include="Views\AdminPanel\SORegions.cshtml" />
+    <Content Include="Views\NationalUser\NationalUser.cshtml" />
+    <Content Include="Views\Reports\DailyPerformanceKPI.cshtml" />
+    <Content Include="WeeklyReport.xsc">
+      <DependentUpon>WeeklyReport.xsd</DependentUpon>
+    </Content>
+    <Content Include="Views\Reports\PresentSOReport.cshtml" />
+    <Content Include="Views\Reports\OrderSummaryReport.cshtml" />
+    <Content Include="Views\Reports\OrderSummaryReportForDistributor.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\Reports\ItemsNotSoldBySoRpt.cshtml" />
+    <Content Include="Views\Reports\ShopsNotVisitedBySORpt.cshtml" />
+    <Content Include="Views\Reports\Retailer\DeleteRetailerApproval.cshtml" />
+    <Content Include="Views\Setup\SchemeInfo.cshtml" />
+    <Content Include="Views\Setup\SchemeInformation.cshtml" />
+    <Content Include="Views\Reports\SoVisitsFrequency.cshtml" />
+    <Content Include="Views\Job\MsgRetailers.cshtml" />
+    <Content Include="Views\Job\MsgDistributor.cshtml" />
+    <Content Include="Views\Job\MsgSaleOfficer.cshtml" />
+    <Content Include="Views\Reports\GetTotalFollowupReport.cshtml" />
+    <Content Include="Views\NationalUser\TransferOrders.cshtml" />
+    <Content Include="Views\Dealer\TransferDealer.cshtml" />
+    <Content Include="Views\Reports\BrandWiseReport.cshtml" />
+    <Content Include="Views\Home\ManagersDashboard.cshtml" />
+    <Content Include="Views\Reports\RetailerInfo - Copy.cshtml" />
+    <Content Include="Views\NationalUser\UploadStock.cshtml" />
+    <Content Include="Views\RegionalHead\ItemGroup.cshtml" />
+    <Content Include="SOWise.xsc">
+      <DependentUpon>SOWise.xsd</DependentUpon>
+    </Content>
+    <None Include="SOWise.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SOWise.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="SOWise.xss">
+      <DependentUpon>SOWise.xsd</DependentUpon>
+    </Content>
+    <Content Include="Views\NationalUser\UploadInvoice.cshtml" />
+    <Content Include="StockPositions.xsc">
+      <DependentUpon>StockPositions.xsd</DependentUpon>
+    </Content>
+    <None Include="StockPositions.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>StockPositions.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="StockPositions.xss">
+      <DependentUpon>StockPositions.xsd</DependentUpon>
+    </Content>
+    <Content Include="Views\Dealer\TransferRetailers.cshtml" />
+    <Content Include="Views\Reports\StockPosition.cshtml" />
+    <Content Include="Views\Reports\StockInvoice.cshtml" />
+    <Content Include="Views\Reports\SOAttendance.cshtml" />
+    <Content Include="Views\Reports\Attandance.cshtml" />
+    <Content Include="Views\Reports\ManagersUpdate.cshtml" />
+    <Content Include="Views\Reports\RetailerAvgSale.cshtml" />
+    <Content Include="Views\Reports\SaleOfficerDetail.cshtml" />
+    <Content Include="Views\Dealer\DistributorDSR.cshtml" />
+    <Content Include="Views\Home\DealersDashboard.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
+    <Content Include="Views\Reports\LowItemsDetail.cshtml" />
+    <Content Include="Views\Setup\DelieveryBoys.cshtml" />
+    <Content Include="Views\Dealer\DealerDispatch.cshtml" />
+    <Content Include="Views\Reports\ItemSaleSummary.cshtml" />
+    <Content Include="Views\Item\Item.cshtml" />
+    <Content Include="Views\Reports\RetailerSummery.cshtml" />
+    <Content Include="Views\Reports\SSDailyPerformance.cshtml" />
+    <Content Include="Views\Reports\ShopsPerformance.cshtml" />
+    <Content Include="Views\Reports\SSSaleSummary.cshtml" />
+    <Content Include="Views\Reports\SSVisitSummary.cshtml" />
+    <Content Include="Views\Retailer\CityMktRtlrWiseReport.cshtml" />
+    <Content Include="Views\Retailer\CityWiseFosReport.cshtml" />
+    <Content Include="Views\Retailer\DeleteRetailerApproval.cshtml" />
+    <Content Include="Views\Retailer\FosMonthWiseReport.cshtml" />
+    <Content Include="Views\Retailer\NewRetailer.cshtml" />
+    <Content Include="Views\Retailer\PendingRetailer.cshtml" />
+    <Content Include="Views\Retailer\ProposedAddApproval.cshtml" />
+    <Content Include="Views\Retailer\ResetLocApproval.cshtml" />
+    <Content Include="Views\Retailer\Retailer.cshtml" />
+    <Content Include="Views\Retailer\RetailerMapView.cshtml" />
+    <Content Include="Views\Retailer\RetailerMonthlyReport.cshtml" />
+    <Content Include="Views\Retailer\RetailerReport.cshtml" />
+    <Content Include="Views\Retailer\ShopMonthWiseReport.cshtml" />
+    <Content Include="Views\Retailer\UpdateApproval.cshtml" />
+    <Content Include="Views\Retailer\UpdateLocApproval.cshtml" />
+    <Content Include="TradeVisit.xsc">
+      <DependentUpon>TradeVisit.xsd</DependentUpon>
+    </Content>
+    <Content Include="TradePDF.xsc">
+      <DependentUpon>TradePDF.xsd</DependentUpon>
+    </Content>
+    <Content Include="TradeDataset.xsc">
+      <DependentUpon>TradeDataset.xsd</DependentUpon>
+    </Content>
+    <None Include="TradeDataset.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TradeDataset.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="TradeDataset.xss">
+      <DependentUpon>TradeDataset.xsd</DependentUpon>
+    </Content>
+    <None Include="TradePDF.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TradePDF.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="TradePDF.xss">
+      <DependentUpon>TradePDF.xsd</DependentUpon>
+    </Content>
+    <Content Include="TraderWiseSummary.xsc">
+      <DependentUpon>TraderWiseSummary.xsd</DependentUpon>
+    </Content>
+    <None Include="TraderWiseSummary.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TraderWiseSummary.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="TraderWiseSummary.xss">
+      <DependentUpon>TraderWiseSummary.xsd</DependentUpon>
+    </Content>
+    <None Include="TradeVisit.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TradeVisit.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="TradeVisit.xss">
+      <DependentUpon>TradeVisit.xsd</DependentUpon>
+    </Content>
+    <Content Include="TradeVisitPDFDaily.xsc">
+      <DependentUpon>TradeVisitPDFDaily.xsd</DependentUpon>
+    </Content>
+    <None Include="TradeVisitPDFDaily.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TradeVisitPDFDaily.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="TradeVisitPDFDaily.xss">
+      <DependentUpon>TradeVisitPDFDaily.xsd</DependentUpon>
+    </Content>
+    <Content Include="Views\Reports\PresentSOReportSummary.cshtml" />
+    <Content Include="Views\Reports\PresentSOReportDetail.cshtml" />
+    <Content Include="Views\Home\ClaimsDashboard.cshtml" />
+    <Content Include="Views\Home\AgentDashboard.cshtml" />
+    <Content Include="Views\Complaint\ManageComplaints.cshtml" />
+    <None Include="Views\Home\GraphicalDashboard.cshtml" />
+    <Content Include="Views\SaleOfficer\SOTargets.cshtml" />
+    <Content Include="Views\Reports\SOPayments.cshtml" />
+    <Content Include="Views\SaleOfficer\SOTransfer.cshtml" />
+    <Content Include="Views\Item\ProductCategory.cshtml" />
+    <Content Include="Views\Reports\VisitsCountReport.cshtml" />
+    <Content Include="VisitsCount.xsc">
+      <DependentUpon>VisitsCount.xsd</DependentUpon>
+    </Content>
+    <EmbeddedResource Include="Views\Reports\ChemicalDSRReport.rdlc" />
+    <EmbeddedResource Include="Views\Reports\CoverageDSRReport.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ClaimsVsKpiReport.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ClaimsSummaryCategoryWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ClaimsSummaryTraderWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ClaimsReportDetailTraderWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ClaimsReport.rdlc" />
+    <Content Include="Views\Reports\SOClaimsSummary.cshtml" />
+    <Content Include="Views\Reports\ClaimSummary.cshtml" />
+    <Content Include="Views\Reports\ClaimDetail.cshtml" />
+    <Content Include="Views\Setup\KPI.cshtml" />
+    <Content Include="Views\Reports\ClaimSummarySOWise.cshtml" />
+    <Content Include="Views\Reports\ClaimSummaryVSKPISOWise.cshtml" />
+    <Content Include="Views\Reports\ChemicalSummarySOWise.cshtml" />
+    <Content Include="Views\Reports\ClaimApprovalSummary.cshtml" />
+    <Content Include="Views\Reports\CoverageSummarySOWise.cshtml" />
+    <Content Include="Views\RetailerOrders\GetSOWiseKPIS.cshtml" />
+    <Content Include="Views\Home\Claim.cshtml" />
+    <Content Include="Views\Setup\AttendanceAndPunctuality.cshtml" />
+    <Content Include="Views\Setup\Training.cshtml" />
+    <Content Include="Views\RetailerOrders\GetClaimsForManager.cshtml" />
+    <Content Include="Views\Reports\PresentSOReportSync.cshtml" />
+    <Content Include="Views\Reports\ClaimApproval.cshtml" />
+    <Content Include="Views\RetailerOrders\AgentCalling.cshtml" />
+    <Content Include="Views\Reports\CallSummaryReport.cshtml" />
+    <Content Include="Views\Retailer\NewFanaanCustomer.cshtml" />
+    <Content Include="Views\Reports\BrightoServicesReport.cshtml" />
+    <Content Include="Views\Home\QualityHome.cshtml" />
+    <Content Include="Views\Reports\ComplaintSummary.cshtml" />
+    <None Include="VisitsCount.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>VisitsCount.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="VisitsCount.xss">
+      <DependentUpon>VisitsCount.xsd</DependentUpon>
+    </Content>
+    <None Include="WeeklyReport.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>WeeklyReport.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="WeeklyReport.xss">
+      <DependentUpon>WeeklyReport.xsd</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Images\ComPicture\" />
+    <Folder Include="Images\ComplaintAudio\" />
+    <Folder Include="Images\ComplaintPictures\" />
+    <Folder Include="Images\ComplaintVideos\" />
+    <Folder Include="Images\ComVideo\" />
+    <Folder Include="Images\ShopPictures\" />
+    <Folder Include="Logs\" />
+    <Folder Include="NewFolder1\" />
+    <Folder Include="PDF\" />
+    <Folder Include="TempFiles\" />
+    <Folder Include="Uploads\Jobs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FOS.Services\FOS.DataLayer.csproj">
+      <Project>{99cbc213-e55c-4c3c-895d-5dcb5f30ed9b}</Project>
+      <Name>FOS.DataLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Setup\FOS.Setup.csproj">
+      <Project>{408754be-eefc-4e17-87bb-dab457782552}</Project>
+      <Name>FOS.Setup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Shared\FOS.Shared.csproj">
+      <Project>{ffca6cd1-6bf2-4285-8eb2-d15940ae7587}</Project>
+      <Name>FOS.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Users\FOS.AdminPanel.csproj">
+      <Project>{246c8d01-3f6b-4b2f-bcd1-a0839fd0690c}</Project>
+      <Name>FOS.AdminPanel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reports\CityFosWise.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityFosWise.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CityMktRtlrWise.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityMktRtlrWise.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CityMonthWiseRpt.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityMonthWiseRpt.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CityRetailerWiseInfo.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityRetailerWiseInfo.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CityWisePaintersReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityWisePaintersReport1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CityDateWiseIntakeReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityDateWiseIntakeReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CityMonthWiseIntakeReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CityMonthWiseIntakeReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\CrystalReport1.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CrystalReport1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\FosMonthWiseIntakeReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FosMonthWiseIntakeReport.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\FosDateWiseIntake.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FosDateWiseIntake.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\FosDateWise.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FosDateWise.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\FosMonthWiseRpt.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FosMonthWiseRpt.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\FOSPlanning.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>FOSPlanning.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\MarketInformation.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>MarketInformation.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\PosAvailabilityReport.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>PosAvailabilityReport1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\RetailerInfo.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RetailerInfo.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\RetailerPointSummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RetailerPointSummary1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\RetailerReport1.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>RetailerReport1.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ShopBrandWiseDisplay.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ShopBrandWiseDisplay.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ShopDateWise.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ShopDateWise.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ShopMonthWiseRpt.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ShopMonthWiseRpt.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ShopVisitSummeryOneLiner.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ShopVisitSummeryOneLiner.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ShopVisit_Detail.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ShopVisit_Detail.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ShopVisit_Summary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>ShopVisit_Summary.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Reports\BrandWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\AbsentSOWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\AllPurposeVisit.rdlc" />
+    <EmbeddedResource Include="Views\Reports\DealerDispatchAll.rdlc" />
+    <EmbeddedResource Include="Views\Reports\DealerDSR.rdlc" />
+    <EmbeddedResource Include="Views\Reports\DispatchForVan.rdlc" />
+    <EmbeddedResource Include="Views\Reports\CorporateVisit.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ItemCityWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ItemRegionWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\HousingVisit.rdlc" />
+    <EmbeddedResource Include="Views\Reports\Count.rdlc" />
+    <EmbeddedResource Include="Views\Reports\BrandClaims.rdlc" />
+    <Content Include="Views\Reports\SOComplaints.rdlc" />
+    <EmbeddedResource Include="Views\Reports\TradeVisit.rdlc" />
+    <EmbeddedResource Include="Views\Reports\MMCOrdersRSM.rdlc" />
+    <EmbeddedResource Include="Views\Reports\OnlineOfflineWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\DistributorWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\MonthlyReport.rdlc" />
+    <EmbeddedResource Include="Views\Reports\ItemWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\DailyKPI.rdlc" />
+    <EmbeddedResource Include="Views\Reports\StockPosition.rdlc" />
+    <EmbeddedResource Include="Views\Reports\Weeklymonthly.rdlc" />
+    <EmbeddedResource Include="Views\Reports\SOWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\RegionWise.rdlc" />
+    <EmbeddedResource Include="Views\Reports\Report1.rdlc" />
+    <EmbeddedResource Include="Views\Reports\TestDistributor.rdlc" />
+    <EmbeddedResource Include="Views\Reports\TestReport - Copy.rdlc" />
+    <EmbeddedResource Include="Views\Reports\TestReport.rdlc" />
+    <EmbeddedResource Include="Views\Reports\WeeklyReport.rdlc" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>4444</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:4442</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="..\packages\Microsoft.VisualStudio.Web.CodeGeneration.Tools.2.0.4\build\microsoft.visualstudio.web.codegeneration.tools.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.Web.CodeGeneration.Tools.2.0.4\build\microsoft.visualstudio.web.codegeneration.tools.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.Web.CodeGeneration.Tools.2.0.4\build\microsoft.visualstudio.web.codegeneration.tools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.Web.CodeGeneration.Tools.2.0.4\build\microsoft.visualstudio.web.codegeneration.tools.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
+  <Import Project="..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.1.21.0\build\Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

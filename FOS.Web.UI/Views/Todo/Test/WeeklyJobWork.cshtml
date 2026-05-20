@@ -1,0 +1,1170 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Territorial Job";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Territorial Job</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+@using (Ajax.BeginForm("AddUpdateWeeklyJob", "Test", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal", id = "myForm" }))
+{
+        
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="min-height: 100px;">
+                <div class="widget-title">
+                    <h4>Manage Weekly Jobs</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 100px;">
+
+
+                    <div class="span5">
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Job Title *</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.JobTitle, new { @class = "", @style = "", name = "JobTitle" })
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.ID)
+                                @Html.HiddenFor(model => model.SelectedRetailers)
+                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="span5">
+
+
+
+                        <div id="THDiv">
+
+                            <!-- Visit Type -->
+                            <div class="control-group" style="margin-bottom: 14px; text-align: right">
+                                <label class="control-label">Visit Type *</label>
+                                <div class="controls" style="margin-top: 4px;">
+                                    @Html.RadioButton("VisitType", "Shop", new { @checked = true, @style = "margin-top: 0px;" })   <span style="margin-right: 46px; margin-top: 2px">Shop</span>
+                                    @Html.RadioButton("VisitType", "Painter", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px">Painter</span>
+
+                                </div>
+                            </div>
+
+                            <div id="RetailerTypeDiv">
+                                <!-- Retailer Type -->
+                                <div class="control-group" style="margin-bottom: 14px; text-align: right">
+                                    <label class="control-label">Retailer Type *</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.RadioButton("RetailerType", "Regular", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px; margin-right: 29px;">Regular</span>
+                                        @Html.RadioButton("RetailerType", "Focused", new { @checked = true, @style = "margin-top: 0px;" })   <span style="margin-top: 2px">Focused</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Buttons -->
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 0px; padding-right: 0px; float: right;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Create</span>
+                                </button>
+                                <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>
+
+        @*  <div class="span7">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Selected Sales Officer Retailers List</h4>
+                </div>
+                <div class="widget-body" style="height: 498px; overflow: scroll;">
+                    
+                    @Html.HiddenFor(model => model.SelectedPainters)
+                    @Html.HiddenFor(model => model.SelectedRetailers)
+                    @Html.HiddenFor(model => model.SelectedDealers)
+                    
+                    <div style="float: left; width: 99%;">
+                        <div id="retailers" class="" style="width: 108%; height: 440px;"></div>
+                    </div>
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>*@
+
+    </div>
+}
+
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span6">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>Retailers List</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body" style="padding: 0px;">
+
+                <div class="span12" style="overflow-y: scroll;overflow-x: hidden;">
+
+                    <div id='external-events'></div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+
+    <div class="span6">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>Manage Weekly Job</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body" style="padding: 0px;">
+
+                <div class="span12" style="">
+                    <div id='calendar'></div>
+
+                    <div style='clear: both'></div>
+                </div>
+
+            </div>
+
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog" style="width: 45%;left: 29%;height: 43%;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-header" style="background-color: #3F51B5;box-shadow: 0px 3px 8px grey;">
+                <button type="button" class="close" data-dismiss="modal" style="margin-top: -8px;color: #ffffff;opacity: 0.8;">&times;</button>
+                <h4 class="modal-title" style="font-weight: 900;color: #ffffff;margin-top: 0px;margin-bottom: 0px;">Retailer Information</h4>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <table class="table table-striped table-hover table-bordered" style="width: 100%;">
+                        <tbody>
+                            <tr>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerInfo">Retailer Name</h5></td>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerValue" id="RName">Afzal Traders</h5></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerInfo">City Name</h5></td>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerValue" id="CName">Lahore</h5></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerInfo">Area Name</h5></td>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerValue" id="AName">Behria Town</h5></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerInfo">Retailer Type</h5></td>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerValue" id="RT">Regular</h5></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerInfo">Shop Name</h5></td>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerValue" id="RSN">Majeed & Sons</h5></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerInfo">Address</h5></td>
+                                <td style="padding-top: 0px;padding-bottom: 0px;padding: 4px;"><h5 class="h5_RetailerValue" id="RADD">9C Commercial Area, Side-A Behria Town Lahore</h5></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                  
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .h5_RetailerInfo {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-weight: 700;
+            color: #3F51B5;
+    }
+
+    .h5_RetailerValue {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            text-align: right;
+            font-weight: 600;
+    }
+
+    #external-events {
+        float: left;
+        padding: 0 2px;
+        background: #fff;
+        text-align: left;
+        margin-bottom: 20px;
+        height: 613px;
+    }
+
+        #external-events h4 {
+                font-size: 16px;
+    margin-top: 0;
+    padding-top: 0.4em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: 18px;
+    font-weight: bolder;
+    color: #3F51B5;
+        }
+
+        #external-events .fc-event {
+            margin: 2px 2px;
+            padding: 3px;
+            float: left;
+            cursor: pointer;
+            width: 44.5%;
+        }
+
+        #external-events p {
+            margin: 1.5em 0;
+            font-size: 11px;
+            color: #666;
+        }
+
+            #external-events p input {
+                margin: 0;
+                vertical-align: middle;
+            }
+
+    #calendar {
+        float: right;
+        width: 100%;
+    }
+
+
+    .fc th {
+       background-image: linear-gradient(to bottom, #797979, #545454);
+       color:white;
+           padding: 6px;
+    }
+</style>
+
+
+
+
+
+<script>
+    var a = [];
+    var b = [];
+    var JobList = "";
+
+    $(function () {
+
+        $('#myForm').submit(function () {
+
+
+            alert(JobList);
+
+            $("#SelectedRetailers").val(JobList);
+
+
+            $("#Type").val("1");
+            
+            if ($('input[type=radio][name=VisitType]:checked').val() == "Shop") {
+                //$("#SelectedRetailers").val(a);
+                $("#SelectedDealers").val(b);
+                $("#SelectedPainters").val("");
+            }
+            else {
+                $("#SelectedPainters").val(a);
+                //$("#SelectedRetailers").val("");
+                $("#SelectedDealers").val("");
+            }
+
+            $('#ID').focusin();
+            if ($('#VisitPlanID').val() == 1) {
+            }
+            else if ($('#VisitPlanID').val() == 2) {
+                if ($("#VisitPlanWeeklyDays").val() == "0") {
+                    alertify.error("Please Select A Day");
+                    return false;
+                }
+            }
+            else if ($('#VisitPlanID').val() == 3) {
+            }
+
+            if ($('#JobTitle').val() == "" || $('#JobTitle').val() == null) {
+
+                alertify.error("Please Enter Job Title");
+                return false;
+
+            }
+
+        });
+    });
+
+    function GenerateDetailGrid() {
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "paging": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "bRestore": true,
+            "ajax": {
+                "type": "POST",
+                "contentType": "application/json; charset=utf-8",
+                "dataType": "json",
+                "url": '@Url.Action("JobDataHandler", "Test")',
+                'data': function (data) {
+                    data.RegionalHeadID = $('#RegionalHeadID').val();
+                    data.SaleOfficerID = $('#SaleOfficerID').val();
+                    return data = JSON.stringify(data);
+                },
+            },
+            "fnDrawCallback": function (osetting) {
+
+                var UpdateCheck = "0";
+                var DeleteCheck = "0";
+
+                if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+                else {
+                    $(".edit").on("click", function () {
+
+                        $('#ID').val($(this).attr("data-id"));
+                        $('#JobTitle').val($(this).attr("data-jobtitle"));
+                        $('#create').text('Update');
+                        $("#SaleOfficerID").val($(this).attr("data-saleofficerid"));
+                        $("#RegionalHeadID").val($(this).attr("data-regionalheadid"));
+                        $("#ContactPerson").val($(this).attr("data-contactperson"));
+                        $("#B2BVisitAddress").val($(this).attr("data-visitaddress"));
+
+                        $("#Description").val($(this).attr("data-description"));
+                        $('#VisitPlanID').val($(this).attr("data-visitplantype"));
+
+                        $("#VisitPlanID").trigger("chosen:update");
+                        $("#VisitPlanID").trigger("change");
+
+                        $("#VisitPlanWeeklyDays").val($(this).attr("data-visitplandays"));
+                        $("#VisitPlanWeeklyDays").trigger("chosen:update");
+                        $("#StartingDate").val($(this).attr("data-startingdate"));
+                        $("#VisitPlanWeeklyDays").trigger("chosen:update");
+
+                        if ($(this).attr("data-visittype") == "Shop") {
+                            $("input[name=VisitType][value='Shop']").prop("checked", true).trigger("click");
+
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("LoadRetailersEdit", "Test")",
+                                data: { JobID: $(this).attr("data-id"), SaleOfficerID: $(this).attr("data-saleofficerid"), RetailerType: $(this).attr("data-retailertype") },
+                                success: function (json) {
+
+                                    if (json != null) {
+
+
+                                        var $el = $("#external-events");
+                                        $el.empty(); // remove old options
+                                        $("#external-events").append(json.Response);
+
+                                        a = [];
+                                        b = [];
+
+                                        $.each(json.EditRetailer, function (value, key) {
+                                            if (key.RetailerJobStatus == true) {
+                                                $("#retailer" + key.ID + "").attr("checked", true);
+                                                a.push(key.ID);
+                                                console.log(key.ID);
+                                                b.push(key.DealerID);
+                                            }
+                                            else {
+                                                $("#retailer" + key.ID + "").attr("checked", false);
+                                            }
+
+                                        });
+
+                                    }
+
+                                    else { alertify.success('All Retailers Assigned To Jobs.'); }
+                                }
+
+                            });
+
+                            $("#RetailerTypeDiv").show();
+                        }
+                        else if ($(this).attr("data-visittype") == "Painter") {
+                            $("input[name=VisitType][value='Painter']").prop("checked", true).trigger("click");
+                            LoadPaintersEdit($(this).attr("data-saleofficerid"), $(this).attr("data-id"));
+                            $("#RetailerTypeDiv").hide();
+                        }
+                        else { }
+
+                        if ($(this).attr("data-retailertype") == "Regular") {
+                            $("input[name=RetailerType][value='Regular']").prop("checked", true).trigger("click");
+                        }
+                        else if ($(this).attr("data-retailertype") == "Focused") {
+                            $("input[name=RetailerType][value='Focused']").prop("checked", true).trigger("click");
+                        }
+                        else { }
+
+                        $("#VisitPlanHiddenID").val($(this).attr("data-visitplantype"));
+
+                        var arr = $(this).attr("data-visitplandays").split(',');
+
+                        $('html, body').animate({
+                            scrollTop: $("#main-content").offset().top
+                        }, 500);
+
+                        $('#VisitPlanID').attr('disabled', true);
+
+
+
+                        $('html, body').animate({
+                            scrollTop: $("#main-content").offset().top
+                        }, 500);
+
+                    });
+                }
+
+                if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                else {
+                    $(".delete").on("click", function () {
+
+                        var JobID = $(this).attr("data-id");
+
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Delete This Job ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("DeleteJob", "Test")",
+                                    data: { JobID: JobID },
+                                    success: function (data) {
+
+                                        if (data == "0") {
+                                            alertify.success('Record Deleted Successfully');
+                                            var table = $('#datatab').DataTable();
+                                            table.row(this).remove().draw(false);
+                                        }
+
+                                        else { alertify.error('An Error Occured, Try Again.'); }
+                                    }
+
+                                });
+
+                            } else { }
+                        });
+
+                    });
+                }
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search jobs : " },
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "RegionalHeadID", "bVisible": false },
+           { "data": "SaleOfficerID", "bVisible": false },
+           { "data": "ID" },
+           { "data": "JobTitle" },
+           { "data": "RegionalHeadName" },
+           { "data": "SaleOfficerName" },
+           { "data": "VisitPlanName" },
+           { "data": "DateOfAssign" },
+
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+                   return '<button class="btn btn-success edit" data-id=' + '"' + row.ID + '" data-jobtitle=' + '"' + row.JobTitle + '"' + '  data-saleofficerid=' + '"' + row.SaleOfficerID + '"' + ' data-regionalheadid=' + '"' + row.RegionalHeadID + '"' + ' data-jobno=' + '"' + row.JobNo + '"' + ' data-visittype=' + '"' + row.VisitType + '"' + '  data-visitplantype=' + '"' + row.VisitPlanID + '"' + 'data-startingdate=' + '"' + row.StartingDate + '"' + 'data-visitplandays=' + '"' + row.VisitPlanDays + '"' + ' data-retailertype=' + '"' + row.RetailerType + '"' + ' data-contactperson=' + '"' + row.ContactPerson + '"' + ' data-visitaddress=' + '"' + row.B2BVisitAddress + '"' + ' data-description=' + '"' + row.Description + '"' + ' ><i class=icon-pencil></i></button>&nbsp;<button class="btn btn-info delete" data-id=' + '"' + row.ID + '"' + '><i class=icon-trash></i></button>';
+               }
+           }], "order": [0, "asc"]
+
+        });
+
+    }
+
+
+    function LoadRegionalHead(RegionalHeadType) {
+
+
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: "@Url.Action("GetRegionalHeadAccordingToType", "SaleOfficer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#RegionalHeadID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+                $("#RegionalHeadID").trigger("change");
+            }
+
+        });
+    }
+
+    function LoadPaintersEdit(SOID, JobID) {
+        try {
+            $.ajax({
+                type: "POST",
+                data: { JobID: JobID, SOID: SOID },
+                url: "@Url.Action("LoadPaintersEdit", "Test")",
+                success: function (json) {
+
+                    var $el = $("#retailers");
+                    $el.empty();
+                    $("#retailers").append(json.Response);
+
+                    a = [];
+                    for (i = 0 ; i < json.PainterIDs.length ; i++) {
+                        a.push(json.PainterIDs[i]);
+                    }
+                    $.each(json.Response, function (value, key) {
+                        if (key.Selected == true) {
+                            $("#retailer" + key.ID + "").attr("checked", true);
+                        }
+                        else { $("#retailer" + key.ID + "").attr("checked", false); }
+                    });
+
+                },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                complete: function () {
+                    $("#progress").hide();
+                },
+                error: function () {
+                    alertify.error("Server Is not Responding.");
+                }
+            });
+        }
+        catch (e) {
+            alert(e);
+        }
+    }
+
+    $(document).ready(function () {
+        $('input[name=StartingDate]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $("input[name=StartingDate]").datepicker({ dateFormat: "dd-MM-yy" });
+        $("input[name=StartingDate]").trigger('change')
+
+        $("#Type").val("1");
+
+
+        
+
+        $("#PaintersCity").hide();
+
+        
+
+        // $("input[name=StartingDate]").datepicker({ dateFormat: "yy-mm-dd" });
+
+
+        //$('#startingDateDiv').hide();
+        $("#B2BDiv").hide();
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+
+        $("#Type").change(function () {
+
+            if ($(this).val() == 1) {
+                LoadRegionalHead($(this).val());
+                $("#THDiv").show();
+                $("#B2BDiv").hide();
+            }
+            else {
+                LoadRegionalHead($(this).val());
+                $("#THDiv").hide();
+                $("#B2BDiv").show();
+                $("#PaintersCity").hide();
+            }
+
+        });
+
+        $('input[type=radio][name=RetailerType]').change(function () {
+            LoadRetailers($(this).val());
+        });
+
+        $('input[type=radio][name=VisitType]').change(function () {
+            if ($(this).val() == "Shop") {
+                var $el = $("#external-events");
+                $el.empty(); // remove old options
+                $("input[name=RetailerType][value='Regular']").prop("checked", false)
+                $("input[name=RetailerType][value='Focused']").prop("checked", false)
+                $("#RetailerTypeDiv").show();
+                $("#PaintersCity").hide();
+            }
+            else {
+                var $el = $("#external-events");
+                $el.empty(); // remove old options
+                $("#RetailerTypeDiv").hide();
+                $("#PaintersCity").show();
+                LoadPainters($("#SaleOfficerID").val());
+            }
+
+        });
+
+        function LoadPainters(SOID) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: SOID },
+                    url: "@Url.Action("LoadPainters", "Test")",
+                    success: function (json) {
+                        var $el = $("#retailers");
+                        $el.empty(); // remove old options
+                        $("#retailers").append(json.Response);
+                    },
+                    beforeSend: function () {
+                        $("#progress").show();
+                    },
+                    complete: function () {
+                        $("#progress").hide();
+                    },
+                    error: function () {
+                        alertify.error("Server Is not Responding.");
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+
+            }
+        }
+
+
+
+        $("#liJob,#liManageJobs").addClass("active");
+
+        function setRadio(id) {
+            var radio = $('#' + id);
+            radio[0].checked = true;
+            radio.button("refresh");
+        }
+
+        function LoadRetailers(RetailerType) {
+            try {
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: SaleOfficerID, RetailerType: RetailerType },
+                    url: "@Url.Action("LoadRetailers", "Test")",
+                    success: function (json) {
+
+                        var $el = $("#external-events");
+                        $el.empty(); // remove old options
+                        $("#external-events").append(json.Response);
+                        //$.each(json, function (value, key) {
+
+                        //    $el.append($("<div class='span3' style='margin:0px;margin-left: 5px;'><input data-id='" + key.ID + "'  class='' name='retailer[]' type='checkbox' style='margin: -1px 0 0;'><span class='lbl' style='font-size:11px'> " + key.Name + "</span><p style='font-size:9px'> " + key.Address + "</p></div>"))
+                        //});
+                        $('#datatab').DataTable().ajax.reload();
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+
+            }
+        }
+
+        function LoadSalesOfficer() {
+
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealer", "Test")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+
+                        if ($('#SaleOfficerID').val() != null) {
+
+                            $("#retailers").empty();
+
+                            @*try {
+                                var SaleOfficerID = $("#SaleOfficerID").val();
+                                var RegionalHeadID = $("#RegionalHeadID").val();
+                                var RetailerType = $("#RetailerType").val();
+
+                                $.ajax({
+                                    type: "POST",
+                                    data: { RegionalHeadID: RegionalHeadID, SaleOfficerID: SaleOfficerID, RetailerType: RetailerType },
+                                    url: "@Url.Action("LoadRetailers", "Job")",
+                                    success: function (json) {
+
+                                        var $el = $("#retailers");
+                                        $el.empty(); // remove old options
+                                        $("#retailers").append(json.Response);
+                                        //$.each(json, function (value, key) {
+
+                                        //    $el.append($("<div class='span3' style='margin:0px;margin-left: 5px;'><input data-id='" + key.ID + "'  class='' name='retailer[]' type='checkbox' style='margin: -1px 0 0;'><span class='lbl' style='font-size:11px'> " + key.Name + "</span><p style='font-size:9px'> " + key.Address + "</p></div>"))
+                                        //});
+                                        $('#datatab').DataTable().ajax.reload();
+                                    }
+
+                                });
+                            } catch (e) {
+                                alert(e);
+
+                            }*@
+
+                        }
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RegionalHeadID").change(function () {
+            LoadSalesOfficer();
+            $("input[name=VisitType][value='Shop']").prop("checked", false)
+            $("input[name=VisitType][value='Painter']").prop("checked", false)
+            $("input[name=RetailerType][value='Regular']").prop("checked", false)
+            $("input[name=RetailerType][value='Focused']").prop("checked", false)
+            $("#RetailerTypeDiv").hide();
+        });
+
+        $("#SaleOfficerID").change(function () {
+            LoadRetailerAccordingToSalesOfficer();
+            $("input[name=VisitType][value='Shop']").prop("checked", false)
+            $("input[name=VisitType][value='Painter']").prop("checked", false)
+            $("input[name=RetailerType][value='Regular']").prop("checked", false)
+            $("input[name=RetailerType][value='Focused']").prop("checked", false)
+            $("#RetailerTypeDiv").hide();
+        });
+
+        function LoadRetailerAccordingToSalesOfficer() {
+
+            try {
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: SaleOfficerID },
+                    url: "@Url.Action("LoadRetailers", "Test")",
+                    success: function (json) {
+
+                        var $el = $("#external-events");
+                        $el.empty(); // remove old options
+                        //$("#retailers").append(json.Response);
+                        //$('#datatab').DataTable().ajax.reload();
+                    }
+
+                });
+
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+        function LoadCitiesAndAreas(SOID) {
+
+            try {
+
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, SaleOfficerID: SOID, RetailerType: $("#Type").val() },
+                    url: "@Url.Action("LoadCitiesAndAreas", "Test")",
+                    success: function (json) {
+
+                        var $el = $("#retailers");
+                        $el.empty(); // remove old options
+                        $("#retailers").append(json.Response);
+                        //$.each(json, function (value, key) {
+
+                        //    $el.append($("<div class='span3' style='margin:0px;margin-left: 5px;'><input data-id='" + key.ID + "'  class='' name='retailer[]' type='checkbox' style='margin: -1px 0 0;'><span class='lbl' style='font-size:11px'> " + key.Name + "</span><p style='font-size:9px'> " + key.Address + "</p></div>"))
+                        //});
+                        $('#datatab').DataTable().ajax.reload();
+                    }
+
+                });
+
+            } catch (e) {
+                alert(e);
+
+
+            }
+        }
+
+        $("#btnRefresh").click(function () {
+            ClearForm();
+        });
+
+        $('#VisitPlanID').change('change', function () {
+            if ($(this).val() == 1) {
+                $('#startingDateDiv').show();
+                $('#weekSelectDay').hide();
+                $('#weekSelectDay').val("0");
+                $("#days").css("display", "none");
+                $("#days").val(",,,,,,,");
+            }
+            else if ($(this).val() == 2) {
+                $('#startingDateDiv').hide();
+                $('#weekSelectDay').show();
+                $("#days").css("display", "none");
+                $("#days").val(",,,,,,,");
+            }
+            else if ($(this).val() == 3) {
+                $('#startingDateDiv').hide();
+                $('#weekSelectDay').hide();
+                //$('#VisitPlanWeekDay').val("0");
+                //$("#days").css("display", "flex");
+            }
+        });
+
+        GenerateDetailGrid();
+
+        $("#btnRefresh").trigger('click');
+        //$("#RegionalHeadID").trigger("change");
+        //$("#RegionalHeadID").trigger("chosen:update");
+    });
+
+
+    function RefreshTable(tableId, urlData) {
+        $.getJSON(urlData, null, function (json) {
+            table = $(tableId).dataTable();
+            oSettings = table.fnSettings();
+
+            table.fnClearTable(this);
+
+            for (var i = 0; i < json.aaData.length; i++) {
+                table.oApi._fnAddData(oSettings, json.aaData[i]);
+            }
+
+            oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+            table.fnDraw();
+        });
+    }
+
+
+    function ClearForm() {
+
+        a = [];
+        b = [];
+        JobList = "";
+
+        $('#ID').val(0);
+        $('#JobTitle').val('');
+        $('#JobNo').val('');
+        $('#VisitPlanID').val(1);
+        $('#VisitPlanID').trigger("chosen:update");
+        $("#VisitPlanID").trigger("change");
+        $('#create').text('Create');
+        //$('#retailers').empty();
+
+        $("#SaleOfficerID").trigger("change");
+        $("#SaleOfficerID").trigger("chosen:update");
+
+        $('#VisitPlanWeeklyDays').val("0");
+        $('#VisitPlanWeeklyDays').trigger("chosen:update");
+
+        $("#days").css("display", "none");
+
+        //$("input[type=radio][name=RetailerType]").attr('disabled', false);
+
+        $("#VisitPlanEach_Monday").prop("checked", false);
+        $("#VisitPlanEach_Monday").parent().removeClass('checked');
+        $("#VisitPlanEach_Tuesday").prop("checked", false);
+        $("#VisitPlanEach_Tuesday").parent().removeClass('checked');
+        $("#VisitPlanEach_Wednesday").prop("checked", false);
+        $("#VisitPlanEach_Wednesday").parent().removeClass('checked');
+        $("#VisitPlanEach_Thursday").prop("checked", false);
+        $("#VisitPlanEach_Thursday").parent().removeClass('checked');
+        $("#VisitPlanEach_Friday").prop("checked", false);
+        $("#VisitPlanEach_Friday").parent().removeClass('checked');
+        $("#VisitPlanEach_Saturday").prop("checked", false);
+        $("#VisitPlanEach_Saturday").parent().removeClass('checked');
+        $("#VisitPlanEach_Sunday").prop("checked", false);
+        $("#VisitPlanEach_Sunday").parent().removeClass('checked');
+
+
+
+        $("#StartingDate").val("");
+        $("#SelectedRetailers").val("");
+        $("#SelectedPainters").val("");
+        $("#SelectedDealers").val("");
+        $("#VisitPlanHiddenID").val("");
+        $("#ContactPerson").val("");
+        $("#B2BVisitAddress").val("");
+        $("#Description").val("");
+        $('#VisitPlanID').attr('disabled', false);
+        //$("input[name=VisitType][value='Shop']").prop("checked", true)
+        //$("input[name=RetailerType][value='Regular']").prop("checked", true)
+        $("input[name=VisitType][value='Shop']").prop("checked", false)
+        $("input[name=VisitType][value='Painter']").prop("checked", false)
+        $("input[name=RetailerType][value='Regular']").prop("checked", false)
+        $("input[name=RetailerType][value='Focused']").prop("checked", false)
+
+        $('#calendar').fullCalendar('removeEvents');
+
+    }
+
+
+    function dateFormatter(date) {
+        var d = date;
+
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+
+        var output = (('' + day).length < 2 ? '0' : '') + day + '-' + (('' + month).length < 2 ? '0' : '') + month + '-' + d.getFullYear();
+        return output;
+    }
+
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Job Saved Successfully");
+            $('#create').text('Create');
+            var dt = $('#datatab').DataTable();
+            dt.ajax.reload();
+            ClearForm();
+        }
+        else if (response == "2") {
+            alertify.error("Please Select Any Retailer For Job");
+        }
+        else if (response == "3") {
+            alertify.error("Please Select Any Painter For Job");
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Save Job.");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+
+
+    $(document).ajaxComplete(function () {
+
+        $("input[name='retailer[]']").bind().change(function () {
+
+            a = [];
+            b = [];
+            JobList = "";
+
+            $("input[name='retailer[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    a.push($(this).attr('data-id'));
+                }
+
+            });
+
+            $("input[name='retailer[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    b.push($(this).attr('data-dealerid'));
+                }
+
+            });
+
+        });
+
+
+        /* initialize the external events
+-----------------------------------------------------------------*/
+
+        $('#external-events .fc-event').each(function () {
+
+            // store data so the calendar knows to render an event upon drop
+            $(this).data('event', {
+                title: $.trim($(this).text()), // use the element's text as the event title
+                stick: true // maintain when user navigates (see docs on the renderEvent method)
+            });
+
+            // make the event draggable using jQuery UI
+            $(this).draggable({
+                zIndex: 999,
+                revert: true,      // will cause the event to go back to its
+                revertDuration: 0  //  original position after the drag
+            });
+
+        });
+
+        
+
+
+        /* initialize the calendar
+		-----------------------------------------------------------------*/
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'today,next',
+                center: 'title',
+                right: 'basicWeek'
+            },
+            defaultView: 'basicWeek',
+            // This Allows Droppeable Things To Calendar Limits On Showing...
+            eventLimit: true, // for all non-agenda views
+            views: {
+                agenda: {
+                    eventLimit: 4 // adjust to 6 only for agendaWeek/agendaDay
+                }
+            },
+            // This Allows Things To Be Editable Onto The Calendar...
+            editable: true,
+            // This Allows Things To Be Droppeable Onto The Calendar...
+            droppable: true, 
+            //After Drop Retailer Delete From Retailers
+            drop: function (date, jsEvent, ui, resourceId) {
+                if ($('#drop-remove').is(':checked')) {
+                    $(this).remove();
+                }
+                JobList += date.format() + ',' + $(this).attr("data-id") + ',' + $(this).attr("data-dealerid") + '|';
+                //alert('Date: ' + date.format() + ' || Retailer ID: ' + $(this).attr("data-id") + ' || Distributor ID: ' + $(this).attr("data-dealerid") + ' || SalesOfficer ID: ' + $(this).attr("data-salesofficerid"));
+                //alert(date.format()+','+$(this).attr("data-id")+','+$(this).attr("data-dealerid")+','+ $(this).attr("data-salesofficerid")+'');
+            },
+            eventClick: function (event) {
+
+            },
+            eventRender: function (event, element) {
+                element.bind('dblclick', function () {
+                    $('#calendar').fullCalendar('removeEvents', event._id);
+                });
+            }
+        });
+
+        $("#drop-remove").prop("checked", true);
+
+        $(".RetailerInfo").click(function () {
+            $("#RName").text($(this).attr("data-name"));
+            $("#CName").text($(this).attr("data-cityname"));
+            $("#AName").text($(this).attr("data-areaname"));
+            $("#RT").text($(this).attr("data-retailertype"));
+            $("#RSN").text($(this).attr("data-shopname"));
+            $("#RADD").text($(this).attr("data-address"));
+        });
+
+    });
+
+
+</script>

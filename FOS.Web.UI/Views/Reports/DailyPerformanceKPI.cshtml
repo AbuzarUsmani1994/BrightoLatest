@@ -1,0 +1,354 @@
+﻿@model  FOS.Shared.JobsData
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">DailyPerformanceKPI</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@using (Ajax.BeginForm("DailyPerformanceKPI", "Reports", new AjaxOptions { HttpMethod = "POST" }, new { @class = "form-horizontal", id = "myForm" }))
+{
+
+
+    @*//@Html.AntiForgeryToken()
+        //@Html.ValidationSummary(true)*@
+
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="min-height: 100px;">
+                <div class="widget-title">
+                    <h4>Daily Performance KPI</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 100px;">
+                    <div class="span5">
+
+                        @*<div class="control-group" style="margin-bottom: 14px; display:none;">
+            <label class="control-label">Job Title *</label>
+            <div class="controls">
+                @Html.EditorFor(model => model.JobTitle, new { @class = "", @style = "", name = "JobTitle" })
+            </div>
+        </div>*@
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Starting Date *</label>
+                            <div class="controls">
+                                <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Ending Date *</label>
+                            <div class="controls">
+                                <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                            </div>
+                        </div>
+
+                    
+                   
+
+                        <div class="control-group" id="RegionalHeadOther">
+                            <label class="control-label">Select Head *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                                @Html.HiddenFor(model => model.HiddenRegionalHeadID)
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Please select Type: </label>
+                            <div class="controls">
+                                <select class="form-control" id="Type" name="Type">
+                                    <option value="RegionWise">Region Wise</option>
+                                    <option value="SoWise">Sale Officer Wise</option>
+                                    <option value="ItemWise">Item Wise</option>
+                                   @*// <option value="DistributorWise">Distributor Wise</option>*@
+                                    @*<option value="OnlineVsOffline">Online Vs Offline</option>*@
+                                    <option value="NoSoPresent">Absent SaleOfficers</option>
+                                    <option value="SOSummary">SaleOfficers Summary</option>
+                                </select>
+
+
+
+                                @*@Html.RadioButton("Type","RegionWise") Region Wise <br />
+                @Html.RadioButton("Type","SoWise")Sale Officer Wise <br />
+                @Html.RadioButton("Type", "ItemWise") Item Wise <br />
+                @Html.RadioButton("Type", "DistributorWise")Distributor Wise <br />*@
+                                @*<input type="radio" id="RegionWise" name="RegionWise" value="RegionWise"> Region Wise<br />
+                <input type="radio" id="SaleOfficerWise" name="SaleOfficerWise" value="SaleOfficerWise"> SaleOfficer Wise<br />
+                <input type="radio" id="ItemWise" name="ItemWise" value="ItemWise"> Item Wise<br />
+                <input type="radio" id="DistributorWise" name="DistributorWise" value="DistributorWise"> Distributor Wise<br />*@
+                            </div>
+                        </div>
+                        <div class="control-group" id="RegionalHead">
+                            <label class="control-label">Select Head *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionalHeadIDD, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionalHeadIDD)
+
+                            </div>
+                        </div>
+                        <div class="control-group" style="margin-bottom: 14px;" id="SaleOfficer">
+                            <label class="control-label">Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.ID)
+                                @Html.HiddenFor(model => model.SelectedRetailers)
+
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;" id="Types">
+                            <label class="control-label">Report Type: </label>
+                            <div class="controls">
+                                <select class="form-control" id="Typess" name="Typess">
+                                    <option value="Daily">Daily</option>
+                                    <option value="Weekly">Weekly/Monthly</option>
+
+
+                                </select>
+
+
+
+                                @*@Html.RadioButton("Type","RegionWise") Region Wise <br />
+                @Html.RadioButton("Type","SoWise")Sale Officer Wise <br />
+                @Html.RadioButton("Type", "ItemWise") Item Wise <br />
+                @Html.RadioButton("Type", "DistributorWise")Distributor Wise <br />*@
+                                @*<input type="radio" id="RegionWise" name="RegionWise" value="RegionWise"> Region Wise<br />
+                <input type="radio" id="SaleOfficerWise" name="SaleOfficerWise" value="SaleOfficerWise"> SaleOfficer Wise<br />
+                <input type="radio" id="ItemWise" name="ItemWise" value="ItemWise"> Item Wise<br />
+                <input type="radio" id="DistributorWise" name="DistributorWise" value="DistributorWise"> Distributor Wise<br />*@
+                            </div>
+                        </div>
+                        <div class="control-group" style="margin-bottom: 0px">
+                            <label class="control-label" style="margin-top: 10px">Report Type *</label>
+                            <div class="controls">
+
+                                <br />
+                                @Html.RadioButton("ReportType", "Excel", new { @style = "margin-top: 0px;", @checked = "true" })   <span style="margin-right: 25px; margin-top: 2px">Excel</span>
+
+                                @Html.RadioButton("ReportType", "PDF", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px">PDF</span>
+
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 130px; padding-right: 0px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Generate Report</span>
+                                </button>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="span5">
+
+                        <div id="THDiv">
+
+                            <!-- Visit Type -->
+
+
+
+                        </div>
+
+
+                        <!-- Buttons -->
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+<script>
+    $(document).ready(function () {
+        $('#RegionalHeadOther').show();
+        $('#RegionalHead').hide();
+        $('#SaleOfficer').hide();
+        $('#Types').hide();
+        $('#StartingDate1').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+    });
+
+
+    function LoadSaleOfficersKPI() {
+
+            try {
+                var RegionalHeadID = $("#RegionalHeadIDD").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealerSelectOption", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+                        if ($('#SaleOfficerID').val() != null) {
+                            $("#external-events").empty();
+
+                        }
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+    }
+        function LoadHeads() {
+
+            try {
+                var RegionalHeadID = $("#RangeID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetHeadsRelatedtorange", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#RegionalHeadID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.Name));
+                        });
+
+
+                        var $el1 = $("#RegionalHeadIDD");
+                        $el1.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el1.append($("<option></option>")
+                                .val(key.ID).text(key.Name));
+                        });
+
+                        LoadSaleOfficersKPI();
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RangeID").change(function () {
+
+
+            LoadHeads();
+
+            //$("#RetailerTypeDiv").hide();
+        });
+
+        $("#RegionalHeadIDD").change(function () {
+
+
+            LoadSaleOfficersKPI();
+
+            //$("#RetailerTypeDiv").hide();
+        });
+
+
+    $('select[name="Type"]').change(function () {
+
+        if (this.value == "SOSummary") {
+            $('#RegionalHead').show();
+            $('#SaleOfficer').show();
+            $('#RegionalHeadOther').hide();
+            $('#Types').show();
+        } else {
+            $('#RegionalHeadOther').show();
+            $('#RegionalHead').hide();
+            $('#SaleOfficer').hide();
+            $('#Types').hide();
+        }
+
+    });
+    $('#btnNew').click(function () {
+        //var message = "";
+        //for (i = 0; i < sPainters.length ; i++) {
+        //    message += sPainters[i] + ",";
+        //}
+        //var $Shoptypeid = $("#Shoptypeid").val();
+        debugger;
+        var $sdate = $("#StartingDate1").val();
+        var $edate = $("#StartingDate2").val();
+        var $Type = $("#Type").val();
+        var $RepType = $('input[name="ReportType"]:checked').val();
+        if ($sdate == "") {
+            alertify.error("Please Enter Starting Date");
+        }
+        else if ($edate == "") {
+            alertify.error("Please Enter Ending Date");
+        }
+        else {
+            var $sdate = $("#StartingDate1").val();
+            var $edate = $("#StartingDate2").val();
+
+            @*if ($("#cbCheck1").is(':checked') == true) {
+                window.open("@Url.Action("CityMonthWiseIntakeReport", "Retailer")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#StartingDate2").val() + "&TID=" + $("#TID").val() + "&Shoptypeid=" + $("#Shoptypeid").val() + "&message=" + message + "", "_top");
+            }*@
+            //else {
+            window.open("@Url.Action("DailyPerformanceKPIDetails", "Reports")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#StartingDate2").val() + "&Type=" + $("#Type").val() + "&Typess=" + $("#Typess").val() + "&RHID=" + $("#RegionalHeadID").val() + "&SOID=" + $("#SaleOfficerID").val() + "&ReportType=" + $RepType + "&RHIDD=" + $("#RegionalHeadIDD").val());
+            //}
+        }
+    });
+</script>

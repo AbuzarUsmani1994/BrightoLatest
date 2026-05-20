@@ -1,0 +1,230 @@
+﻿@model FOS.Shared.AreaData
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Saleofficer Visits Frequency</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+@using (Ajax.BeginForm("ShopVisitDetail", "Reports", new AjaxOptions { HttpMethod = "POST" }, new { @class = "form-horizontal", id = "myForm" }))
+{
+
+
+    @*//@Html.AntiForgeryToken()
+        //@Html.ValidationSummary(true)*@
+
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="min-height: 100px;">
+                <div class="widget-title">
+                    <h4>Saleofficer Visits Frequency</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 100px;">
+                    <div class="span5">
+
+                        @*<div class="control-group" style="margin-bottom: 14px; display:none;">
+                                <label class="control-label">Job Title *</label>
+                                <div class="controls">
+                                    @Html.EditorFor(model => model.JobTitle, new { @class = "", @style = "", name = "JobTitle" })
+                                </div>
+                            </div>*@
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Starting Date *</label>
+                            <div class="controls">
+                                <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Ending Date *</label>
+                            <div class="controls">
+                                <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                            </div>
+                        </div>
+
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Region *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionID, new SelectList(Model.Regions, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionID)
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Select Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.intSaleOfficerIDfrom, new SelectList(Model.SaleOfficersFrom, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.CityID)
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 130px; padding-right: 0px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Export Report</span>
+                                </button>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+}
+
+<script>
+
+    
+
+    function LoadSaleOfficersFrom() {
+            try {
+                var RegionID = $("#RegionID").val();
+                debugger;
+                $.ajax({
+                    type: "POST",
+                    data: { RegionID: RegionID },
+                    url: "@Url.Action("GetSoRegionWise", "Reports")",
+                    dataType: 'json',
+                success: function (json) {
+
+                    var $el = $("#intSaleOfficerIDfrom");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>")
+                                .val(key.ID).text(key.Name));
+                    });
+
+                    if ($('#CityID').val() != null) {
+                        $('#datatab').dataTable().fnDestroy();
+                        GenerateDetailGrid();
+                    }
+                    else {
+                        $('#datatab').dataTable().empty();
+                    }
+
+                }
+
+            });
+        } catch (e) {
+            alert(e);
+            $('#datatab').dataTable().fnDestroy();
+        }
+
+    }
+
+
+        $(document).ready(function () {
+
+            $("#liSetup,#liArea").addClass("active");
+
+            var WriteCheck = "0";
+
+            if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#RegionID").change(function () {
+            LoadSaleOfficersFrom();
+        });
+
+        $("#btnRefresh").click(function () {
+            ClearForm();
+        });
+
+        $("#ShortCode").bind('keyup', function (e) {
+            if (e.which >= 97 && e.which <= 122) {
+                var newKey = e.which - 32;
+                // I have tried setting those
+                e.keyCode = newKey;
+                e.charCode = newKey;
+            }
+
+            $("#ShortCode").val(($("#ShortCode").val()).toUpperCase());
+        });
+
+        });
+
+    $(document).ready(function () {
+
+        $('#StartingDate1').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+    });
+
+    $('#btnNew').click(function () {
+        //var message = "";
+        //for (i = 0; i < sPainters.length ; i++) {
+        //    message += sPainters[i] + ",";
+        //}
+        //var $Shoptypeid = $("#Shoptypeid").val();
+        debugger;
+        var $sdate = $("#StartingDate1").val();
+        var $edate = $("#StartingDate2").val();
+        var $RegionID = $("#RegionID").val();
+        var $SoID = $("#intSaleOfficerIDfrom").val();
+        if ($sdate == "") {
+            alertify.error("Please Enter Starting Date");
+        }
+        else if ($edate == "") {
+            alertify.error("Please Enter Ending Date");
+        }
+        else {
+            var $sdate = $("#StartingDate1").val();
+            var $edate = $("#StartingDate2").val();
+
+            @*if ($("#cbCheck1").is(':checked') == true) {
+                window.open("@Url.Action("CityMonthWiseIntakeReport", "Retailer")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#StartingDate2").val() + "&TID=" + $("#TID").val() + "&Shoptypeid=" + $("#Shoptypeid").val() + "&message=" + message + "", "_top");
+            }*@
+            //else {
+            window.open("@Url.Action("SoVisitsFrequencyDetail", "Reports")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#StartingDate2").val() + "&intSaleOfficerIDfrom=" + $("#intSaleOfficerIDfrom").val() + "&RegionID=" + $("#RegionID").val());
+            //}
+        }
+    });
+
+
+</script>

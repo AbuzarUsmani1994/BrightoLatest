@@ -1,0 +1,247 @@
+﻿@model FOS.Shared.JobsDetailData
+    @{
+        ViewBag.Title = "Manual Sales";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<style>
+
+    .Sale_InputField {
+        width: 24%;text-align: right;
+    }
+
+</style>
+
+    <!-- BEGIN PAGE HEADER-->
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN THEME CUSTOMIZER-->
+            <!-- END THEME CUSTOMIZER-->
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title"></h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">Manual Sales</a>
+@*                    <span class="divider">/</span>*@
+                </li>
+@*                <li>
+                    <a href="#">Manage Sales Officer</a>
+                </li>*@
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+
+    @using (Ajax.BeginForm("AddShopVisit", "Sales", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="row-fluid">
+
+            <div class="span12">
+                <!-- BEGIN SAMPLE FORMPORTLET-->
+                <div class="widget green" style="">
+                    <div class="widget-title">
+                        <h4>Manage Shop Visit</h4>
+                        <span class="tools">
+                        </span>
+                    </div>
+                    <div class="widget-body" style="height: 520px;">
+
+                        <div class="span12">
+
+                            <div class="span6">
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Today</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        <input type="text" disabled value="@DateTime.Now.ToString("dd/MM/yyyy")" style="background-color: #bfbfbf;color: #fff;font-weight: 700;text-align: -webkit-center;" />
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Visited Month</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                          @Html.TextBoxFor(model => model.VisitedDate,  new { @class="date-picker" , @type = "text", @style = "",  })
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label class="control-label">Dealers *</label>
+                                    <div class="controls">
+                                       @Html.DropDownListFor(model => model.DealerID, new SelectList(Model.Dealers, "ID", "Name"), new { @class = "" })
+                                        @Html.ValidationMessageFor(model => model.DealerID)
+                                    </div>
+                                 </div>  
+    
+                                <div class="control-group">
+                                    <label class="control-label">Retailers *</label>
+                                    <div class="controls">
+                                       @Html.DropDownListFor(model => model.RetailerID, new SelectList(Model.Retailers, "ID", "ShopName"), new { @class = "" })
+                                        @Html.ValidationMessageFor(model => model.RetailerID)
+                                    </div>
+                                 </div>  
+                            
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Available</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.RadioButton("SAvailable", "true", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px;margin-right: 29px;">Yes</span>
+                                        @Html.RadioButton("SAvailable", "false", new { @checked = true, @style = "margin-top: 0px;" })   <span style=" margin-top: 2px">No</span>                                       
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Quantity</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.TextBoxFor(model => model.SQuantity1KG,  new { @type = "number", @style = "width: 24%;text-align: right;", @placeholder="1 KG" })
+
+                                        @Html.TextBoxFor(model => model.SQuantity5KG,  new { @type = "number", @style = "width: 24%;text-align: right;", @placeholder="5 KG" })
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">New Order Generated</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.RadioButton("SNewOrder", "true", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px;margin-right: 29px;">Yes</span>
+                                        @Html.RadioButton("SNewOrder", "false", new { @checked = true, @style = "margin-top: 0px;" })   <span style=" margin-top: 2px">No</span>                                       
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label"></label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.TextBoxFor(model => model.SNewQuantity1KG, new { @type = "number", @style = "width: 24%;text-align: right;", @placeholder="1 KG" })
+
+                                         @Html.TextBoxFor(model => model.SNewQuantity5KG, new { @type = "number", @style = "width: 24%;text-align: right;", @placeholder="5 KG" })
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Previous Order</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.TextBoxFor(model => model.SPreviousOrder1KG, new { @type = "number", @style = "width: 24%;text-align: right;", @placeholder="1 KG" })
+
+                                         @Html.TextBoxFor(model => model.SPreviousOrder5KG, new { @type = "number", @style = "width: 24%;text-align: right;", @placeholder="5 KG" })
+                                    </div>
+                                </div>
+
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">POS Material Available</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.RadioButton("SPOSMaterialAvailable", "true", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px;margin-right: 29px;">Yes</span>
+                                        @Html.RadioButton("SPOSMaterialAvailable", "false", new { @checked = true, @style = "margin-top: 0px;" })   <span style=" margin-top: 2px">No</span>                                       
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Note</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        @Html.TextAreaFor(model => model.SNote, htmlAttributes: new { @class = "control-label", @style = "width:200px;resize: none;height:70px;color:#4e4e4e" })
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="">
+                                    <div class="form-actions" style="padding-left: 178px;">
+                                        <button type="submit" style="width: 215px;" id="btnNew" value="Create" class="btn btn-primary">
+                                            <i class="icon-ok icon-white" style="padding-right:8px"></i><span id="create">Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                             </div>
+
+                             </div>
+
+                        <!-- END FORM-->
+                    </div>
+                </div>
+                <!-- END SAMPLE FORM PORTLET-->
+
+            </div>
+        </div>
+    }
+ 
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+    <script>
+        $(function () {
+            $('#form0').submit(function () {
+
+
+            });
+        });
+
+
+        $(document).ready(function () {
+
+            $("#VisitedDate").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                dateFormat: 'mm-yy',
+                onClose: function (dateText, inst) {
+                    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+                }
+            });
+
+
+
+            $("#DealerID").change(function () {
+                LoadDealerRetailers($(this).val());
+            });
+
+
+        });
+
+        function LoadDealerRetailers(DID) {
+
+            $.ajax({
+                type: "POST",
+                data: { DealerID: DID },
+                url: "@Url.Action("GetDealerRetailers", "Sales")",
+                dataType: 'json',
+                success: function (json) {
+                    var $el = $("#RetailerID");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>")
+                                .attr("value", key.ID).text(key.ShopName));
+                    });
+                }
+            });
+        }
+
+
+
+
+        function OnSuccess(response) {
+            if (response == "1") {
+                alertify.success("Shop Visit Saved Successfully.");
+            }
+            else if (response == "0") {
+                alertify.error("Unable To Add Data.");
+            }
+            else {
+                alertify.error(response);
+            }
+
+        }
+
+        function OnFailure(response) {
+            if (response.status == 422) {
+                var errors = JSON.parse(response.responseText);
+                alertify.error(errors.errors);
+            }
+            else {
+                alertify.error(response);
+            }
+        }
+
+
+
+
+
+</script>

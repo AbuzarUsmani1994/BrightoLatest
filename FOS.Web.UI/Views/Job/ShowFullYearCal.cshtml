@@ -1,0 +1,271 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    Layout = null;
+}
+
+<link href="~/Content/bootstrap-forCal.min.css" rel="stylesheet" />
+<link href="~/Content/bootstrap-year-calendar.min.css" rel="stylesheet" />
+
+@*<link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />*@
+<link href="~/Content/Style/font-awesome.css" rel="stylesheet" />
+<link href="~/Content/Style/style.css" rel="stylesheet" />
+<link href="~/Content/Style/style-responsive.css" rel="stylesheet" />
+<link href="~/Content/Style/style-green.css" rel="stylesheet" id="style_color" />
+
+
+<script src="~/Scripts/jquery-1.9.1.min.js"></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/bootstrap.min.js'></script>
+<script src='~/Scripts/bootstrap-popover.js'></script>
+<script src='~/Scripts/bootstrap-year-calendar.min.js'></script>
+
+<style>
+        .loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -50px;
+            width: 128px;
+            height: 128px;
+            z-index: 9999;
+            background-color: transparent !important;
+            background: url('@string.Format("{0}/Content/images/ajax-loader.gif",FOS.Web.UI.Common.Settings.AppPath)') 50% 50% no-repeat rgb(249,249,249);
+        }
+</style>
+<title>Full Year Calendar</title>
+<div class="loader"></div>
+<!-- BEGIN PAGE HEADER-->
+
+<div class="row-fluid">
+
+    <div class="span12" style="margin-left:0 !important">
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>Full Year Calendar</h4>
+                @*<table align="right" border="0" style="color:white">
+                    <tr>
+                        <td align="right">Monthly</td>
+                        <td width="20px" style="background-color:#4CAF50">&nbsp;</td>
+                        <td align="right">Selective Days</td>
+                        <td width="20px" style="background-color:#fff68f">&nbsp;</td>
+                        <td align="right">Alternate Days</td>
+                        <td width="20px" style="background-color:#6495ed">&nbsp;</td>
+                        <td align="right">Once a Month</td>
+                        <td width="20px" style="background-color:#68228b">&nbsp;</td>
+                    </tr>
+                </table>*@
+            </div>
+            <div class="widget-body" style="padding: 0px;">
+
+                <div class="span12" style="">
+                    <div id='calendar'></div>
+
+                    <div style='clear: both'></div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="row-fluid"></div>
+
+
+<script>
+    var a = [];
+    var b = [];
+    var JobList = "";
+
+    $(window).load(function () {
+        $(".loader").fadeOut("fast");
+    });
+    var $loading = $('.loader');
+    $(document)
+      .ajaxStart(function () {
+          //if (showLoadingEnabled) {
+          $loading.show();
+          //}
+      })
+      .ajaxStop(function () {
+          $loading.hide();
+      });
+
+    //function editEvent(event) {
+    //    $('#event-modal input[name="event-index"]').val(event ? event.id : '');
+    //    $('#event-modal input[name="event-name"]').val(event ? event.name : '');
+    //    $('#event-modal input[name="event-location"]').val(event ? event.location : '');
+    //    $('#event-modal input[name="event-start-date"]').datepicker('update', event ? event.startDate : '');
+    //    $('#event-modal input[name="event-end-date"]').datepicker('update', event ? event.endDate : '');
+    //    $('#event-modal').modal();
+    //}
+
+    //function deleteEvent(event) {
+    //    var dataSource = $('#calendar').data('calendar').getDataSource();
+
+    //    for (var i in dataSource) {
+    //        if (dataSource[i].id == event.id) {
+    //            dataSource.splice(i, 1);
+    //            break;
+    //        }
+    //    }
+
+    //    $('#calendar').data('calendar').setDataSource(dataSource);
+    //}
+
+    //function saveEvent() {
+    //    var event = {
+    //        id: $('#event-modal input[name="event-index"]').val(),
+    //        name: $('#event-modal input[name="event-name"]').val(),
+    //        location: $('#event-modal input[name="event-location"]').val(),
+    //        startDate: $('#event-modal input[name="event-start-date"]').datepicker('getDate'),
+    //        endDate: $('#event-modal input[name="event-end-date"]').datepicker('getDate')
+    //    }
+
+    //    var dataSource = $('#calendar').data('calendar').getDataSource();
+
+    //    if (event.id) {
+    //        for (var i in dataSource) {
+    //            if (dataSource[i].id == event.id) {
+    //                dataSource[i].name = event.name;
+    //                dataSource[i].location = event.location;
+    //                dataSource[i].startDate = event.startDate;
+    //                dataSource[i].endDate = event.endDate;
+    //            }
+    //        }
+    //    }
+    //    else {
+    //        var newId = 0;
+    //        for (var i in dataSource) {
+    //            if (dataSource[i].id > newId) {
+    //                newId = dataSource[i].id;
+    //            }
+    //        }
+
+    //        newId++;
+    //        event.id = newId;
+
+    //        dataSource.push(event);
+    //    }
+
+    //    $('#calendar').data('calendar').setDataSource(dataSource);
+    //    $('#event-modal').modal('hide');
+    //}
+
+    $(function () {
+        var currentYear = new Date().getFullYear();
+
+        $('#calendar').calendar({
+            enableContextMenu: true,
+            //enableRangeSelection: true,
+            //contextMenuItems: [
+            //    {
+            //        text: 'Update',
+            //        click: editEvent
+            //    },
+            //    {
+            //        text: 'Delete',
+            //        click: deleteEvent
+            //    }
+            //],
+            selectRange: function (e) {
+                //editEvent({ startDate: e.startDate, endDate: e.endDate });
+            },
+            mouseOnDay: function (e) {
+                //debugger;
+                if (e.events.length > 0) {
+                    var content = '';
+
+                    for (var i in e.events) {
+                        content += '<div class="event-tooltip-content">'
+                                        + '<div class="event-name" style="color:' + e.events[i].color + '">' + e.events[i].name + '</div>'
+                                        //+ '<div class="event-location">' + e.events[i].location + '</div>'
+                                    + '</div>';
+                    }
+
+                    $(e.element).popover({
+                        trigger: 'manual',
+                        container: 'body',
+                        html: true,
+                        content: content
+                    });
+
+                    $(e.element).popover('show');
+                }
+            },
+            mouseOutDay: function (e) {
+                if (e.events.length > 0) {
+                    $(e.element).popover('hide');
+                }
+            },
+            dayContextMenu: function (e) {
+                $(e.element).popover('hide');
+            },
+            dataSource: []
+        });
+
+        $('#save-event').click(function () {
+            saveEvent();
+        });
+    });
+
+    $(document).ready(function () {
+        //debugger;
+        var queries = {};
+        $.each(document.location.search.substr(1).split('&'), function (c, q) {
+            var i = q.split('=');
+            queries[i[0].toString()] = i[1].toString();
+        });
+        var soId = queries["soId"];
+        var plan = "all";
+        var year = "2018";
+        var totalVisited = 0;
+        var totalUnvisited = 0;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetJobsYearwise", "Job")",
+            dataType: 'json',
+            data: { SOID: soId, year: year, plan: plan },
+            success: function (Response) {
+                //debugger;
+                $('#calendar').data('calendar').setDataSource([]);
+
+                //count visited and unvisited
+                $.each(Response, function (i, l) {
+                    if (l.Status == true) {
+                        totalVisited = totalVisited + l.Count;
+                    }
+                    else {
+                        totalUnvisited = totalUnvisited + l.Count;
+                    }
+                });
+
+                var datasrc = [];
+
+
+                $.each(Response, function (i, l) {
+                    datasrc.push(
+                        {
+                            name: l.ShopName,
+                            startDate: dateFormatter(l.JobDate),
+                            endDate: dateFormatter(l.JobDate)
+                        }
+                    );
+                });
+
+                $('#calendar').data('calendar').setDataSource(datasrc);
+            }
+        });
+    });
+
+    function dateFormatter(dateString) {
+        //debugger;
+        var re = /\/Date\(([0-9]*)\)\//;
+        var m = dateString.match(re);
+        if (m) return new Date(parseInt(dateString.substr(6)));
+        else return null;
+    }
+</script>

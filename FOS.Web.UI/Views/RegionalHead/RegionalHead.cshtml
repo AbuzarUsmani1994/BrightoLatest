@@ -1,0 +1,520 @@
+﻿@model FOS.Shared.RegionalHeadData
+    @{
+        ViewBag.Title = "Regional Head";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    <!-- BEGIN PAGE HEADER-->
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN THEME CUSTOMIZER-->
+            <!-- END THEME CUSTOMIZER-->
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title"></h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">Regional Head</a>
+                   @* <span class="divider">/</span>*@
+                </li>
+@*                <li>
+                    <a href="#">Manage Regional Head</a>
+                </li>*@
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+
+    @using (Ajax.BeginForm("NewUpdateRegionalHead", "RegionalHead", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="row-fluid">
+
+            <div class="span12">
+                <!-- BEGIN SAMPLE FORMPORTLET-->
+                <div class="widget green" style="">
+                    <div class="widget-title">
+                        <h4>Manage Regional Head</h4>
+                        <span class="tools">
+                            @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                            @*<a href="javascript:;" class="icon-remove"></a>*@
+                        </span>
+                    </div>
+                    <div class="widget-body">
+
+                        <div class="control-group">
+                            <label class="control-label">Head Type *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.Type, new SelectList(Model.RegionalHeadTypeData, "ID", "Type"), new { @class = "", style = "220px" })
+                                @Html.ValidationMessageFor(model => model.Type)
+                                @Html.HiddenFor(model => model.Type)
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Select Region *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.Regions, new SelectList(Model.Regions, "RegionID", "Name"), new { @class = "", style = "220px" })
+                                @Html.ValidationMessageFor(model => model.Regions)
+                                @Html.HiddenFor(model => model.RegionID)
+                            </div>
+                        </div>
+                        @*<div class="control-group">
+                            <label class="control-label">Range  *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RangeID, new SelectList(Model.Ranges, "ID", "Type"), new { @class = "", style = "220px" })
+                                @Html.ValidationMessageFor(model => model.RangeID)
+                                @Html.HiddenFor(model => model.RangeID)
+                            </div>
+                        </div>*@
+                        <div class="control-group">
+                            <label class="control-label">Head Name *</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Name)
+                                @Html.ValidationMessageFor(model => model.Name)
+                                @Html.HiddenFor(model => model.ID)
+                            </div>
+                        </div>
+                        <span style="font-size: 10px;margin-left: 180px;color: #cc514f;"></span>
+                        <div class="control-group">
+
+                            <label class="control-label">Phone 1 *</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Phone1)
+                                @Html.ValidationMessageFor(model => model.Phone1)
+                            </div>
+                        </div>
+                        <span style="font-size: 10px;margin-left: 180px;color: #cc514f;"></span>
+                        <div class="control-group">
+
+                            <label class="control-label">Phone 2</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.Phone2)
+                                @Html.ValidationMessageFor(model => model.Phone2)
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"></label>
+                            <div class="controls">
+                                @Html.CheckBoxFor(model => model.IsActive, new { @style = "width: 18px; height: 18px", @id = "cbIsActive" }) <span style="margin-left: 7px; font-weight: bold; color: blue;border-bottom: 3px solid;">Is Active</span>
+                            </div>
+                        </div>
+
+
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 238px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right:8px"></i><span id="create">Create</span>
+                                </button>
+                                <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right:8px"></i>Reset</button>
+                            </div>
+                        </div>
+
+                        <!-- END FORM-->
+                    </div>
+                </div>
+                <!-- END SAMPLE FORM PORTLET-->
+            </div>
+        </div>
+    }
+    <!-- BEGIN ADVANCED TABLE widget-->
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN EXAMPLE TABLE widget-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>View Detail</h4>
+                </div>
+                <div class="widget-body">
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                <button id="editable-sample_new" class="btn green">
+                                    Add New <i class="icon-plus"></i>
+                                </button>
+                            </div>*@
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ID)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.RegionID)
+                                </th>
+                                <th style="width: 35px !important">Sr #</th>
+                                <th style="width:200px !important">
+                                    Type
+                                </th>
+                                <th style="width:200px !important">
+                                    Name
+                                </th>
+                                <th style="width:500px !important">
+                                    Region
+                                </th>
+                               
+                                <th style="width:100px !important">
+                                    Phone 1
+                                </th>
+                                <th style="width:100px !important">
+                                    Phone 2
+                                </th>
+                                <th style="width:100px !important">
+                                    Is Active
+                                </th>
+                                <th style="width:100px !important">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- END EXAMPLE TABLE widget-->
+        </div>
+    </div>
+
+    <script>
+
+    try {
+
+        // Functions
+
+        $(function () {
+            $('#form0').submit(function () {
+                if ($("#Phone1").val() != "" && $("#Phone2").val() != "") {
+                    if ($("#Phone1").val() === $("#Phone2").val()) {
+                        alertify.error("Phone No 1 & Phone No 2 Are Same");
+                        return false;
+
+                    }
+                }
+
+                var options = $('#Regions > option:selected');
+                if (options.length == 0) {
+                    alertify.error('Please Select Region');
+                    return false;
+                }
+
+                if ($("#Type").val() == null || $("#Type").val() == 0) {
+                    alertify.error('Please Select Regional Head Type');
+                    return false;
+                }
+
+
+
+            });
+
+
+
+
+        });
+
+        $(document).ready(function () {
+
+            $("#cbIsActive").attr('checked', true);
+
+            $('#Regions').css("width", "220px");
+
+            $('#Regions').change(function () {
+
+                $('#RegionID').val($('#Regions').multipleSelect('getSelects'));
+
+            }).multipleSelect({
+                filter: true
+            });
+
+
+
+        });
+
+        function LoadRegions() {
+
+            var type = $("#Type").val();
+           
+            try {
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetRegionForRegionalHead", "RegionalHead")",
+                    dataType: 'json',
+                    data: { RegionalHeadType: type },
+                        success: function (json) {
+
+                            var $el = $("#Regions");
+                            $el.empty(); // remove old options
+
+                            $.each(json, function (value, key) {
+
+                                $el.append($("<option></option>")
+                               .val(key.RegionID).text(key.Name));
+                            });
+
+                            $('#Regions').change(function () {
+
+                                $('#RegionID').val($('#Regions').multipleSelect('getSelects'));
+
+                            }).multipleSelect({
+                                filter: true
+                            });
+
+                        }
+
+                    });
+                } catch (e) {
+                    alert(e);
+                }
+
+            }
+
+        function LoadRegionsForEdit(RegionHeadID, RegionID, type) {
+
+                type = $("#Type").val();
+                try {
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("GetRegionForRegionalHeadEdit", "RegionalHead")",
+                        dataType: 'json',
+                        data: { id: RegionHeadID, RegionalHeadType: type },
+                        success: function (json) {
+
+                            var $el = $("#Regions");
+                            $el.empty(); // remove old options
+
+                            $.each(json, function (value, key) {
+
+                                $el.append($("<option></option>")
+                               .val(key.RegionID).text(key.Name));
+                            });
+
+                            $('#Regions').change(function () {
+
+                                $('#RegionID').val($('#Regions').multipleSelect('getSelects'));
+
+                            }).multipleSelect({
+                                filter: true
+                            });
+
+                            $('#Regions').multipleSelect('setSelects', RegionID);
+
+                        }
+
+                    });
+                } catch (e) {
+                    alert(e);
+                }
+
+            }
+
+        } catch (e) {
+            alert(e);
+        }
+    </script>
+
+    <script>
+    try {
+
+        function GenerateDetailGrid() {
+
+            var oTable = $('#datatab').DataTable({
+                "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+                "iDisplayLength": 10,
+                "paging": true,
+                "pagingType": "full_numbers",
+                "serverSide": true,
+                "bRetrieve": true,
+                "bDestroy": true,
+                "autoWidth": true,
+                "ajax": {
+                    "type": "POST",
+                    "url": '@Url.Action("DataHandler", "RegionalHead")',
+                    "contentType": 'application/json; charset=utf-8',
+                    'data': function (data) {
+                        data.RegionalHeadType = $('#Type').val();
+                        return data = JSON.stringify(data);
+                    },
+
+                },
+                "fnDrawCallback": function (osetting) {
+
+                    var UpdateCheck = "0";
+                    var DeleteCheck = "0";
+
+                    if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+                    else {
+
+                        $(".edit").on("click", function () {
+
+                            ClearForm();
+
+                            $('#ID').val($(this).attr("data-id"));
+                            $('#create').text('Update');
+                            $("#Name").val($(this).attr("data-name"));
+                            $('#Type').val($(this).attr("data-type"));
+                            $("#Phone1").val($(this).attr("data-phone1").replace("null", ""));
+                            $("#Phone2").val($(this).attr("data-phone2").replace("null", ""));
+                            LoadRegionsForEdit($(this).attr("data-id"), $(this).attr("data-regions"), $(this).attr("data-type"));
+                            $('html, body').animate({
+                                scrollTop: $("#main-content").offset().top
+                            }, 500);
+                            $("#Name").focus();
+
+                        });
+
+                    }
+
+                    if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                        else {
+
+                            $(".delete").on("click", function () {
+
+                                var RegionalHeadID = $(this).attr("data-id");
+
+                                // confirm dialog
+                                alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                                    if (e) {
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("DeleteRegionalHead", "RegionalHead")",
+                                            data: { regionalHeadID: RegionalHeadID },
+                                            success: function (data) {
+
+                                                if (data == "0") {
+                                                    alertify.success('Record Deleted Successfully');
+                                                    var table = $('#datatab').DataTable();
+                                                    table.row(this).remove().draw(false);
+                                                    LoadRegions();
+                                                }
+
+                                                else { alertify.error('This Regional Head Associative To Someone. Delete Them First.'); }
+                                            }
+
+                                        });
+
+                                    } else { }
+                                });
+
+                            });
+                        }
+
+
+                    },
+                    "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                        $("td:first", nRow).html(iDisplayIndex + 1);
+                        return nRow;
+                    },
+                    "oLanguage": { "sSearch": "Search Regional Head : " },
+                    "sDom": 'lftipr',
+                    "processing": true,
+                    "deferRender": true,
+                    "bSelect": true,
+                    "columns": [
+                   { "data": "ID", "bVisible": false },
+                   { "data": "RegionID", "bVisible": false },
+                   { "data": "Name", "bSortable": false },
+                   { "data": "TypeName" },
+                   { "data": "Name" },
+                        { "data": "RegionName" },
+                       
+                   { "data": "Phone1" },
+                        { "data": "Phone2" },
+                        { "data": "IsActiveYes" },
+                    {
+                        "sClass": "center-align-td",
+                        "mData": null,
+                        "bSortable": false,
+                        "mRender": function (data, type, row) {
+                            return '<button id="edit" class="btn btn-success edit" data-id=' + row.ID + ' data-type=' + '"' + row.Type + '"' + '  data-name=' + '"' + row.Name + '"' + '  data-regions=' + row.RegionID + ' data-phone1=' + row.Phone1 + ' data-phone2=' + row.Phone2 + '>' + '<i class=icon-pencil></i>' + '</button>&nbsp;<button class="btn btn-info delete" data-id=' + row.ID + '>' + '<i class=icon-trash></i>' + '</button>';
+                        }
+                    }
+                    ],
+                    "order": [3, "asc"]
+
+                });
+
+
+
+
+            }
+
+            $(document).ready(function () {
+                
+                var WriteCheck = "0";
+
+                $("#Type").change(function () {
+                    $('#datatab').dataTable().fnDestroy();
+                    LoadRegions();
+                    GenerateDetailGrid();
+                });
+
+                $("#btnRefresh").click(function () {
+                    ClearForm();
+                });
+
+                if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#liRegional,#liReginalHead").addClass("active");
+        GenerateDetailGrid();
+
+    });
+
+    } catch (e) {
+        alert(e);
+    }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function ClearForm() {
+            //$('#form0').clearForm();
+            LoadRegions();
+            $('#ID').val(0);
+            $('#Name').val("");
+            $('#Phone1').val("");
+            $('#Phone2').val("");
+            $('#btnNew').val('Create');
+        }
+
+        function OnSuccess(response) {
+            if (response == "1") {
+                alertify.success("Regional Head Saved Successfully.");
+                $('#create').text('Create');
+                LoadRegions();
+                var dt = $('#datatab').DataTable();
+                dt.ajax.reload();
+                ClearForm();
+            }
+            else if (response == "0") {
+                alertify.error("Unable To Save Regional Head.");
+            }
+            else if (response == "2") {
+                alertify.error("Phone Number Already Exist.");
+            }
+            else {
+                alertify.error(response);
+            }
+
+        }
+
+        function OnFailure(response) {
+
+            if (response.status == 422) {
+                var errors = JSON.parse(response.responseText);
+                alertify.error(errors.errors);
+            }
+            else {
+                alertify.error(response);
+            }
+
+        }
+
+    </script>

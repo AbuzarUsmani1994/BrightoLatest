@@ -1,0 +1,1155 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Jobs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    #preview {
+        position: absolute;
+        border: 1px solid #ccc;
+        background: #333;
+        padding: 1px;
+        display: none;
+        color: #fff;
+        z-index: 3000;
+    }
+</style>
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Orders</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Stock Taking</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>Stock Taking</h4>
+                <span class="tools" style="margin-right: 15px">
+                    @*<button id="ExportToExcel">Export To Excel</button>*@
+                    <a href="@Url.Action("ExportToExcel", "Job")" style="background-color: #85b73a;border: 1px solid #6a9627;padding: 5px;margin-right: 0px;">Export</a>
+                </span>
+            </div>
+
+
+
+
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <label class="control-label" style="display:inline">Starting Date *</label>
+                                <div class="controls" style="display:inline">
+                                    <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                                </div>
+                            </div>*@
+
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <label class="control-label" style="display:inline">Ending Date *</label>
+                                <div class="controls" style="display:inline">
+                                    <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                                </div>
+                            </div>*@
+
+
+
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <label class="control-label" style="display:inline">Sales Officer *</label>
+                                <div class="controls" style="display:inline">
+                                    @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+
+                                </div>
+                            </div>*@
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <button type="button" class="btn btn-success" id="btn_search">Search</button>
+
+                            </div>*@
+
+
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" style="width: 100%;" id="datatab">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th style="width: 10% !important">Sr #</th>
+
+                                <th style="width:16% !important">
+                                    Sales Officer
+                                </th>
+
+                                <th style="width:16% !important">
+                                    Distributor Name
+                                </th>
+                                <th style="width:16% !important">
+                                    Distributor Phone
+                                </th>
+                                <th style="width:16% !important">
+                                    Region Name
+                                </th>
+
+                                <th style="width:16% !important">
+                                    Purpose Of Visit
+                                </th>
+
+                                <th style="width:16% !important">
+                                    Location
+                                </th>
+                                <th style="width:16% !important">
+                                   Created On
+                                </th>
+
+                                <th style="width:16% !important">Status</th>
+
+                                <th style="width:10% !important">Action</th>
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+<!-- Shop Modal -->
+<div id="ShopModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 4%;left: 15%; overflow-y:scroll">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">DONE</h2>
+
+                    <div class="span12" style="padding:5px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="saleOfficer" style=""></span></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">ShopName</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="SchoolShopName" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Plan</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="visitPlan" style=""></span></td>
+                                </tr>
+                             
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="status" style="color:#62c462"></span></td>
+                                </tr>
+                                @*<tr>
+                                        <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Address</span></td>
+                                        <td style="padding: 18px  0px 18px  5px;"><span id="address" style=""></span></td>
+                                    </tr>*@
+                                
+                                @*<tr>
+                                        <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Time</span></td>
+                                        <td style="padding: 18px  0px 18px  5px;"><span id="visitedTime" style=""></span></td>
+                                    </tr>*@
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+
+                    <div class="span12" style="padding:0px">
+
+                        <table class="table table-striped table-hover table-bordered" id="tblItems">
+
+                            <thead>
+                                <tr><th style="text-align:center;background: #545454;color: white;" colspan="12">Items</th></tr>
+                                <tr>
+
+                                    @*<th style="width: 10% !important">Sr #</th>*@
+
+                                    <th style="width:16% !important">
+                                        ItemName
+                                    </th>
+
+                                    <th style="width:16% !important">
+                                        Quantity
+                                    </th>
+
+                                    <th style="width:16% !important">
+                                        Price
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody style="overflow-y:scroll"></tbody>
+                        </table>
+
+                    </div>
+
+
+
+
+
+
+
+                  
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END Shop Modal -->
+<!-- Painter Modal -->
+<div id="PainterModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 7%;left: 15%; overflow-y:scroll;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">DONE</h2>
+
+                    <div class="span12" style="padding:2px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="PsaleOfficer" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">School/ShopName</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="PSchool" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Type</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="PvisitPlan" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="Pstatus" style="color:#62c462"></span></td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                  
+
+                    @*<table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                    <th style="text-align:center;background: #545454;color: white;">1kg Qty</th>
+                                    <th style="text-align:center;background: #545454;color: white;">5kg Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Using WallCoat</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="UseWallCoat">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Order</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="PNewOrder">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;    padding: 19px 0px 16px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mobile No</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLeadMobileNo">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:22%;text-align:center;" colspan="3">
+                                        <textarea disabled id="PRemarks" style="width:95%;height:133px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>*@
+
+
+
+                </div>
+
+               
+                <div class="span6" style="margin-left:0px;padding:5px">
+
+                    @*<table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                    <th style="text-align:center;background: #545454;color: white;">1kg Qty</th>
+                                    <th style="text-align:center;background: #545454;color: white;">5kg Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Using WallCoat</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="UseWallCoat">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Order</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="PNewOrder">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;    padding: 19px 0px 16px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mobile No</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLeadMobileNo">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:22%;text-align:center;" colspan="3">
+                                        <textarea disabled id="PRemarks" style="width:95%;height:133px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>*@
+
+                </div>
+
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END Painter Modal -->
+<!-- B2B Modal -->
+<div id="B2BModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 0%;left: 15%;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">DONE</h2>
+
+                    <div class="span6" style="padding:5px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="BsaleOfficer" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Type</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitPlan" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="Bstatus" style="color:#62c462"></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Date</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitedDate" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Time</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitedTime" style=""></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="span6" style="margin-left:0px;padding:5px">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Area</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BArea">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Shop</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BShop">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Old house</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BOldHouse">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New House</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BNewHouse">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Plaza/Basement</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BPB">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Factory Area</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BFactory">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mosque</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BMosque">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Others</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BOthers">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sample Applied</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BSampleApplied">-</h4></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:65%;text-align:center;" colspan="3">
+                                        <textarea disabled id="BRemarks" style="width:95%;height:70px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END B2B Modal -->
+<!-- Buttons -->
+<button id="ShopModalButton" data-toggle="modal" data-target="#ShopModal" style="display:none"></button>
+<button id="PainterModalButton" data-toggle="modal" data-target="#PainterModal" style="display:none"></button>
+<button id="B2BModalButton" data-toggle="modal" data-target="#B2BModal" style="display:none"></button>
+
+<script src="~/Scripts/js/preview.js"></script>
+
+<script>
+
+    function GenerateDetailGrid() {
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "paging": true,
+            "searching":true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "bRestore": true,
+            "ajax": {
+                "type": "POST",
+                "contentType": "application/json; charset=utf-8",
+                "dataType": "json",
+                "url": '@Url.Action("StockDetailDataHandler", "Job")',
+                'data': function (data) {
+                    debugger;
+
+                    //data.SaleOfficer = $('#SaleOfficerID').find('option:selected').text();
+                    //data.StartingDate1 = $('#StartingDate1').val();
+                    //data.StartingDate2 = $('#StartingDate2').val();
+
+                   return data = JSON.stringify(data);
+                },
+            },
+            "fnDrawCallback": function (osetting) {
+
+                $(".view").on("click", function () {
+                    debugger;
+
+                    if ($(this).attr("data-VisitPlanName").trim() == "Stock Taking") {
+
+                        //Left Values
+
+                        $("#jobstatus").text($(this).attr("data-statuschecker"));
+
+                        if ($("#jobstatus").text() == "PENDING") {
+                            $("#jobstatus").text("PENDING");
+                            $("#jobstatus").css({ 'color': '#b94a48', 'border-bottom': '1px solid rgb(185, 74, 72)', 'border-top': '1px solid rgb(185, 74, 72)' });
+                            $("#mapplePricetd").css('background', '#e09b9a');
+                        }
+                        else {
+                            $("#jobstatus").text("DONE");
+                            $("#jobstatus").css({ 'color': '#62c462', 'border-bottom': '1px solid #62c462', 'border-top': '1px solid #62c462' });
+                            $("#mapplePricetd").css('background', '#b9f1b9');
+                        }
+
+                       // $("#dealer").text($(this).attr("data-dealer"));
+                        $("#saleOfficer").text($(this).attr("data-saleofficer"));
+                        $("#SchoolShopName").text($(this).attr("data-ShopName"));
+                        $("#visitPlan").text($(this).attr("data-VisitPlanName"));
+                        $("#ActivityType").text($(this).attr("data-RetailerType"));
+                        $("#status").text($(this).attr("data-statuschecker"));
+                        $("#visitedDate").text($(this).attr("data-VisitedDate"));
+                        //if ($(this).attr("data-address") == 'null') { $("#address").text("-"); }
+                        //else { $("#address").text($(this).attr("data-address")); }
+
+                        if ($("#status").text() == "PENDING")
+                        { $("#status").css('color', '#b94a48'); }
+                        else {
+                            $("#status").css('color', '#62c462');
+                        }
+
+
+                        //Dates Work ...
+                        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                        ];
+                        var dateString = $(this).attr("data-assigndate").substr(6);
+                        var currentTime = new Date(parseInt(dateString));
+                        var month = monthNames[currentTime.getMonth()];
+                        var day = currentTime.getDate("DD");
+                        var year = currentTime.getFullYear();
+                        var date = month + " " + day + " " + year;
+
+                        if (isNaN(year)) {
+                            $('#visitedDate').text("-");
+                        }
+                        else {
+                            $('#visitedDate').text(date);
+                        }
+
+                        var time = currentTime.toLocaleTimeString().toLowerCase();
+
+                        if (time == 'invalid date') {
+                            $("#visitedTime").text("-");
+                        }
+                        else {
+                            $('#visitedTime').text(time);
+                        }
+                        //END Date Work ...
+
+                        //END Left Values
+
+
+
+                        if ($(this).attr("data-savailability") == "true") {
+                            $("#Available").text("Yes");
+                        }
+                        else if ($(this).attr("data-savailability") == "false") {
+                            $("#Available").text("No");
+                        }
+                        else {
+                            $("#Available").text("-");
+                        }
+
+                        if ($(this).attr("data-squantity1kg") == "null") {
+                            $("#Available1KG").val("");
+                        }
+                        else {
+                            $("#Available1KG").val($(this).attr("data-squantity1kg"));
+                        }
+
+                        if ($(this).attr("data-squantity5kg") == "null") {
+                            $("#Available5KG").val("");
+                        }
+                        else {
+                            $("#Available5KG").val($(this).attr("data-squantity5kg"));
+                        }
+
+                        if ($(this).attr("data-sneworder") == "true") {
+                            $("#NewOrder").text("Yes");
+                        }
+                        else if ($(this).attr("data-sneworder") == "false") {
+                            $("#NewOrder").text("No");
+                        }
+                        else {
+                            $("#NewOrder").text("-");
+                        }
+
+                        if ($(this).attr("data-snewquantity1kg") == "null") {
+                            $("#NewOrder1KG").val("");
+                        }
+                        else {
+                            $("#NewOrder1KG").val($(this).attr("data-snewquantity1kg"));
+                        }
+
+                        if ($(this).attr("data-snewquantity5kg") == "null") {
+                            $("#NewOrder5KG").val("");
+                        }
+                        else {
+                            $("#NewOrder5KG").val($(this).attr("data-snewquantity5kg"));
+                        }
+
+                        if ($(this).attr("data-spreviousorder1kg") == "null") {
+                            $("#PreviousOrder1KG").val("");
+                        }
+                        else {
+                            $("#PreviousOrder1KG").val($(this).attr("data-spreviousorder1kg"));
+                        }
+
+                        if ($(this).attr("data-spreviousorder5kg") == "null") {
+                            $("#PreviousOrder5KG").val("");
+                        }
+                        else {
+                            $("#PreviousOrder5KG").val($(this).attr("data-spreviousorder5kg"));
+                        }
+
+                        if ($(this).attr("data-sposmaterialavailable") == "true") {
+                            $("#POSMaterialAvailable").text("Yes");
+                        }
+                        else if ($(this).attr("data-sposmaterialavailable") == "false") {
+                            $("#POSMaterialAvailable").text("No");
+                        }
+                        else {
+                            $("#POSMaterialAvailable").text("-");
+                        }
+
+                        if ($(this).attr("data-snote") == "null") {
+                            $("#SNote").text("");
+                        }
+                        else {
+                            $("#SNote").text($(this).attr("data-snote"));
+                        }
+
+                        if ($(this).attr("data-simage") == "null") {
+                            $("#IfNoImage").show();
+                            $("#IfImage").hide(); //IMAGE_SHOP
+                            $("#IMAGE_SHOP").attr("src", "");
+                        }
+                        else {
+                            $("#IfNoImage").hide();
+                            $("#IfImage").show(); //IMAGE_SHOP
+
+                            $("#IMAGE_SHOP_HREF").attr("href", $(this).attr("data-simage"));
+                            $("#IMAGE_SHOP").attr("src", $(this).attr("data-simage"));
+                        }
+                        debugger;
+                        var JobID = ($(this).attr("data-id"));
+
+                        $.ajax({
+
+                            type: "POST",
+                            data: {JobID: JobID},
+                            url: "@Url.Action("GetStockRelatedToJobID", "Job")",
+                            dataType: 'JSON',
+                        success: function (json) {
+                            var row = "";
+                            //var $el = $("#RegionalHeadID");
+                            //$el.empty(); // remove old options
+                            $.each(json, function (value, key) {
+                                row += "<tr><td>" + key.ItemCode + "</td><td>" + key.ItemName + "</td><td>" + key.Quantity + "</td></tr>";
+
+                            });
+
+                            $('#tblItems').append(row);
+
+
+                            $("#tblItems").html(row);
+                        }
+
+                    });
+
+
+                        $("#ShopModalButton").trigger("click");
+
+                    }
+                    else if ($(this).attr("data-VisitPlanName") == "Sampling" || ($(this).attr("data-VisitPlanName") == "Ordering")) {
+                        //$('#PainterModal').on('hidden', function () {
+                        //    $(this).data('PainterModal').$element.removeData();
+                        //})
+                        $("#Pjobstatus").text($(this).attr("data-statuschecker"));
+
+                        if ($("#Pjobstatus").text() == "PENDING") {
+                            $("#Pjobstatus").text("PENDING");
+                            $("#Pjobstatus").css({ 'color': '#b94a48', 'border-bottom': '1px solid rgb(185, 74, 72)', 'border-top': '1px solid rgb(185, 74, 72)' });
+                        }
+                        else {
+                            debugger;
+                            $("#Pjobstatus").text("DONE");
+                            $("#Pjobstatus").css({ 'color': '#62c462', 'border-bottom': '1px solid #62c462', 'border-top': '1px solid #62c462' });
+                        }
+
+                        //$("#Pdealer").text($(this).attr("data-dealer"));
+                        $("#PsaleOfficer").text($(this).attr("data-saleofficer"));
+                       // $("#SchoolShopName").text($(this).attr("data-ShopName"));
+                        $("#PSchool").text($(this).attr("data-ShopName"));
+                        $("#PvisitPlan").text($(this).attr("data-visitplan"));
+                        $("#Pstatus").text($(this).attr("data-statuschecker"));
+
+                        if ($(this).attr("data-paddress") == 'null') { $("#address").text("-"); }
+                        else { $("#Paddress").text($(this).attr("data-paddress")); }
+
+                        if ($("#Pstatus").text() == "PENDING")
+                        { $("#Pstatus").css('color', '#b94a48'); }
+                        else {
+                            $("#Pstatus").css('color', '#62c462');
+                        }
+
+
+                        //Dates Work ...
+                        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                        ];
+                        var dateString = $(this).attr("data-assigndate").substr(6);
+                        var currentTime = new Date(parseInt(dateString));
+                        var month = monthNames[currentTime.getMonth()];
+                        var day = currentTime.getDate("DD");
+                        var year = currentTime.getFullYear();
+                        var date = month + " " + day + " " + year;
+
+                        if (isNaN(year)) {
+                            $('#PvisitedDate').text("-");
+                        }
+                        else {
+                            $('#PvisitedDate').text(date);
+                        }
+
+                        var time = currentTime.toLocaleTimeString().toLowerCase();
+
+                        if (time == 'invalid date') {
+                            $("#PvisitedTime").text("-");
+                        }
+                        else {
+                            $('#PvisitedTime').text(time);
+                        }
+                        //END Date Work ...
+
+
+
+
+                        if ($(this).attr("data-pusewc") == "true") {
+                            $("#UseWallCoat").text("Yes");
+                        }
+                        else if ($(this).attr("data-pusewc") == "false") {
+                            $("#UseWallCoat").text("No");
+                        }
+                        else {
+                            $("#UseWallCoat").text("-");
+                        }
+
+                        if ($(this).attr("data-pusewc1kg") == "null") {
+                            $("#UseWalCoat1KG").val("");
+                        }
+                        else {
+                            $("#UseWalCoat1KG").val($(this).attr("data-pusewc1kg"));
+                        }
+
+                        if ($(this).attr("data-pusewc5kg") == "null") {
+                            $("#UseWalCoat5KG").val("");
+                        }
+                        else {
+                            $("#UseWalCoat5KG").val($(this).attr("data-pusewc5kg"));
+                        }
+
+                        if ($(this).attr("data-pneworder") == "true") {
+                            $("#PNewOrder").text("Yes");
+                        }
+                        else if ($(this).attr("data-pneworder") == "false") {
+                            $("#pneworder").text("No");
+                        }
+                        else {
+                            $("#PNewOrder").text("-");
+                        }
+
+                        if ($(this).attr("data-pneworder1kg") == "null") {
+                            $("#PNewOrder1KG").val("");
+                        }
+                        else {
+                            $("#PNewOrder1KG").val($(this).attr("data-pneworder1kg"));
+                        }
+
+                        if ($(this).attr("data-pneworder5kg") == "null") {
+                            $("#PNewOrder5KG").val("");
+                        }
+                        else {
+                            $("#PNewOrder5KG").val($(this).attr("data-pneworder5kg"));
+                        }
+
+                        if ($(this).attr("data-pnewlead") == "true") {
+                            $("#PNewLead").text("Yes");
+                        }
+                        else if ($(this).attr("data-pnewlead") == "false") {
+                            $("#PNewLead").text("No");
+                        }
+                        else {
+                            $("#PNewLead").text("-");
+                        }
+
+                        if ($(this).attr("data-pnewleadmobno") == "null") {
+                            $("#PNewLeadMobileNo").text("-");
+                        }
+                        else {
+                            $("#PNewLeadMobileNo").text($(this).attr("data-pnewleadmobno"));
+                        }
+
+                        if ($(this).attr("data-premarks") == "null") {
+                            $("#PRemarks").val("");
+                        }
+                        else {
+                            $("#PRemarks").val($(this).attr("data-premarks"));
+                        }
+                       
+
+
+
+
+
+
+
+                        $("#PainterModalButton").trigger("click");
+
+                    }
+                    else if ($(this).attr("data-visittype") == "B2B") {
+
+                        $("#Bjobstatus").text($(this).attr("data-statuschecker"));
+
+                        if ($("#Bjobstatus").text() == "PENDING") {
+                            $("#Bjobstatus").text("PENDING");
+                            $("#Bjobstatus").css({ 'color': '#b94a48', 'border-bottom': '1px solid rgb(185, 74, 72)', 'border-top': '1px solid rgb(185, 74, 72)' });
+                        }
+                        else {
+                            $("#Bjobstatus").text("DONE");
+                            $("#Bjobstatus").css({ 'color': '#62c462', 'border-bottom': '1px solid #62c462', 'border-top': '1px solid #62c462' });
+                        }
+
+                        $("#BsaleOfficer").text($(this).attr("data-saleofficer"));
+                        $("#BvisitPlan").text($(this).attr("data-visitplan"));
+                        $("#Bstatus").text($(this).attr("data-statuschecker"));
+
+                        if ($("#Bstatus").text() == "PENDING")
+                        { $("#Bstatus").css('color', '#b94a48'); }
+                        else {
+                            $("#Bstatus").css('color', '#62c462');
+                        }
+
+
+                        //Dates Work ...
+                        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                        ];
+                        var dateString = $(this).attr("data-visitdate").substr(6);
+                        var currentTime = new Date(parseInt(dateString));
+                        var month = monthNames[currentTime.getMonth()];
+                        var day = currentTime.getDate("DD");
+                        var year = currentTime.getFullYear();
+                        var date = month + " " + day + " " + year;
+
+                        if (isNaN(year)) {
+                            $('#BvisitedDate').text("-");
+                        }
+                        else {
+                            $('#BvisitedDate').text(date);
+                        }
+
+                        var time = currentTime.toLocaleTimeString().toLowerCase();
+
+                        if (time == 'invalid date') {
+                            $("#BvisitedTime").text("-");
+                        }
+                        else {
+                            $('#BvisitedTime').text(time);
+                        }
+                        //END Date Work ...
+
+                        $("#BArea").text($(this).attr("data-bareaid"));
+                        $("#BShop").text($(this).attr("data-bShop"));
+                        $("#BNewHouse").text($(this).attr("data-bnewhouse"));
+                        $("#BParking").text($(this).attr("data-bparking"));
+                        $("#BPB").text($(this).attr("data-bplazabasement"));
+                        $("#BFactory").text($(this).attr("data-bfactoryarea"));
+                        $("#BMosque").text($(this).attr("data-bmosque"));
+                        $("#BOthers").text($(this).attr("data-bothers"));
+
+                        if ($(this).attr("data-blead") == "true") {
+                            $("#BLead").text("Yes");
+                        }
+                        else if ($(this).attr("data-blead") == "false") {
+                            $("#BLead").text("No");
+                        }
+                        else {
+                            $("#BLead").text("-");
+                        }
+
+                        if ($(this).attr("data-bsampleapplied") == "true") {
+                            $("#BSampleApplied").text("Yes");
+                        }
+                        else if ($(this).attr("data-bsampleapplied") == "false") {
+                            $("#BSampleApplied").text("No");
+                        }
+                        else {
+                            $("#BSampleApplied").text("-");
+                        }
+
+                        $("#BRemarks").val($(this).attr("data-bremarks"));
+
+                        $("#B2BModalButton").trigger("click");
+                    }
+                    else {
+                    }
+
+
+
+
+
+
+
+
+
+
+                    //$("#mapple").attr('checked', ($(this).attr("data-mapple") == "true" ? true : false));
+                    //$("#dg").attr('checked', ($(this).attr("data-dg") == "true" ? true : false));
+                    //$("#bestWay").attr('checked', ($(this).attr("data-bestWay") == "true" ? true : false));
+                    //$("#lucky").attr('checked', ($(this).attr("data-lucky") == "true" ? true : false));
+                    //$("#other").attr('checked', ($(this).attr("data-other") == "true" ? true : false));
+
+                    //if ($(this).attr("data-major") == 'null') { $("#major").text("-"); }
+                    //else { $("#major").text($(this).attr("data-major")); }
+
+                    //if ($(this).attr("data-mapplePrice") == 'null') { $("#mapplePrice").text("-"); }
+                    //else { $("#mapplePrice").text($(this).attr("data-mapplePrice")); }
+
+                    //if ($(this).attr("data-display") == 'null') { $("#display").text("-"); }
+                    //else { $("#display").text($(this).attr("data-display")); }
+
+                    //if ($(this).attr("data-major") == 'null') { $("input[type=radio]").prop('checked', false); }
+                    //$("input[type=radio][value='" + $(this).attr("data-major") + "']").attr('checked', 'checked');
+
+
+
+
+
+
+
+
+                    //var array = $(this).attr("data-other").split(',');
+
+                    //if (!array[0] || !array[1])
+                    //{ $("#otherName").text("-"); $("#otherValue").text("-");}
+                    //else{
+
+                    //    $("#otherName").text(array[0]);
+                    //    $("#otherValue").text(array[1]);
+                    //}
+
+
+                    //$("#mapple").attr('disabled',true);
+                    //$("#dg").attr('disabled', true);
+                    //$("#bestWay").attr('disabled', true);
+                    //$("#lucky").attr('disabled', true);
+                    //$("#other").attr('disabled', true);
+
+                    //$('input[name=major]').attr('disabled', true);
+
+                });
+
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search Stock : " },
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "DealerID", "bVisible": false },
+           { "data": "SaleOfficerID", "bVisible": false },
+           { "data": "ID" },
+           { "data": "SaleOfficerName" },
+           { "data": "DealerName" },
+           { "data": "DealerPhone" },
+           { "data": "RegionName" },
+           { "data": "VisitPlanName" },
+           {
+
+               "data": "RetailerAddress"
+
+           },
+            {
+
+                "data": "VisitDateFormatted",
+              
+            },
+
+           { "data": "StatusChecker", "sClass": "center-align-td", },
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+
+                  // alert('<button class="btn btn-primary view" data-id=' + row.ID + '' + ' data-saleofficer=' + '"' + row.SaleOfficerName + '"' + ' data-ShopName=' + '"' + row.ShopName + '"' + ' data-VisitPlanName=' + '"' + row.VisitPlanName + '"' + ' data-RetailerType=' + '"' + row.RetailerType + '"' + ' data-visitplan=' + '"' + row.VisitPlanName + '"' + ' data-visittype=' + '"' + row.VisitType + '"' + ' data-retailertype=' + '"' + row.RetailerType + '"' + ' data-savailability=' + '"' + row.SAvailable + '"' + ' data-squantity1kg=' + '"' + row.SQuantity1KG + '"' + ' data-squantity5kg=' + '"' + row.SQuantity5KG + '"' + 'data-sneworder=' + '"' + row.SNewOrder + '"' + ' data-snewquantity1kg=' + '"' + row.SNewQuantity1KG + '"' + ' data-snewquantity5kg=' + '"' + row.SNewQuantity5KG + '"' + ' data-spreviousorder1kg=' + '"' + row.SPreviousOrder1KG + '"' + ' data-spreviousorder5kg=' + '"' + row.SPreviousOrder5KG + '"' + ' data-sposmaterialavailable=' + '"' + row.SPOSMaterialAvailable + '"' + ' data-simage=' + '"' + row.SImage + '"' + 'data-snote=' + '"' + row.SNote + '"' + 'data-pusewc=' + '"' + row.PUseWC + '"' + ' data-pusewc1kg=' + '"' + row.PUseWC1KG + '"' + ' data-pusewc5kg=' + '"' + row.PUseWC5KG + '"' + ' data-pneworder=' + '"' + row.PNewOrder + '"' + ' data-pneworder1kg=' + '"' + row.PNewOrder1KG + '"' + ' data-pneworder5kg=' + '"' + row.PNewOrder5KG + '"' + ' data-pnewlead=' + '"' + row.PNewLead + '"' + ' data-pnewleadmobno=' + '"' + row.PNewLeadMobNo + '"' + ' data-premarks=' + '"' + row.PRemarks + '"' + 'data-bareaid=' + '"' + row.BAreaName + '"' + ' data-bshop=' + '"' + row.BShop + '"' + ' data-boldhouse=' + '"' + row.BOldHouse + '"' + ' data-bnewhouse=' + '"' + row.BNewHouse + '"' + ' data-bparking=' + '"' + row.BParking + '"' + ' data-bplazabasement=' + '"' + row.BPlazaBasement + '"' + ' data-bfactoryarea=' + '"' + row.BFactoryArea + '"' + ' data-bmosque=' + '"' + row.BMosque + '"' + ' data-bothers=' + '"' + row.BOthers + '"' + ' data-blead=' + '"' + row.BLead + '"' + ' data-bsampleapplied=' + '"' + row.BSampleApplied + '"' + ' data-bremarks=' + '"' + row.BRemarks + '"' + ' data-statuschecker=' + '"' + row.StatusChecker + '"' + ' data-assigndate=' + '"' + row.AssignDate + '"' + ' data-visiteddate=' + '"' + row.VisitedDate + '"' + 'data-visitdate=' + '"' + row.VisitDate + '"' + 'data-address=' + '"' + row.Address + '"' + '><i class=icon-file-text-alt></i></button>');
+                   return '<button class="btn btn-primary view" data-id=' + row.ID + '' + ' data-saleofficer=' + '"' + row.SaleOfficerName + '"' + ' data-ShopName=' + '"' + row.DealerName + '"' + ' data-VisitPlanName=' + '"' + row.VisitPlanName + '"' + ' data-VisitedDate=' + '"' + row.VisitedDate + '"' + ' data-visitplan=' + '"' + row.VisitPlanName + '"' + ' data-visittype=' + '"' + row.VisitType + '"' + ' data-retailertype=' + '"' + row.RetailerType + '"' + ' data-savailability=' + '"' + row.SAvailable + '"' + ' data-squantity1kg=' + '"' + row.SQuantity1KG + '"' + ' data-squantity5kg=' + '"' + row.SQuantity5KG + '"' + 'data-sneworder=' + '"' + row.SNewOrder + '"' + ' data-snewquantity1kg=' + '"' + row.SNewQuantity1KG + '"' + ' data-snewquantity5kg=' + '"' + row.SNewQuantity5KG + '"' + ' data-spreviousorder1kg=' + '"' + row.SPreviousOrder1KG + '"' + ' data-spreviousorder5kg=' + '"' + row.SPreviousOrder5KG + '"' + ' data-sposmaterialavailable=' + '"' + row.SPOSMaterialAvailable + '"' + ' data-simage=' + '"' + row.SImage + '"' + 'data-snote=' + '"' + row.SNote + '"' + 'data-pusewc=' + '"' + row.PUseWC + '"' + ' data-pusewc1kg=' + '"' + row.PUseWC1KG + '"' + ' data-pusewc5kg=' + '"' + row.PUseWC5KG + '"' + ' data-pneworder=' + '"' + row.PNewOrder + '"' + ' data-pneworder1kg=' + '"' + row.PNewOrder1KG + '"' + ' data-pneworder5kg=' + '"' + row.PNewOrder5KG + '"' + ' data-pnewlead=' + '"' + row.PNewLead + '"' + ' data-pnewleadmobno=' + '"' + row.PNewLeadMobNo + '"' + ' data-premarks=' + '"' + row.PRemarks + '"' + 'data-bareaid=' + '"' + row.BAreaName + '"' + ' data-bshop=' + '"' + row.BShop + '"' + ' data-boldhouse=' + '"' + row.BOldHouse + '"' + ' data-bnewhouse=' + '"' + row.BNewHouse + '"' + ' data-bparking=' + '"' + row.BParking + '"' + ' data-bplazabasement=' + '"' + row.BPlazaBasement + '"' + ' data-bfactoryarea=' + '"' + row.BFactoryArea + '"' + ' data-bmosque=' + '"' + row.BMosque + '"' + ' data-bothers=' + '"' + row.BOthers + '"' + ' data-blead=' + '"' + row.BLead + '"' + ' data-bsampleapplied=' + '"' + row.BSampleApplied + '"' + ' data-bremarks=' + '"' + row.BRemarks + '"' + ' data-statuschecker=' + '"' + row.StatusChecker + '"' + ' data-assigndate=' + '"' + row.AssignDate + '"' + ' data-visiteddate=' + '"' + row.VisitedDate + '"' + 'data-visitdate=' + '"' + row.VisitDate + '"' + 'data-address=' + '"' + row.Address + '"' + '><i class=icon-file-text-alt></i></button>';
+               }
+           }
+            ], "order": [0, "asc"]
+
+        });
+
+    }
+
+    function addZero(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+
+    $(document).ready(function () {
+
+
+    });
+
+</script>
+
+
+<script>
+    function ConvertDateFormat(DateFormat) {
+        var re = /\/Date\(([0-9]*)\)\//;
+        var m = DateFormat.match(re);
+        if (m) { return new Date(parseInt(DateFormat.substr(6))); }
+        else { return "-" };
+    }
+
+    $(document).ready(function () {
+
+        $('#StartingDate1').datepicker(
+              {
+                  dateFormat: 'dd-M-yy',
+                  changeMonth: true,
+                  changeYear: true,
+                  yearRange: '1950:2100'
+              });
+        var startDate = '@DateTime.Now.Date.Year.ToString()-@DateTime.Now.Month.ToString().PadLeft(2, '0')-01';
+        startDate = $.datepicker.formatDate("dd-M-yy", new Date(startDate));
+        //alert(startDate);
+
+        $('#StartingDate1').val(startDate);
+        $('#StartingDate2').val('@DateTime.Now.ToString("dd-MMM-yyyy")');
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+        $("#liJob,#liCheckJobs").addClass("active");
+        GenerateDetailGrid();
+    });
+
+
+
+
+
+
+
+
+
+
+    $("#btn_search").click(function () {
+        debugger;
+        //GenerateDetailGrid();
+        $('#datatab').DataTable().ajax.reload();
+
+
+    });
+
+
+
+</script>
+

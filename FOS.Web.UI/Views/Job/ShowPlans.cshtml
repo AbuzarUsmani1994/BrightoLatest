@@ -1,0 +1,552 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    Layout = null;
+}
+
+<link href="~/Content/Style/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/Style/bootstrap-responsive.min.css" rel="stylesheet" />
+
+<link href="~/Content/Style/chosen.css" rel="stylesheet" />
+<link href="~/Content/Style/bootstrap-toggle-buttons.css" rel="stylesheet" />
+<link href="~/Content/Style/font-awesome.css" rel="stylesheet" />
+<link href="~/Content/Style/style.css" rel="stylesheet" />
+<link href="~/Content/Style/style-responsive.css" rel="stylesheet" />
+<link href="~/Content/Style/style-green.css" rel="stylesheet" id="style_color" />
+<link href="~/Content/Style/inputTag.css" rel="stylesheet" />
+<link href="~/Content/Style/jquery.fancybox.css" rel="stylesheet" />
+<link href="~/Content/Style/uniform.default.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="~/Content/Style/uniform.default.css" />
+<link rel="stylesheet" href="~/Content/Style/DT_bootstrap.css" />
+<link rel="stylesheet" href="~/Content/Style/bootstrap-fileupload.css" />
+<link href="~/Content/Style/alertify.css" rel="stylesheet" />
+<link href="~/Content/multiple-select.css" rel="stylesheet" />
+<link href="~/Content/Style/jquery.dataTables.min.css" rel="stylesheet" />
+<script src="~/Scripts/js/jquery-1.8.3.min.js"></script>
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<style>
+        .loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -50px;
+            width: 128px;
+            height: 128px;
+            z-index: 9999;
+            background-color: transparent !important;
+            background: url('@string.Format("{0}/Content/images/ajax-loader.gif",FOS.Web.UI.Common.Settings.AppPath)') 50% 50% no-repeat rgb(249,249,249);
+        }
+</style>
+<title>Sale Officer Calendar</title>
+<div class="loader"></div>
+<!-- BEGIN PAGE HEADER-->
+
+<div class="row-fluid">
+
+    <div class="span12" style="margin-left:0 !important">
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>Plans</h4>
+                <input type="button" value="Delete" onclick="javascript:deleteplans();" style="padding-top:3px;padding-bottom:3px;" />
+                <table align="right" border="0" style="color:white">
+                    <tr>
+                        <td align="right">Monthly</td>
+                        <td width="20px" style="background-color:#4CAF50">&nbsp;</td>
+                        <td align="right">Selective Days</td>
+                        <td width="20px" style="background-color:#fff68f">&nbsp;</td>
+                        <td align="right">Alternate Days</td>
+                        <td width="20px" style="background-color:#6495ed">&nbsp;</td>
+                        <td align="right">Once a Month</td>
+                        <td width="20px" style="background-color:#68228b">&nbsp;</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="widget-body jobDetdiv" style="border:double;display:none;">
+                <table border="0" align="center">
+                <tr>
+                    <td style="padding-right:12px;color:maroon;"><b>Shop Name:</b></td>
+                    <td style="padding-right:12px;" id="lblShopName"></td>
+                    <td style="padding-right:12px;color:maroon;"><b>Retailer Name:</b></td>
+                    <td style="padding-right:12px;"id="lblRetName"></td>
+                    <td style="padding-right:12px;color:maroon;"><b>Dealer Name:</b></td>
+                    <td style="padding-right:12px;" id="lblDealerName"></td>
+                    <td style="padding-right:12px;color:maroon;"><b>Plan Type:</b></td>
+                    <td style="padding-right:12px;" id="lblPlanType"></td>
+                    <td style="display:none;">
+                        <input type="hidden" id="hdnJobId" value="0" name="hdnJobId" />
+                        <input type="hidden" id="hdnJobDetailId" value="0" name="hdnJobDetailId" />
+                        <input type="hidden" id="hdnRetId" value="0" name="hdnRetId" />
+                        <input type="hidden" id="hdnPlanType" value="0" name="hdnPlanType" />
+                    </td>
+                    <td style="padding-left:24px"><input type="button" id="btnSinglePlanDel" value="Delete" style="padding-top:3px;padding-bottom:3px;" /></td>
+                    <td style="padding-left:4px"><input type="button" id="btnSinglePlanCancel" value="Cancel" style="padding-top:3px;padding-bottom:3px;" /></td>
+                </tr>
+                </table>
+            </div>
+            <div class="widget-body" style="padding: 0px;">
+
+                <div class="span12" style="">
+                    <div id='calendar'></div>
+
+                    <div style='clear: both'></div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="row-fluid"></div>
+
+<style>
+    .h5_RetailerInfo {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        font-weight: 700;
+        color: #3F51B5;
+    }
+
+    .h5_RetailerValue {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    #external-events {
+        float: left;
+        padding: 0 2px;
+        background: #fff;
+        text-align: left;
+        margin-bottom: 20px;
+        height: 613px;
+    }
+
+        #external-events h4 {
+            font-size: 16px;
+            margin-top: 0;
+            padding-top: 0.4em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-size: 18px;
+            font-weight: bolder;
+            color: #3F51B5;
+        }
+
+        #external-events .fc-event {
+            margin: 2px 2px;
+            padding: 3px;
+            float: left;
+            cursor: pointer;
+            width: 44.5%;
+        }
+
+        #external-events p {
+            margin: 1.5em 0;
+            font-size: 11px;
+            color: #666;
+        }
+
+            #external-events p input {
+                margin: 0;
+                vertical-align: middle;
+            }
+
+    #calendar {
+        float: right;
+        width: 100%;
+    }
+
+    .fc th {
+        background-image: linear-gradient(to bottom, #797979, #545454);
+        color: white;
+        padding: 6px;
+    }
+</style>
+
+<script>
+    function deleteplans() {
+        //debugger;
+        if ($("#calendar").fullCalendar('getView').type == 'month') {
+            var queries = {};
+            $.each(document.location.search.substr(1).split('&'), function (c, q) {
+                var i = q.split('=');
+                queries[i[0].toString()] = i[1].toString();
+            });
+
+            var mo = ($("#calendar").fullCalendar('getDate')._d + '').substring(3, 7);
+            var yr = ($("#calendar").fullCalendar('getDate')._d + '').substring(10, 15);
+            var soId = queries["soId"];
+            var beat = queries["beat"];
+            var msg = 'Are you sure to delete this months whole monthly plan?';
+            if (beat == '1') {
+                msg = 'Are you sure to delete this months beat plan?';
+            }
+            var yes = confirm(msg);
+            if (yes) {
+                
+                $.ajax({
+                    type: "POST",
+                    url: "/api/Jobs/DeletePlans",
+                    dataType: 'json',
+                    data: {
+                        SOID: soId,
+                        Month: mo + " " + yr,
+                        Beat: beat
+                    },
+                    success: function (response) {
+                        if (response.status.code == "200") {
+                            alert(response.status.message);
+                            window.location.reload();
+                        }
+                        else {
+                            alert(response.status.message);
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            alert('Please select month view');
+        }
+    }
+
+    function deleteSinglePlan() {
+        //debugger;
+        if ($("#calendar").fullCalendar('getView').type == 'month') {
+            var queries = {};
+            $.each(document.location.search.substr(1).split('&'), function (c, q) {
+                var i = q.split('=');
+                queries[i[0].toString()] = i[1].toString();
+            });
+
+            var mo = ($("#calendar").fullCalendar('getDate')._d + '').substring(3, 7);
+            var yr = ($("#calendar").fullCalendar('getDate')._d + '').substring(10, 15);
+            var soId = queries["soId"];
+            var beat = queries["beat"];
+            var msg = 'Are you sure to delete this job of monthly plan?';
+            if (beat == '1') {
+                msg = 'Are you sure to delete this job of beat plan?';
+            }
+            var jobId = $('#hdnJobId').val();
+            var jobDetailId = $('#hdnJobDetailId').val();
+            var retId = $('#hdnRetId').val();
+            var planType = $('#hdnPlanType').val();
+            //debugger;
+            var yes = confirm(msg);
+            if (yes) {
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/Jobs/DeleteSinglePlan",
+                    dataType: 'json',
+                    data: {
+                        SOID: soId,
+                        JobID: jobId,
+                        Month: mo + " " + yr,
+                        Beat: beat,
+                        RetailerID: retId,
+                        VisitPlanType: planType,
+                        JobDetailID: jobDetailId
+                    },
+                    success: function (response) {
+                        if (response.status.code == "200") {
+                            alert(response.status.message);
+                            window.location.reload();
+                        }
+                        else {
+                            alert(response.status.message);
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            alert('Please select month view');
+        }
+    }
+
+    function cancelSinglePlan() {   
+        $('.jobDetdiv').hide();
+        $('.fc-day-grid-event').css('border-color', $('.fc-day-grid-event').css('background-color'));
+    }
+
+    var a = [];
+    var b = [];
+    var JobList = "";
+
+    $(window).load(function () {
+        $(".loader").fadeOut("fast");
+    });
+    var $loading = $('.loader');
+    $(document)
+      .ajaxStart(function () {
+          //if (showLoadingEnabled) {
+          $loading.show();
+          //}
+      })
+      .ajaxStop(function () {
+          $loading.hide();
+      });
+
+    function UpdateSOJob(jobId, jobDetailId, retailerId, visitPlanType, newDate) {
+        $.ajax({
+            type: "POST",
+            url:  "/api/jobs/UpdateSOJob", //" Url.Action("UpdateSOJob", "Jobs")",
+            dataType: 'json',
+            data: {
+                JobID: jobId,
+                JobDetailID: jobDetailId,
+                RetailerID: retailerId,
+                VisitPlanType: visitPlanType,
+                NewDateStr: newDate
+            },
+            success: function (response) {
+                if(response.status.code == "200")
+                {
+                    if (visitPlanType == 4 || visitPlanType == 5) {
+                        $('.loader').show();
+                        alert(response.status.message);
+                        window.location.reload();
+                    }
+                    else {
+                        alert(response.status.message);
+                    }
+                }
+                else if (response.status.code == "404") {
+                    $('.loader').show();
+                    alert(response.status.message);
+                    window.location.reload();
+                }
+                else if (response.status.code == "400") {
+                    $('.loader').show();
+                    alert(response.status.message);
+                    window.location.reload();
+                }
+                else if (response.status.code == "500") {
+                    $('.loader').show();
+                    alert(response.status.message);
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function GetJobs(SOID, month, plan) {
+        
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetJobsMonthwise", "Job")",
+            dataType: 'json',
+            data: { SOID: SOID, month: month, plan: plan },
+            success: function (Response) {
+                //debugger;
+                $('#calendar').fullCalendar('removeEvents');
+
+                $.each(Response, function (i, l) {
+                    var newEvent = new Object();
+
+                    newEvent.title = l.ShopName;
+                    newEvent.start = dateFormatter(l.JobDate);
+                    newEvent.allDay = true;
+                    newEvent.stick = true;
+                    newEvent.jobId = l.JobID;
+                    newEvent.jobDetailId = l.JobDetailID;
+                    newEvent.visitPlanType = l.VisitPlanType;
+                    newEvent.retailerId = l.RetailerID;
+                    newEvent.DealerName = l.DealerName;
+                    newEvent.Status = l.Status;
+                    newEvent.RetailerName = l.RetailerName;
+                    if (l.DateComplete != null) {
+                        newEvent.DateComplete = dateFormatter(l.DateComplete);
+                    }
+                    else {
+                        newEvent.DateComplete = "";
+                    }
+                    
+                    //debugger;
+                    if (l.VisitPlanType == 1) {
+                        newEvent.color = '#4CAF50';//#458b00';//#228b22';
+                        if (newEvent.Status == true) {
+                            newEvent.textColor = 'red';
+                        }
+                        else {
+                            newEvent.textColor = 'white';
+                        }
+                    }
+                    else if (l.VisitPlanType == 4) {
+                        newEvent.color = '#fff68f';//#0000cd';//#3F51B5';
+                        if (newEvent.Status == true) {
+                            newEvent.textColor = 'red';
+                        }
+                        else {
+                            newEvent.textColor = 'black';
+                        } 
+                    }
+                    else if (l.VisitPlanType == 5) {
+                        newEvent.color = '#6495ed';//#F44336';
+                        if (newEvent.Status == true) {
+                            newEvent.textColor = 'red';
+                        }
+                        else {
+                            newEvent.textColor = 'white';
+                        }
+                    }
+                    else {
+                        newEvent.color = '#68228b';//#3F0105';
+                        if (newEvent.Status == true) {
+                            newEvent.textColor = 'red';
+                        }
+                        else {
+                            newEvent.textColor = 'white';
+                        }
+                    }
+
+                    setTimeout(function () {
+                        $('#calendar').fullCalendar('renderEvent', newEvent, true);
+                        $('#calendar').fullCalendar('option', 'height', 'auto');
+                    }, 1);
+                    //$('#calendar').fullCalendar('renderEvent', newEvent);
+                    //$('#calendar').fullCalendar('option', 'height', 700);
+                });
+            }
+        });
+    }
+
+    function dateFormatter(dateString) {
+        //debugger;
+        var re = /\/Date\(([0-9]*)\)\//;
+        var m = dateString.match(re);
+        if (m) return new Date(parseInt(dateString.substr(6)));
+        else return null;
+    }
+
+    $(document).ready(function () {
+        //$('.jobDetdiv').hide();
+        //});
+
+        $('#btnSinglePlanCancel').on('click', function () {
+            cancelSinglePlan();
+        });
+        $('#btnSinglePlanDel').on('click', function () {
+            deleteSinglePlan();
+        });
+
+        //$("#btnRefresh").trigger('click');
+    });
+
+    $('#external-events .fc-event').each(function () {
+
+        // make the event draggable using jQuery UI
+        $(this).draggable({
+            zIndex: 999,
+            revert: true,      // will cause the event to go back to its
+            revertDuration: 0  //  original position after the drag
+        });
+
+    });
+
+
+    $('#calendar').fullCalendar({
+        //windowResize: function(view) {
+        //    alert('The calendar has adjusted to a window resize');
+        //},
+        header: {
+            left: 'prev,today,next',
+            center: 'title',
+            right: 'basicWeek,month'
+            //right: 'month'
+        },
+        defaultView: 'month',
+        // This Allows Droppeable Things To Calendar Limits On Showing...
+        //eventLimit: true, // for all non-agenda views
+        //views: {
+        //    agenda: {
+        //        eventLimit: 5 // adjust to 6 only for agendaWeek/agendaDay
+        //    }
+        //},
+        droppable: true,
+        eventStartEditable: true, //or editable:true,
+
+        viewRender: function (view) {
+            //debugger; //call function GetSO jobs here
+            var queries = {};
+            $.each(document.location.search.substr(1).split('&'), function (c, q) {
+                var i = q.split('=');
+                queries[i[0].toString()] = i[1].toString();
+            });
+
+            if (view.type == 'month') {
+                GetJobs(queries["soId"], view.title, queries["plan"]);
+            }
+            $('.jobDetDiv').hide();
+        },
+        eventClick: function (calEvent, jsEvent, view) {
+            //alert(calEvent.DateComplete);
+            var plan = 'Monthly Plan';
+            if (calEvent.visitPlanType == 4) {
+                plan = 'Beat Plan Selective days'
+            }
+            else if (calEvent.visitPlanType == 5) {
+                plan = 'Beat Plan Alternate days'
+            }
+            else if (calEvent.visitPlanType == 6) {
+                plan = 'Beat Plan Once a month'
+            }
+
+            if (calEvent.DateComplete == '') {
+                $('.jobDetdiv').show();
+                $('#lblShopName').html(calEvent.title);
+                $('#lblRetName').html(calEvent.RetailerName);
+                $('#lblDealerName').html(calEvent.DealerName);
+                $('#lblPlanType').html(plan);
+                $('#hdnJobId').val(calEvent.jobId);
+                $('#hdnJobDetailId').val(calEvent.jobDetailId);
+                $('#hdnRetId').val(calEvent.retailerId);
+                $('#hdnPlanType').val(calEvent.visitPlanType);
+                
+            }
+            else {
+                var stDate = calEvent.DateComplete+'';
+                stDate = stDate.substring(0, 15);
+                alert('Shop Name: ' + calEvent.title + '\n' +
+                    'Retailer Name: ' + calEvent.RetailerName + '\n' +
+                    'Dealer Name: ' + calEvent.DealerName + '\n' +
+                    'Plan Type: ' + plan + '\n' +
+                    'Visited Date: ' + stDate);
+            }
+
+            //alert('Stick: ' + calEvent.stick);
+            //alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+            //alert('View: ' + view.name);
+
+            // change the border color just to show that its viewed
+            // client needs to not show it - its confusing
+            $('.fc-day-grid-event').css('border-color', $('.fc-day-grid-event').css('background-color'));
+            $(this).css('border-color', 'red');
+
+        },
+        eventDrop: function (event, jsEvent, ui, view) {
+
+            UpdateSOJob(event.jobId, event.jobDetailId, event.retailerId, event.visitPlanType, event.start._d);
+        },
+        eventDragStart: function (event, jsEvent, ui, view) {
+            //debugger;a
+            //alert('Event: ' + event.title);
+            //return false;
+        }//,
+        //eventRender: function (event, element) {
+        //    element.bind('dblclick', function () {
+        //        alert('double click!');
+        //    });
+        //}
+    });
+
+</script>

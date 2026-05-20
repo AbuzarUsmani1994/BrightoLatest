@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d4a37a8cf060422ba4d16447284c293e" Name="Diagram1" ZoomLevel="63">
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Area" Width="1.5" PointX="5.25" PointY="47.375" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.City" Width="1.5" PointX="3" PointY="40.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.CityZone" Width="1.5" PointX="5.25" PointY="42" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Complaint" Width="1.5" PointX="12.75" PointY="48.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DealerCityArea" Width="1.5" PointX="13.5" PointY="44.5" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.FeeStructure" Width="1.5" PointX="8.25" PointY="33.25" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Job" Width="1.5" PointX="9.75" PointY="53.875" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Jobs_HTR" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.JobsDetail_HTR" Width="1.5" PointX="2.75" PointY="5.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.JobsHistory" Width="1.5" PointX="18.75" PointY="40.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.LoginHistory" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.QrActivity" Width="1.5" PointX="5.25" PointY="52.25" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.QrSODetail" Width="1.5" PointX="12.75" PointY="40.5" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RegionalHeadRegion" Width="1.5" PointX="3" PointY="36.5" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RegionalHead" Width="1.5" PointX="0.75" PointY="31.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RegionalHeadsType" Width="1.5" PointX="1.5" PointY="29.25" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Region" Width="1.5" PointX="0.75" PointY="37.625" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RetailerPainter" Width="1.5" PointX="12.75" PointY="67.5" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RetailersForApproval" Width="1.5" PointX="4.75" PointY="7.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Role" Width="1.5" PointX="0.75" PointY="6" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SalesOfficerJob" Width="1.5" PointX="12" PointY="55.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SMSLog" Width="1.5" PointX="12.75" PointY="36.5" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Sylabu" Width="1.5" PointX="8.25" PointY="36.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Todo" Width="1.5" PointX="3" PointY="24.25" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Token" Width="1.5" PointX="8.75" PointY="8.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TokenDetail" Width="1.5" PointX="9.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.User" Width="1.5" PointX="3" PointY="19.375" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.VisitPlan" Width="1.5" PointX="7.5" PointY="56.375" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.vActiveJob" Width="1.5" PointX="10.75" PointY="3.75" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Areas_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DealerCityArea_Areas" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Cities_Regions" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_CityZone_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DealerCityArea_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_QrActivity_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Jobs_RegionalHeads" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Jobs_VisitPlans" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobsInquiries_Jobs" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SalesOfficerJobs_Jobs" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_RegionalHeadRegions_RegionalHeads" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_RegionalHeadRegions_Regions" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_RegionalHeads_RegionalHeadsType" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Todo_RegionalHeads" />
+        <AssociationConnector Association="FOS_WallCoatModel.UserRoles" />
+        <AssociationConnector Association="FOS_WallCoatModel.UsersRegionalHead" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.MainCategory" Width="1.5" PointX="7.375" PointY="14.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SubCategory" Width="1.5" PointX="9.625" PointY="19.5" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SubCategory_MainCategory" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Page" Width="1.5" PointX="11.375" PointY="10" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RolePage" Width="1.5" PointX="13.625" PointY="8.25" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Pages_Pages" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_RolePages_Pages" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_RolePages_Roles" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Zone" Width="1.5" PointX="0.75" PointY="1" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_CityZone_Zone" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SubCtegoryA" Width="1.5" PointX="11.875" PointY="17" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SubCtegoryA_MainCategory" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SubCtegoryA_SubCategory" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.CompititorInfo" Width="1.5" PointX="16.75" PointY="33.75" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_CompititorInfo_Sylabus" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ActivityPurpose" Width="1.5" PointX="13.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TblReminder" Width="1.5" PointX="19.75" PointY="35.625" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_TblReminders_Jobs" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SchoolException" Width="1.5" PointX="9.75" PointY="48.25" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_MasterStock" Width="1.5" PointX="19.75" PointY="30.625" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_MasterStock_RegionalHeads" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_RetailerClass" Width="1.5" PointX="16.5" PointY="0.875" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_RetailerType" Width="1.5" PointX="13.375" PointY="3.375" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.AccessLog" Width="1.5" PointX="9.75" PointY="44.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.JobItem" Width="1.5" PointX="15" PointY="39.375" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobItem_Jobs" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Item" Width="1.5" PointX="9.625" PointY="24" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Item_MainCategory" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobItem_Item" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.tbl_StockDetail" Width="1.5" PointX="22" PointY="27.375" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_tbl_StockDetail_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_tbl_StockDetail_Tbl_MasterStock" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_Access" Width="1.5" PointX="9.75" PointY="40.875" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_Access_Regions" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SaleOfficer" Width="1.5" PointX="7.5" PointY="41.25" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_AccessLog_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SaleOfficers_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_CompititorInfo_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Complaint_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Jobs_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_QrSODetail_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SaleOfficers_RegionalHeads" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SMSLog_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_Access_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_MasterStock_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_SchoolException_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_TblReminders_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.SaleOfficerAreas" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SOREGIONS" Width="1.5" PointX="7.375" PointY="11.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_FollowupReasons" Width="1.5" PointX="13.375" PointY="12.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TblDetailScheme" Width="1.5" PointX="15.375" PointY="3.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TblMasterScheme" Width="2.625" PointX="15.375" PointY="12.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.JobsDetail" Width="1.5" PointX="22.25" PointY="32.375" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobsDetail_Areas" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SoRetailersJobs_Jobs" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobsDetail_RegionalHeads" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SMSLogs" Width="1.5" PointX="16.375" PointY="7.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DealerRanx" Width="1.5" PointX="18" PointY="22.125" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Dealer" Width="1.5" PointX="12.75" PointY="23.25" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Retailer" Width="1.5" PointX="15" PointY="16.125" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_Areas" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Dealers_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_CompititorInfo_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Complaint_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DealerCityArea_Dealers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DealerRanges_Dealers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DealerRanges_MainCategory" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Dealers_RegionalHeads" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Dealers_Regions" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Dealers_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Dealers_Zone" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobsDetail_Dealers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_Dealers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_FeeStructure" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SoRetailersJobs_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_JobsHistory_Retailer" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_QrSODetail_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_RetailerPainters_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_Sylabus" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Retailers_Zone" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SMSLog_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_MasterStock_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_TblReminders_Retailers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.KPIReport" Width="1.5" PointX="9.75" PointY="29.5" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_KPIReports_SaleOfficers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.StockPosition" Width="1.5" PointX="17.875" PointY="26.125" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_StockPosition_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_StockPosition_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_StockPosition_Regions" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ItemGroupDetail" Width="1.5" PointX="17.875" PointY="18.5" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ItemGroupMaster" Width="1.5" PointX="15.625" PointY="48.5" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_ItemGroupDetail_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_ItemGroupDetail_ItemGroupMaster" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SODesignation" Width="1.5" PointX="17.375" PointY="3.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SOAttendance" Width="1.5" PointX="15.75" PointY="44.875" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.StockInvoice" Width="1.5" PointX="20.875" PointY="23.375" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SOAttendance_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_StockInvoice_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_StockInvoice_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SOAttendance_Regions" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_StockInvoice_Regions" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_SOAttendance_SaleOfficers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ReportType" Width="1.5" PointX="9.375" PointY="14.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.RSMPortalUser" Width="1.5" PointX="17.375" PointY="15.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ManagersLoginHst" Width="1.5" PointX="5.25" PointY="20.125" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_ManagersLoginHst_Users" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DealerDSRDispatch" Width="1.5" PointX="18.375" PointY="6.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DealerDispatchCalculation" Width="1.5" PointX="19.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DelieveryBoy" Width="1.5" PointX="15" PointY="51.5" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DelieveryBoys_Dealers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DispatchInVan" Width="1.5" PointX="24.25" PointY="28.125" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DispatchInVan_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DispatchInVan_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DispatchInVan_SaleOfficers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.DispatchInVanMaster" Width="1.5" PointX="15" PointY="54.75" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_DispatchInVanMaster_Dealers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TBL_RouteSelection" Width="1.5" PointX="19.375" PointY="11.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_CompititorBrand" Width="1.5" PointX="20.375" PointY="4.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TBL_CurrentStock" Width="1.5" PointX="21" PointY="49" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_OurBrandRate" Width="1.5" PointX="11.875" PointY="62.375" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_TBL_CurrentStock_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_OurBrandRate_Item" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_TBL_CurrentStock_Jobs" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_NoSaleReason" Width="1.5" PointX="19.375" PointY="14.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_VisittypesOfSO" Width="1.5" PointX="20.375" PointY="17.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TBL_CompititorBrandsForDropDown" Width="1.5" PointX="20.375" PointY="20.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ChecklistBeforeVisit" Width="1.5" PointX="25" PointY="40.625" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_RSMCheckList" Width="1.5" PointX="27.25" PointY="36.375" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_RSMSummary" Width="1.5" PointX="25" PointY="35.75" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_RSMSummary_Cities" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_RSMSummary_Dealers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_RSMSummary_SaleOfficers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_RSMCheckList_Tbl_ChecklistBeforeVisit" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_RSMCheckList_Tbl_RSMSummary" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.SOType" Width="1.5" PointX="21.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_Segmenttype" Width="1.5" PointX="21.375" PointY="9.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.BusinessStatu" Width="1.5" PointX="21.375" PointY="12.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.BusinessType" Width="1.5" PointX="22.375" PointY="3.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_CorporateVisits" Width="1.5" PointX="17.25" PointY="52.625" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_CorporateVisits_Retailers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ConstructionStage" Width="1.5" PointX="22.375" PointY="6.625" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_Industry" Width="1.5" PointX="22.375" PointY="15.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_NatureOfWork" Width="1.5" PointX="22.375" PointY="18.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ScopeOfWork" Width="1.5" PointX="23.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_HousingTradeCustomers" Width="1.5" PointX="24.5" PointY="43.875" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_HousingTradeCustomers_Retailers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_CompititorList" Width="1.5" PointX="5.375" PointY="23.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SharedCards" Width="1.5" PointX="23.375" PointY="9.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_PlotSize" Width="1.5" PointX="23.375" PointY="12.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TradeVisit" Width="1.5" PointX="17.25" PointY="66.25" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_TradeVisits_Retailers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_TradeVisitsFinal" Width="1.5" PointX="24.25" PointY="23.5" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_TradeVisitsFinal_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_TradeVisitsFinal_SaleOfficers" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_Targets" Width="1.5" PointX="24.375" PointY="3.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.TBL_Payments" Width="1.5" PointX="24.375" PointY="15.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_AllPurposeVisits" Width="1.5" PointX="25.375" PointY="9.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_PurposeOfVisit" Width="1.5" PointX="24.375" PointY="20.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ProductSubCategory" Width="1.5" PointX="26.375" PointY="4.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ProuctCategory" Width="1.5" PointX="5.375" PointY="26.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ClaimDetail" Width="1.5" PointX="26.375" PointY="14.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SalesClaimMaster" Width="1.5" PointX="26.375" PointY="18.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ProductDetail" Width="1.5" PointX="26.375" PointY="22.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_HousingSiteVerification" Width="1.625" PointX="27.375" PointY="7.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_HousingVerificationOffTakeFrom" Width="1.5" PointX="25.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ClaimsApproval" Width="1.5" PointX="27.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ChemSaleDetail" Width="1.5" PointX="28.375" PointY="19.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ChemSaleMaster" Width="1.5" PointX="28.375" PointY="23.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ChemCustomerInfo" Width="1.5" PointX="28.375" PointY="27.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_BrightoChemicalProducts" Width="1.5" PointX="28.375" PointY="13.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_KPITargetsRegionWise" Width="1.5" PointX="29.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_DetailCoverage" Width="1.5" PointX="29.375" PointY="4.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_MasterCoverage" Width="1.5" PointX="4.375" PointY="29.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_AffiliatesBusinessTypes" Width="1.5" PointX="6.375" PointY="29.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_AffiliatesClassification" Width="1.5" PointX="29.375" PointY="9.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_AffiliatesExpertise" Width="1.5" PointX="30.375" PointY="12.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_BusinessAffiliates" Width="1.5" PointX="30.375" PointY="15.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_NatureOfClient" Width="1.5" PointX="30.375" PointY="20.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_BusinessAffiliatesVisits" Width="1.5" PointX="30.375" PointY="23.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_DetailKPI" Width="1.5" PointX="30.375" PointY="28.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_FocusArea" Width="1.5" PointX="31.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_MasterKPIS" Width="1.5" PointX="31.375" PointY="3.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SOAttendanceandPunctuality" Width="1.5" PointX="31.375" PointY="7.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SOTraining" Width="1.5" PointX="30.375" PointY="31.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SaveCall" Width="1.5" PointX="5.375" PointY="32.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_FannanCustomer" Width="1.5" PointX="32.375" PointY="10.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_FannanCustomerAssign" Width="1.5" PointX="32.375" PointY="14.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_FannanSODirection" Width="1.5" PointX="32.375" PointY="17.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ComplaintUpdate" Width="1.5" PointX="32.375" PointY="20.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ConditionOfSubstratee" Width="1.5" PointX="32.375" PointY="25.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_NatureOfComplaint" Width="1.5" PointX="26.375" PointY="32.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ProductNature" Width="1.5" PointX="32.375" PointY="28.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SaveComplaints" Width="1.5" PointX="32.375" PointY="31.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SaveConditionOfSubstrate" Width="1.5" PointX="33.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_SaveNatureOfComplaint" Width="1.5" PointX="33.375" PointY="3.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ThinningSolvent" Width="1.5" PointX="33.375" PointY="6.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_AppliedTool" Width="1.5" PointX="10.375" PointY="33.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ComplaintSuggesionAdded" Width="1.5" PointX="34.375" PointY="9.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ComplaintApplicationCause" Width="1.5" PointX="34.375" PointY="15.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ComplaintProductQualityRelated" Width="1.5" PointX="34.375" PointY="18.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.ComplaintSubstrateCause" Width="1.5" PointX="34.375" PointY="21.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_HousingVisits" Width="1.5" PointX="17.25" PointY="70.625" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_HousingVisits_Retailers" />
+        <AssociationConnector Association="FOS_WallCoatModel.FK_Tbl_HousingTradeCustomers_Tbl_HousingVisits" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

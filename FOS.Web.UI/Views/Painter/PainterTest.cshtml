@@ -1,0 +1,609 @@
+﻿@model FOS.Shared.PainterAssociationData
+
+
+@{
+    ViewBag.Title = "Painter";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li><a href="#">Painter</a>
+            <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Manage Painters</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- END PAGE HEADER-->
+
+@using (Ajax.BeginForm("AddUpdateRetailerPaintersAssociation", "painter", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row-fluid">
+
+        <div class="span5">
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Manage Painter</h4>
+                    <span class="tools"></span>
+                </div>
+                <div class="widget-body" style="height: 440px;">
+
+
+
+                 
+
+                    <div class="control-group">
+                        <label class="control-label">Type</label>
+                        <div class="controls">
+                            <select id="Type" name="Type" disabled>
+                                <option value="1">Territorial Head</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <!-- Select RegionalHead -->
+                    <div class="control-group">
+                        <label class="control-label">Regional Head *</label>
+                        <div class="controls">
+                            @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHeads, "ID", "Name"), new { @class = "" })
+                            @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                            @Html.HiddenFor(model => model.HiddenRegionalHeadID)
+                        </div>
+                    </div>
+
+                    <!-- Select Sale Officer -->
+                    <div class="control-group">
+                        <label class="control-label">Sales Officer *</label>
+                        <div class="controls">
+                            @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SalesOfficer, "ID", "Name"), new { @class = "" })
+                            @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                            @Html.HiddenFor(model => model.ID)
+                        </div>
+                    </div>
+
+                    <!-- Select Sale Officer -->
+                    <div class="control-group">
+                        <label class="control-label">Retailers *</label>
+                        <div class="controls">
+                            @Html.DropDownListFor(model => model.RetailerID, new SelectList(Model.Retailers, "ID", "Name"), new { @class = "" })
+                            @Html.ValidationMessageFor(model => model.RetailerID)
+
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="form-actions" style="padding-left: 238px;">
+                            <button type="submit" id="btnNew" value="Create" class="btn btn-primary">
+                                <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Create</span>
+                            </button>
+                            <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="span7">
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4 >Painters List</h4>
+                    <h4 style="float: right;font-weight: 600;">Total Painters: <span  style="font-weight: 300;" id="totalpainters"></span></h4>
+                    <h4 style="float: right;font-weight: 600;border-right: 1px solid;">Associate Painters: <span  style="font-weight: 300;" id="usedpainters"></span></h4>
+                    <h4 style="float: right;font-weight: 600;border-right: 1px solid;">Free Painters: <span  style="font-weight: 300;" id="freepainters"></span></h4>
+                    <h4 style="float: right;font-weight: 600;border-right: 1px solid;border-left: 1px solid;">Cities: <span  style="font-weight: 300;" id="cities"></span></h4>
+                </div>
+                <div class="widget-body" style="padding: 10px; height: 450px; overflow: scroll; background-color: #ebffdf;">
+                    <div id="progress" style="display: none; position: absolute; margin-top: 180px; margin-left: 245px;">
+                        <h3>Loading . . . </h3>
+                    </div>
+                    @Html.HiddenFor(model => model.SelectedPainters)
+                    
+                     <div class="control-group">
+                        <label class="control-label" style="width: 45px;">Cities</label>
+                         <div class="controls" style="margin-left: 50px;">
+                             @Html.DropDownListFor(model => model.PainterCityID, new SelectList(Model.PainterCityNames, "ID", "CityName"), new { @class = "" })
+                             @Html.HiddenFor(model => model.City)
+                         </div>
+                      </div>
+                    <hr />
+                    <div id="painters" class="" style="width: 108%; height: 440px;"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+                    
+}
+
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Detail</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                    <button id="editable-sample_new" class="btn green">
+                                        Add New <i class="icon-plus"></i>
+                                    </button>
+                                </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab">
+                        <thead>
+                            <tr>
+                                <th style=""></th>
+                                <th style="width: 7% !important">Sr #</th>
+                                <th style="width: 17% !important">Mapping Name</th>
+                                <th style="width: 17% !important">Regional Head</th>
+                                <th style="width: 17% !important">Sales Officer</th>
+                                <th style="width: 17% !important">Retailer</th>
+                                <th style="width: 17% !important">No Of Painters</th>
+                                <th style="width: 8% !important">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+
+<script>
+
+
+    var a = [];
+
+    $(function () {
+        $('#form0').submit(function () {
+
+            $("#City").val($("#PainterCityID").find("option:selected").text());
+
+        });
+    });
+
+@*    function GenerateDetailGrid() {
+
+
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "paging": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "ajax": {
+                "type": "POST",
+                "url": '@Url.Action("DataHandler", "Painter")',
+                "contentType": 'application/json; charset=utf-8',
+                'data': function (data) {
+                    data.RegionalHeadID = $('#RegionalHeadID').val() == null ? 1 : $('#RegionalHeadID').val();
+                    data.SaleOfficerID = $('#SaleOfficerID').val() == null ? 1 : $('#SaleOfficerID').val();
+                    return data = JSON.stringify(data);
+                },
+
+            },
+            "fnDrawCallback": function (osetting) {
+
+                var UpdateCheck = "0";
+                var DeleteCheck = "0";
+
+                if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+                else {
+                    $(".edit").on("click", function () {
+
+                        //ClearForm();
+
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("LoadPaintersEdit", "Painter")",
+                            data: {RegionalHeadID: $(this).attr("data-regionalheadid"), SaleOfficerID: $(this).attr("data-saleofficerid"), RetailerID: $(this).attr("data-retailerid"), CityName: $(this).attr("data-city") },
+                            success: function (json) {
+
+                                if (json != null) {
+
+
+                                    var $el = $("#painters");
+                                    $el.empty(); // remove old options
+                                    $("#painters").append(json.Response);
+
+                                    $.each(json.EditPainter, function (value, key) {
+                                        
+                                        if (key.PainterAssociationStatus == true) { $("#painter" + key.ID + "").attr("checked", true); }
+                                        else { $("#painter" + key.ID + "").attr("checked", false); }
+                                        a.push(key.ID);
+                                    });
+
+                                }
+
+                                else { alertify.success('All Painters Assigned To Jobs.'); }
+                            }
+
+                        });
+
+                        $('html, body').animate({
+                            scrollTop: $("#main-content").offset().top
+                        }, 500);
+
+                        $('#ID').val($(this).attr("data-id"));
+                        $('#create').text('Update');
+
+                        $("#Title").val($(this).attr("data-title"));
+                        $("#RegionalHeadID").val($(this).attr("data-regionalheadid"));
+                        $("#HiddenRegionalHeadID").val($(this).attr("data-regionalheadid"));
+
+                        $("#SaleOfficerID").val($(this).attr("data-saleofficerid"));
+                        $("#RetailerID").val($(this).attr("data-retailerid"));
+                        $("#RetailerID").trigger("chosen:updates");
+                        $('#PainterCityID option:contains(' + $(this).attr("data-city") + ')').each(function () {
+                            $(this).attr('selected', 'selected');
+                        });
+
+                    });
+                }
+
+                if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                else {
+                    $(".delete").on("click", function () {
+
+                        var ID = $(this).attr("data-id");
+
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("DeleteRetailerPaintersAssociation", "Painter")",
+                                    data: { ID: ID },
+                                    success: function (data) {
+
+                                        if (data == "0") {
+                                            alertify.success('Record Deleted Successfully');
+                                            var table = $('#datatab').DataTable();
+                                            table.row(this).remove().draw(false);
+                                            LoadPainters($("#PainterCityID").find("option:selected").text());
+                                            ClearForm();
+                                        }
+
+                                        else { alertify.error('This Record Can Not be Deleted.'); }
+                                    }
+
+                                });
+
+                            } else { }
+                        });
+
+                    });
+                }
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search Dealer : " },
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "ID", "bSortable": false },
+           { "data": "Title" },
+           { "data": "RegionalHeadName" },
+           { "data": "SaleOfficerName" },
+           { "data": "RetailerName" },
+           { "data": "NoOfPainters" },
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+                   return '<button class="btn btn-success edit" data-id=' + row.ID + '  data-title=' + '"' + row.Title + '" data-regionalheadid=' + '"' + row.RegionalHeadID + '"' + '  data-saleofficerid=' + row.SaleOfficerID + ' data-retailerid=' + row.RetailerID + ' data-TotalPainters=' + row.TotalNoOfPainters + ' data-city=' + row.City + ' >' + '<i class=icon-pencil></i>' + '</button>&nbsp;<button class="btn btn-info delete" data-id=' + row.ID + '>' + '<i class=icon-trash></i>' + '</button>';
+               }
+           }
+            ],
+            "order": [1, "asc"]
+
+        });
+
+    }*@
+
+    function LoadPainters(CityName) {
+        try {
+            $.ajax({
+                type: "POST",
+                data: { RegionalHeadID: $("#RegionalHeadID").val(), SaleOfficerID: $("#SaleOfficerID").val(), RetailerID: $("#RetailerID").val(), CityName: CityName },
+                url: "@Url.Action("LoadPaintersEdit", "Painter")",
+                success: function (json) {
+                    
+                    var $el = $("#painters");
+                    $el.empty(); // remove old options
+                    $("#painters").append(json.Response);
+
+                    $('#PainterCityID option:contains(' + $("#cityName").html() + ')').each(function () {
+                        $(this).attr('selected', 'selected');
+                    });
+
+
+                    $.each(json.EditPainter, function (value, key) {
+
+                        if (key.PainterAssociationStatus == true) { $("#painter" + key.ID + "").attr("checked", true); }
+                        else { $("#painter" + key.ID + "").attr("checked", false); }
+                        a.push(key.ID);
+                    });
+
+
+                },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                complete: function () {
+                    $("#progress").hide();
+                },
+                error: function () {
+                    alertify.error("Server Is not Responding.");
+                }
+
+            });
+        } catch (e) {
+            alert(e);
+
+        }
+    }
+
+    function LoadRegionalHead() {
+
+        var RegionalHeadType = $("#Type").val();
+
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: "@Url.Action("GetRegionalHeadAccordingToType", "SaleOfficer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#RegionalHeadID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+                $("#RegionalHeadID").trigger("change");
+            }
+
+        });
+    }
+
+    $(document).ready(function () {
+        $("#liPainter,#liManagePainter").addClass("active");
+
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("PaintersInfo", "Painter")",
+                            data: {},
+                            success: function (json) {
+
+                                if (json != null) {
+                                    $("#totalpainters").html(json.TotalNoOfPainters);
+                                    $("#usedpainters").html(json.UsedPainters);
+                                    $("#freepainters").html(json.FreePainters);
+                                    $("#cities").html(json.Cities);
+                                }
+                            }
+         });
+
+        var WriteCheck = "0";
+
+        //GenerateDetailGrid();
+        $("#RetailerID").trigger('change');
+
+
+       // LoadPainters($("#PainterCityID").find("option:selected").text());
+
+        $("#PainterCityID").change(function () {
+            LoadPainters($(this).find("option:selected").text());
+        });
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+
+        $("#RegionalHeadID").change(function () {
+
+            $("#HiddenRegionalHeadID").val($(this).val())
+            LoadSalesOfficer();
+            //var dt = $('#datatab').DataTable();
+            //dt.ajax.reload();
+
+        });
+
+        $("#SaleOfficerID").change(function () {
+
+            LoadRetailers($(this).val());
+            //var dt = $('#datatab').DataTable();
+            //dt.ajax.reload();
+
+        });
+
+
+        $("#RetailerID").change(function () {
+            var CityName = $(this).find("option:selected").attr("data-cityname");
+            //if ($('#PainterCityID option:contains(' + CityName + ')').length == 1)
+            //{
+                $('#PainterCityID option:contains(' + CityName + ')').each(function () {
+                        $(this).attr('selected', 'selected');
+                });
+                LoadPainters(CityName);
+            //}
+            //else {
+            //    alertify.error("No Painter Exist In " + CityName +".");
+            //}
+
+        });
+
+
+        function LoadSalesOfficer() {
+
+
+            var RegionalHeadID = $("#RegionalHeadID").val();
+
+
+            $.ajax({
+                type: "POST",
+                data: { RegionalHeadID: RegionalHeadID },
+                url: "@Url.Action("GetAllSaleOfficerListRelatedToDealer", "Job")",
+                success: function (json) {
+
+                    var $el = $("#SaleOfficerID");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>").val(key.SaleOfficerID).text(key.SaleOfficerName));
+
+                       // $('#datatab').DataTable().ajax.reload();
+                    });
+
+                    $('#SaleOfficerID').trigger("chosen:update");
+                    $('#SaleOfficerID').trigger("change");
+                }
+
+            });
+
+        }
+
+        function LoadRetailers(SOID) {
+            var $e2 = $("#RetailerID");
+            if (SOID == null)
+            { $e2.empty(); }
+            else {
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: SOID },
+                    url: "@Url.Action("LoadRetailersRelatedToSaleOfficer", "Painter")",
+                     success: function (json) {
+                         $e2.empty();
+                         $.each(json, function (value, key) {
+                             $e2.append($("<option></option>").val(key.ID).text(key.Name).attr("data-cityname", key.CItyName));
+                         });
+                     }
+                 });
+             }
+         }
+
+        $("#btnRefresh").click(function () {
+            LoadPainters($("#PainterCityID").find("option:selected").text());
+            ClearForm();
+        });
+
+        $("#btnRefresh").trigger('click');
+
+
+    });
+
+
+     function ClearForm() {
+         a = [];
+
+         $('#ID').val(0);
+         $('#Title').val('');
+         $('#create').text('Create');
+         $("#RegionalHeadID").trigger("change");
+         $("#RegionalHeadID").trigger("chosen:update");
+
+         $("#SelectedPainters").val("");
+     }
+
+     function OnSuccess(response) {
+         if (response == "1") {
+             alertify.success("Association Saved Successfully");
+             $('#create').text('Create');
+             //var dt = $('#datatab').DataTable();
+             //dt.ajax.reload();
+             LoadPainters($("#PainterCityID").find("option:selected").text());
+             ClearForm();
+         }
+         else if (response == "2") {
+             alertify.error("Please Select Any Painter For Association");
+         }
+         else if (response == "3") {
+             alertify.error("Please Select Any Painter For Association");
+         }
+         else if (response == "0") {
+             alertify.error("Unable To Save Association.");
+         }
+         else {
+             alertify.error(response);
+         }
+
+     }
+
+     function OnFailure(response) {
+         if (response.status == 422) {
+             var errors = JSON.parse(response.responseText);
+             alertify.error(errors.errors);
+         }
+         else {
+             alertify.error(response);
+         }
+     }
+
+     $(document).ajaxComplete(function () {
+
+         $("input[name='painter[]']").bind().change(function () {
+
+             a = [];
+
+             $("input[name='painter[]']").each(function () {
+
+                 if ($(this).is(":checked")) {
+                     a.push($(this).attr('data-id'));
+                 }
+
+             });
+
+             $("#SelectedPainters").val(a);
+
+         });
+
+     });
+
+
+</script>
+

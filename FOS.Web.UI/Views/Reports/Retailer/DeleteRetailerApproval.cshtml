@@ -1,0 +1,427 @@
+﻿@model FOS.Shared.RetailerPendingData
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Retailer</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Manage Delete Approval</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+@using (Ajax.BeginForm("UpdateApprovalSave", "Retailer", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true)
+    <!-- BEGIN EDITABLE TABLE widget-->
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN datatab TABLE widget-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Pending Retailer To Delete</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body">
+                    <div>
+                        <div class="clearfix">
+                            @*<div class="btn-group">
+                                    <button id="editable-sample_new" class="btn green">
+                                        Add New <i class="icon-plus"></i>
+                                    </button>
+                                </div>*@
+                            <div class="btn-group pull-right"></div>
+                        </div>
+                        @*<div class="control-group">
+                                @Html.LabelFor(model => model.DealerID, "Select Dealer", new { @class = "control-label" })
+                                <div class="controls">
+                                    @Html.DropDownListFor(model => model.DealerID, new SelectList(Model.Dealers, "ID", "Name"), new { @class = "" })
+                                    @Html.ValidationMessageFor(model => model.DealerID)
+                                </div>
+                            </div>*@
+                        @Html.HiddenFor(model => model.strDealerID)
+                        @Html.HiddenFor(model => model.strRetailerID)
+                        <div class="control-group">
+                            <div class="form-actions" style="padding-left:0px;">
+                                <button type="submit" id="btnPost" class="btn btn-primary" style="height: 30px;letter-spacing: 1px;">
+                                    <i class="icon-ok icon-white" style="padding-right:8px;"></i>Approve Selected
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space15"></div>
+
+
+
+                        <table class="table table-striped table-hover table-bordered display select" id="datatab" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="width:17% !important"><input name="select_all" id="select_all" value="1" type="checkbox"></th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.TID)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.ID)
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Shop Name
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Sale Officer
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Distributor
+                                    </th>
+                                    <th style="width:17% !important;">
+                                        City
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Address
+                                    </th>
+                                    <th style="width:10% !important">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END datatab TABLE widget-->
+        </div>
+    </div>
+    <!-- END EDITABLE TABLE widget-->
+
+}
+
+<script>
+
+    function GenerateDetailGrid() {
+
+        var table = $('#datatab').DataTable({
+            "ajax": {
+                "type": "POST",
+                "url": '@Url.Action("DeleteApprovalDataHandler", "Retailer")',
+                "contentType": 'application/json; charset=utf-8',
+                'data': function (data) {
+                    //data.ID = $('#DealerID').val();
+                    return data = JSON.stringify(data);
+                },
+            },
+            "sAjaxDataProp": "",
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+                {
+                    "sClass": "center-align-td",
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        return '<input type="checkbox" class="case" data-id=' + data.TID + '>';
+                    }
+                },
+                { "data": "TID", "bVisible": false },
+                { "data": "ID", "bVisible": false },
+                { "data": "ShopName" },
+                { "data": "SaleOfficerName" },
+                { "data": "DealerName" },
+                { "data": "CityName" },
+                { "data": "Address" },
+                @*{
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        var ddlID = "row-" + row.ID;
+                        var ddl = "<select class='input-medium' id='" + ddlID + "'></select>";
+
+                        $.ajax({
+                            type: "POST",
+                            data: { ID: row.SaleOfficerID, rid : row.RegionalHeadID },
+                            url: "@Url.Action("GetDealerListBySaleOfficerID", "Retailer")",
+                            dataType: 'json',
+                            success: function (json) {
+
+                                var $el = $("#" + ddlID);
+                                $el.empty(); // remove old options
+                                $.each(json, function (value, key) {
+
+                                    $el.append($("<option></option>")
+                                            .val(key.ID).html(key.Name))
+                                });
+
+                                $el.val(data.DealerID).find("option[value=" + data.DealerID + "]").attr('selected', true);
+
+                            }
+                        });
+                        return ddl;
+
+                    }
+                },*@
+                {
+                    "sClass": "center-align-td",
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        return '<button title="Approve" class="btn btn-success approve" data-id=' + row.TID + '>' + '<i class=icon-ok></i>' + '</button>&nbsp;<button title="Delete" class="btn btn-info delete" data-id=' + row.TID + '>' + '<i class=icon-trash></i>' + '</button>';
+                    }
+                }
+            ],
+            'order': [1, 'asc'],
+            "fnDrawCallback": function (osetting) {
+
+                var UpdateCheck = "0";
+                var DeleteCheck = "0";
+
+                $(".case").on("click", function () {
+
+                    if ($(".case").length == $(".case:checked").length) {
+                        $("#select_all").attr("checked", "checked");
+                    } else {
+                        $("#select_all").removeAttr("checked");
+                    }
+
+                });
+
+                if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                else {
+                    $(".delete").on("click", function (e) {
+
+                        var TID = $(this).attr("data-id");
+
+                        e.preventDefault();
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("UndoRetailer", "Retailer")",
+                                    data: { ID: TID },
+                                    success: function (data) {
+
+                                        if (data == "0") {
+                                            alertify.success('Record Deleted Successfully');
+                                            var dt = $('#datatab').DataTable();
+                                            dt.ajax.reload();
+                                            Getcount();
+                                        }
+
+                                        else { alertify.error('Please Retry.'); }
+                                    }
+
+                                });
+
+                            } else { }
+                        });
+
+                    });
+                }
+
+                if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+                else {
+
+                    $(".approve").on("click", function (e) {
+
+                        var TID = $(this).attr("data-id");
+                        e.preventDefault();
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Approve This Record ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("DeleteApprovalApproved", "Retailer")",
+                            data: { TID: TID },
+                            success: function (data) {
+
+                                if (data == "1") {
+                                    alertify.success('Record Approved Successfully');
+                                    //var table = $('#datatab').DataTable();
+                                    //table.row(this).remove().draw(false);
+                                    var dt = $('#datatab').DataTable();
+                                    dt.ajax.reload();
+                                    Getcount();
+                                }
+
+                                else { alertify.error('An Error Occured, Try Again...'); }
+                            }
+
+                        });
+
+                    } else { }
+                });
+
+            });
+        }
+    },
+    });
+    }
+
+
+    function GetcountPendingRetailer() {
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetCount", "Home")",
+            data: {},
+            success: function (data) {
+
+                if (data != null) {
+
+                    $(".getCount").html(data);
+
+                }
+                if (data == '0')
+                { alertify.warning('No Retailer To Approve'); }
+
+            }
+
+        });
+
+    }
+
+    function Getcount() {
+        window.showLoadingEnabled = false;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetCount", "Retailer")",
+            data: {},
+        success: function (data) {
+            window.showLoadingEnabled = true;
+            if (data != null) {
+
+                $(".getCount").html(data);
+
+            }
+
+        }
+
+    });
+
+    }
+
+    $(document).ready(function () {
+
+        Getcount();
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnPost").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#liRetailer,#liPendingRetailer").addClass("active");
+
+        GetcountPendingRetailer();
+        GenerateDetailGrid();
+
+        $("#select_all").click(function () {
+            $('.case').attr('checked', this.checked);
+        });
+
+        $("#btnPost").click(function (e) {
+            debugger;
+            var form = $("#form0");
+            var table = $("#datatab").DataTable();
+            var RetailerID = "";
+            var DealerID = "";
+            // Iterate over all selected checkboxes
+
+            table.$('tr').each(function (index, rowhtml) {
+
+
+                var checked = $('input[type="checkbox"]:checked', rowhtml).length;
+                if (checked == 1) {
+                    var DID = $("#row-" + $('input[type="checkbox"]:checked', rowhtml).attr("data-id"));
+                    RetailerID += $('input[type="checkbox"]:checked', rowhtml).attr("data-id") + ",";
+                    DealerID += DID.val() + ",";
+
+                }
+            });
+            if (RetailerID != "") {
+                $('#strRetailerID').val(RetailerID);
+                $("#strDealerID").val(DealerID);
+                Getcount();
+            }
+            else {
+                alertify.error("No Retailer Selected");
+                return false;
+            }
+
+            // FOR DEMONSTRATION ONLY
+
+            // Output form data to a console
+            $('#datatab-console').text($(form).serialize());
+
+            //console.log("Form submission", $(form).serialize());
+            // Prevent actual form submission
+            //e.preventDefault();
+        });
+
+        $("#DealerID").change(function () {
+
+
+            $('#datatab').dataTable().fnDestroy();
+            GenerateDetailGrid();
+
+        });
+
+
+
+
+
+
+
+    });
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Retailer Approved Successfully");
+            var dt = $('#datatab').DataTable();
+            dt.ajax.reload();
+            Getcount();
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Delete Retailer.");
+            Getcount();
+        }
+        else {
+            alertify.error(response);
+            Getcount();
+        }
+
+    }
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+</script>

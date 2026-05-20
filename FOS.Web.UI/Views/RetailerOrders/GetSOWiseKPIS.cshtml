@@ -1,0 +1,1378 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Jobs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    #preview {
+        position: absolute;
+        border: 1px solid #ccc;
+        background: #333;
+        padding: 1px;
+        display: none;
+        color: #fff;
+        z-index: 3000;
+    }
+</style>
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">KPIS</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">SO Wise KPIS</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <style>
+        .form-column {
+            padding: 5px 10px !important;
+            margin: 0 !important;
+        }
+
+        .table-column {
+            padding: 5px 10px !important;
+            margin: 0 !important;
+            margin-top: -10px !important; /* Adjust this value if needed */
+        }
+
+        .control-group {
+            margin-bottom: 6px !important; /* Reduce spacing between fields */
+        }
+    </style>
+
+    <div class="row-fluid">
+        <!-- LEFT COLUMN -->
+        <div class="span4 form-column">
+
+            <div class="control-group">
+                <label class="control-label">Starting Date *</label>
+                <div class="controls">
+                    <input class="text-box single-line" id="StartingDate1" name="StartingDate1"
+                           style="height: 22px; width: 202px;">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Ending Date *</label>
+                <div class="controls">
+                    <input class="text-box single-line" id="StartingDate2" name="StartingDate2"
+                           style="height: 22px; width: 202px;">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Select Head *</label>
+                <div class="controls">
+                    @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"))
+                    @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                    @Html.HiddenFor(model => model.HiddenRegionalHeadID)
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Sales Officer *</label>
+                <div class="controls">
+                    @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"))
+                    @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                    @Html.HiddenFor(model => model.ID)
+                    @Html.HiddenFor(model => model.SelectedRetailers)
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Business Segment *</label>
+                <div class="controls">
+                    @Html.DropDownListFor(model => model.SegmentID, new SelectList(Model.BusinessSegments, "ID", "Name"))
+                    @Html.ValidationMessageFor(model => model.SegmentID)
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Role *</label>
+                <div class="controls">
+                    @Html.DropDownListFor(model => model.SORoleID, new SelectList(Model.Roles, "ID", "Name"))
+                    @Html.ValidationMessageFor(model => model.SORoleID)
+                </div>
+            </div>
+
+            <div class="form-actions" style="padding-left: 120px; margin-top: 15px;">
+                <button type="submit" id="btnNew" class="btn btn-primary">
+                    <i class="icon-ok icon-white" style="padding-right: 8px"></i>Add KPI
+                </button>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="span8 table-column">
+            <div class="table-responsive" style="border: 1px solid #ddd; border-radius: 4px;">
+                <table class="table table-bordered table-hover" style="margin-bottom: 0;">
+                    <thead class="table-light" style="background: #f5f5f5;">
+                        <tr>
+                            <th style="width: 50%">Focus Area</th>
+                            <th style="width: 25%">Target Value</th>
+                            <th style="width: 25%">Target %age</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.focusArea != null && Model.focusArea.Count > 0)
+                        {
+                            for (int i = 0; i < Model.focusArea.Count; i++)
+                            {
+                                <tr style="@(i % 2 == 0 ? "background:#f9f9f9" : "background:white")">
+                                    <td style="padding: 10px; font-weight: 600; color: #376892;">
+                                        <span class="focus-area-name">@Model.focusArea[i].Name</span>
+                                    </td>
+                                    <td style="padding: 6px;">
+                                        <input type="text"
+                                               class="form-control target-value"
+                                               style="width: 100%; height: 28px; padding: 4px;"
+                                               placeholder="Enter value">
+                                    </td>
+                                    <td style="padding: 6px;">
+                                        <input type="text"
+                                               class="form-control target-percentage"
+                                               style="width: 100%; height: 28px; padding: 4px;"
+                                               placeholder="Enter %">
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center" style="padding: 20px;">
+                                    <i class="icon-warning-sign"></i> No focus areas available
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot style="background: #f0f0f0;">
+                        <tr>
+                            <td style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
+                            <td style="padding: 10px; text-align: center;">
+                                <span id="totalTargetValue">0</span>
+                            </td>
+                            <td style="padding: 10px; text-align: center;">
+                                <span id="totalTargetPercentage">0%</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="space15"></div>
+    <table class="table table-striped table-hover table-bordered" style="width: 100%;" id="datatab">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th style="width: 10% !important">Sr #</th>
+
+                <th style="width:16% !important">
+                    Sales Officer
+                </th>
+
+
+                <th style="width:16% !important">
+                    Head Name 
+                </th>
+                <th style="width:16% !important">
+                    Business Segment Name
+                </th>
+                <th style="width:16% !important">
+                   Role
+                </th>
+
+                <th style="width:10% !important">Action</th>
+
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+<!-- END EDITABLE TABLE widget-->
+<!-- Shop Modal -->
+<div id="ShopModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 4%;left: 15%;overflow-y:scroll;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e5e5;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        style="font-size: 30px; font-weight: bold; color: #000; opacity: 0.8;">
+                    &times;
+                </button>
+            </div>
+
+            <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">Claim Details</h2>
+
+                    <div class="span12" style="padding:5px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="saleOfficer" style=""></span></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Customer Name/Trade Party Name</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="SchoolShopName" style=""></span></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Claim Picture</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="ClaimPicture" style=""></span></td>
+                                </tr>
+
+
+
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Date</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="visitedDate" style=""></span></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+
+
+
+                    <div class="span12" style="padding-top: 10px;">
+                        <table class="table table-bordered table-hover" id="tblApprovals" style="border: 2px solid #20c997;">
+                            <!-- Teal border -->
+                            <thead style="background: linear-gradient(to right, #17a2b8, #20c997); color: white;">
+                                <!-- Aquatic gradient -->
+                                <tr>
+                                    <th colspan="4" style="text-align: center; font-size: 18px; font-weight: bold;">
+                                        Claim Approvals History
+                                    </th>
+                                </tr>
+                                <tr style="text-align: center;">
+                                    <th style="width: 14.28%;">Approved By</th>
+                                    <th style="width: 14.28%;">Approved Status</th>
+                                    <th style="width: 14.28%;">Approved At</th>
+                                    <th style="width: 14.28%;">Remarks</th>
+
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+
+
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END Shop Modal -->
+<!-- Modal to show full image -->
+<!-- Full Image Modal -->
+<style>
+    /* Soft backdrop */
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.75);
+    }
+
+    /* Modal styling */
+    #imageModal .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        background-color: #ffffff;
+    }
+
+    #imageModal .modal-header {
+        background-color: #376892;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding: 1rem 1.25rem;
+    }
+
+        #imageModal .modal-header .close {
+            color: white;
+            opacity: 1;
+            font-size: 1.5rem;
+        }
+
+    #imageModal .modal-body img {
+        max-width: 100%;
+        max-height: 80vh;
+        border-radius: 8px;
+        border: 4px solid #f1f1f1;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+        #imageModal .modal-body img:hover {
+            transform: scale(1.02);
+            border-color: #376892;
+        }
+</style>
+
+<!-- Modal -->
+<div id="imageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-image" style="margin-right: 8px;"></i> Claim Full Image
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="fullImage" src="" alt="Claim Image" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Painter Modal -->
+<div id="PainterModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 7%;left: 15%; overflow-y:scroll;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">Claim Details</h2>
+
+                    <div class="span12" style="padding:2px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="PsaleOfficer" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">School/ShopName</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="PSchool" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Type</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="PvisitPlan" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="Pstatus" style="color:#62c462"></span></td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+
+                    @*<table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                    <th style="text-align:center;background: #545454;color: white;">1kg Qty</th>
+                                    <th style="text-align:center;background: #545454;color: white;">5kg Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Using WallCoat</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="UseWallCoat">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Order</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="PNewOrder">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;    padding: 19px 0px 16px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mobile No</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLeadMobileNo">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:22%;text-align:center;" colspan="3">
+                                        <textarea disabled id="PRemarks" style="width:95%;height:133px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>*@
+
+
+
+                </div>
+
+
+                <div class="span6" style="margin-left:0px;padding:5px">
+
+                    @*<table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                    <th style="text-align:center;background: #545454;color: white;">1kg Qty</th>
+                                    <th style="text-align:center;background: #545454;color: white;">5kg Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Using WallCoat</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="UseWallCoat">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="UseWalCoat5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Order</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="PNewOrder">-</h4></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder1KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                    <td style="width:22%;padding: 0px 10px 0px 10px;text-align:center"><input disabled id="PNewOrder5KG" style="width: 65px;height: 22px;font-size: 10px;" type="text" value=""></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;    padding: 19px 0px 16px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mobile No</span></td>
+                                    <td style="width:22%;padding: 0px 0px 0px 5px;text-align:center" colspan="3"><h4 id="PNewLeadMobileNo">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:56%;padding: 21px 0px 17px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:22%;text-align:center;" colspan="3">
+                                        <textarea disabled id="PRemarks" style="width:95%;height:133px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>*@
+
+                </div>
+
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END Painter Modal -->
+<!-- B2B Modal -->
+<div id="B2BModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 0%;left: 15%;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">Claim Details</h2>
+
+                    <div class="span6" style="padding:5px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="BsaleOfficer" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Type</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitPlan" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="Bstatus" style="color:#62c462"></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Date</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitedDate" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Time</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitedTime" style=""></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="span6" style="margin-left:0px;padding:5px">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Area</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BArea">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Shop</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BShop">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Old house</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BOldHouse">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New House</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BNewHouse">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Plaza/Basement</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BPB">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Factory Area</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BFactory">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mosque</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BMosque">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Others</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BOthers">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sample Applied</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BSampleApplied">-</h4></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:65%;text-align:center;" colspan="3">
+                                        <textarea disabled id="BRemarks" style="width:95%;height:70px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END B2B Modal -->
+<!-- Buttons -->
+<button id="ShopModalButton" data-toggle="modal" data-target="#ShopModal" style="display:none"></button>
+<button id="PainterModalButton" data-toggle="modal" data-target="#PainterModal" style="display:none"></button>
+<button id="B2BModalButton" data-toggle="modal" data-target="#B2BModal" style="display:none"></button>
+
+<script src="~/Scripts/js/preview.js"></script>
+
+<script>
+
+    function GenerateDetailGrid() {
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "lengthChange": false,
+            "pagingType": "full_numbers",
+            "info": true,
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "ajax": {
+                "type": "POST",
+                 "url": '@Url.Action("KPISDataHandler", "RetailerOrders")',
+                "contentType": "application/json; charset=utf-8",
+                'data': function (data) {
+                    debugger;
+
+                    data.StartingDate1 = $('#StartingDate1').val();
+                    data.StartingDate2 = $('#StartingDate2').val();
+                    data.ZoneID = $('#RegionalHeadID').val();
+                    data.SOID = $('#SaleOfficerID').val();
+                   return data = JSON.stringify(data);
+                },
+            },
+            "fnDrawCallback": function (osetting) {
+                //$("#ApplyFilter").click(function () {
+                //    debugger;
+                //    oTable.clear().draw();
+                //});
+                $(".view").on("click", function () {
+                    debugger;
+
+
+                        //Left Values
+
+
+
+
+                       // $("#dealer").text($(this).attr("data-dealer"));
+                        $("#saleOfficer").text($(this).attr("data-saleofficer"));
+                        $("#SchoolShopName").text($(this).attr("data-ShopName"));
+
+                    //$("#ClaimPicture").html('<img src="' + $(this).attr("data-VisitPlanName") + '" alt="Claim Image" style="width: 100%; height: auto;" />');
+                    // In your JavaScript
+                    $("#ClaimPicture").html(`
+                        <img src="` + $(this).attr("data-VisitPlanName") + `"
+                             alt="Claim Image"
+                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;"
+                             onclick="showFullImage(this.src)" />
+                    `);
+
+
+                        $("#visitedDate").text($(this).attr("data-assigndate"));
+                        //if ($(this).attr("data-address") == 'null') { $("#address").text("-"); }
+                        //else { $("#address").text($(this).attr("data-address")); }
+
+                        if ($("#status").text() == "PENDING")
+                        { $("#status").css('color', '#b94a48'); }
+                        else {
+                            $("#status").css('color', '#62c462');
+                        }
+
+
+                        //Dates Work ...
+                        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                        ];
+                        var dateString = $(this).attr("data-assigndate").substr(6);
+                        var currentTime = new Date(parseInt(dateString));
+                        var month = monthNames[currentTime.getMonth()];
+                        var day = currentTime.getDate("DD");
+                        var year = currentTime.getFullYear();
+                        var date = month + " " + day + " " + year;
+
+                        if (isNaN(year)) {
+                            $('#visitedDate').text("-");
+                        }
+                        else {
+                            $('#visitedDate').text(date);
+                        }
+
+                        var time = currentTime.toLocaleTimeString().toLowerCase();
+
+                        if (time == 'invalid date') {
+                            $("#visitedTime").text("-");
+                        }
+                        else {
+                            $('#visitedTime').text(time);
+                        }
+                        //END Date Work ...
+
+                        //END Left Values
+
+
+
+                        if ($(this).attr("data-savailability") == "true") {
+                            $("#Available").text("Yes");
+                        }
+                        else if ($(this).attr("data-savailability") == "false") {
+                            $("#Available").text("No");
+                        }
+                        else {
+                            $("#Available").text("-");
+                        }
+
+                        if ($(this).attr("data-squantity1kg") == "null") {
+                            $("#Available1KG").val("");
+                        }
+                        else {
+                            $("#Available1KG").val($(this).attr("data-squantity1kg"));
+                        }
+
+                        if ($(this).attr("data-squantity5kg") == "null") {
+                            $("#Available5KG").val("");
+                        }
+                        else {
+                            $("#Available5KG").val($(this).attr("data-squantity5kg"));
+                        }
+
+                        if ($(this).attr("data-sneworder") == "true") {
+                            $("#NewOrder").text("Yes");
+                        }
+                        else if ($(this).attr("data-sneworder") == "false") {
+                            $("#NewOrder").text("No");
+                        }
+                        else {
+                            $("#NewOrder").text("-");
+                        }
+
+                        if ($(this).attr("data-snewquantity1kg") == "null") {
+                            $("#NewOrder1KG").val("");
+                        }
+                        else {
+                            $("#NewOrder1KG").val($(this).attr("data-snewquantity1kg"));
+                        }
+
+                        if ($(this).attr("data-snewquantity5kg") == "null") {
+                            $("#NewOrder5KG").val("");
+                        }
+                        else {
+                            $("#NewOrder5KG").val($(this).attr("data-snewquantity5kg"));
+                        }
+
+                        if ($(this).attr("data-spreviousorder1kg") == "null") {
+                            $("#PreviousOrder1KG").val("");
+                        }
+                        else {
+                            $("#PreviousOrder1KG").val($(this).attr("data-spreviousorder1kg"));
+                        }
+
+                        if ($(this).attr("data-spreviousorder5kg") == "null") {
+                            $("#PreviousOrder5KG").val("");
+                        }
+                        else {
+                            $("#PreviousOrder5KG").val($(this).attr("data-spreviousorder5kg"));
+                        }
+
+                        if ($(this).attr("data-sposmaterialavailable") == "true") {
+                            $("#POSMaterialAvailable").text("Yes");
+                        }
+                        else if ($(this).attr("data-sposmaterialavailable") == "false") {
+                            $("#POSMaterialAvailable").text("No");
+                        }
+                        else {
+                            $("#POSMaterialAvailable").text("-");
+                        }
+
+                        if ($(this).attr("data-snote") == "null") {
+                            $("#SNote").text("");
+                        }
+                        else {
+                            $("#SNote").text($(this).attr("data-snote"));
+                        }
+
+                        if ($(this).attr("data-simage") == "null") {
+                            $("#IfNoImage").show();
+                            $("#IfImage").hide(); //IMAGE_SHOP
+                            $("#IMAGE_SHOP").attr("src", "");
+                        }
+                        else {
+                            $("#IfNoImage").hide();
+                            $("#IfImage").show(); //IMAGE_SHOP
+
+                            $("#IMAGE_SHOP_HREF").attr("href", $(this).attr("data-simage"));
+                            $("#IMAGE_SHOP").attr("src", $(this).attr("data-simage"));
+                        }
+
+                        var JobID = ($(this).attr("data-id"));
+                        debugger;
+                        $.ajax({
+
+                            type: "POST",
+                            data: {JobID: JobID},
+                            url: "@Url.Action("GetClaimsData", "Job")",
+
+                            dataType: 'JSON',
+                            success: function (json) {
+                                debugger;
+                                var rows = "";
+                                $('#tblVolumeItems tbody').empty();
+                                $.each(json, function (index, item) {
+                                    rows += "<tr>" +
+                                        "<td>" + item.BrandName + "</td>" +
+                                        "<td>" + item.ProductCode + "</td>" +
+                                        "<td>" + item.ProductName + "</td>" +
+                                        "<td>" + item.Drum + "</td>" +
+                                        "<td>" + item.Gallon + "</td>" +
+                                        "<td>" + item.QuarterQty + "</td>" +
+                                        "<td>" + item.SaleValue + "</td>" +
+                                        "</tr>";
+                                });
+
+                                $('#tblVolumeItems tbody').append(rows);
+                            }
+
+                        });
+                    // Second AJAX call for Approvals Data
+                $.ajax({
+                    type: "POST",
+                    data: { JobID: JobID },
+                    url: "@Url.Action("GetClaimsApprovalData", "Job")",  // You should have this Action defined
+                    dataType: 'JSON',
+                    success: function (json) {
+                        $('#tblApprovals tbody').empty();
+                        var rows = "";
+
+                        $.each(json, function (index, item) {
+                            rows += "<tr>" +
+                                "<td>" + item.ApprovedBy + "</td>" +
+                                "<td>" + item.ApprovedStatus + "</td>" +
+                                "<td>" + item.ApprovedAt + "</td>" +
+                                "<td>" + item.Remarks + "</td>" +
+
+                                "</tr>";
+                        });
+
+                        $('#tblApprovals tbody').append(rows);
+                    }
+                });
+
+
+
+                        $("#ShopModalButton").trigger("click");
+
+
+
+
+
+
+
+
+
+
+
+
+                    //$("#mapple").attr('checked', ($(this).attr("data-mapple") == "true" ? true : false));
+                    //$("#dg").attr('checked', ($(this).attr("data-dg") == "true" ? true : false));
+                    //$("#bestWay").attr('checked', ($(this).attr("data-bestWay") == "true" ? true : false));
+                    //$("#lucky").attr('checked', ($(this).attr("data-lucky") == "true" ? true : false));
+                    //$("#other").attr('checked', ($(this).attr("data-other") == "true" ? true : false));
+
+                    //if ($(this).attr("data-major") == 'null') { $("#major").text("-"); }
+                    //else { $("#major").text($(this).attr("data-major")); }
+
+                    //if ($(this).attr("data-mapplePrice") == 'null') { $("#mapplePrice").text("-"); }
+                    //else { $("#mapplePrice").text($(this).attr("data-mapplePrice")); }
+
+                    //if ($(this).attr("data-display") == 'null') { $("#display").text("-"); }
+                    //else { $("#display").text($(this).attr("data-display")); }
+
+                    //if ($(this).attr("data-major") == 'null') { $("input[type=radio]").prop('checked', false); }
+                    //$("input[type=radio][value='" + $(this).attr("data-major") + "']").attr('checked', 'checked');
+
+
+
+
+
+
+
+
+                    //var array = $(this).attr("data-other").split(',');
+
+                    //if (!array[0] || !array[1])
+                    //{ $("#otherName").text("-"); $("#otherValue").text("-");}
+                    //else{
+
+                    //    $("#otherName").text(array[0]);
+                    //    $("#otherValue").text(array[1]);
+                    //}
+
+
+                    //$("#mapple").attr('disabled',true);
+                    //$("#dg").attr('disabled', true);
+                    //$("#bestWay").attr('disabled', true);
+                    //$("#lucky").attr('disabled', true);
+                    //$("#other").attr('disabled', true);
+
+                    //$('input[name=major]').attr('disabled', true);
+
+                });
+
+
+                $(".delete").on("click", function () {
+                    debugger;
+                    var RetailerID = ($(this).attr("data-id"));
+
+                    // confirm dialog
+                    alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                        if (e) {
+
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("DeleteKPI", "Retailer")",
+                                data: { OrderID: RetailerID },
+                                success: function (data) {
+
+                                    if (data == "0") {
+                                        alertify.success('Record Deleted Successfully');
+                                        var table = $('#datatab').DataTable();
+                                        table.row(this).remove().draw(false);
+                                    }
+
+                                    else { alertify.error('An Error Occured, Try Again...'); }
+                                }
+
+                            });
+
+                        } else { }
+                    });
+
+                });
+
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search KPIS : " },
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "DealerID", "bVisible": false },
+           { "data": "SaleOfficerID", "bVisible": false },
+           { "data": "ID" },
+           { "data": "SaleOfficerName" },
+               
+                { "data": "RegionalHeadName" },
+                { "data": "SegmentName" },
+                { "data": "RetailerName" },
+       
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+
+                   // alert('<button class="btn btn-primary view" data-id=' + row.ID + '' + ' data-saleofficer=' + '"' + row.SaleOfficerName + '"' + ' data-ShopName=' + '"' + row.ShopName + '"' + ' data-VisitPlanName=' + '"' + row.VisitPlanName + '"' + ' data-RetailerType=' + '"' + row.RetailerType + '"' + ' data-visitplan=' + '"' + row.VisitPlanName + '"' + ' data-visittype=' + '"' + row.VisitType + '"' + ' data-retailertype=' + '"' + row.RetailerType + '"' + ' data-savailability=' + '"' + row.SAvailable + '"' + ' data-squantity1kg=' + '"' + row.SQuantity1KG + '"' + ' data-squantity5kg=' + '"' + row.SQuantity5KG + '"' + 'data-sneworder=' + '"' + row.SNewOrder + '"' + ' data-snewquantity1kg=' + '"' + row.SNewQuantity1KG + '"' + ' data-snewquantity5kg=' + '"' + row.SNewQuantity5KG + '"' + ' data-spreviousorder1kg=' + '"' + row.SPreviousOrder1KG + '"' + ' data-spreviousorder5kg=' + '"' + row.SPreviousOrder5KG + '"' + ' data-sposmaterialavailable=' + '"' + row.SPOSMaterialAvailable + '"' + ' data-simage=' + '"' + row.SImage + '"' + 'data-snote=' + '"' + row.SNote + '"' + 'data-pusewc=' + '"' + row.PUseWC + '"' + ' data-pusewc1kg=' + '"' + row.PUseWC1KG + '"' + ' data-pusewc5kg=' + '"' + row.PUseWC5KG + '"' + ' data-pneworder=' + '"' + row.PNewOrder + '"' + ' data-pneworder1kg=' + '"' + row.PNewOrder1KG + '"' + ' data-pneworder5kg=' + '"' + row.PNewOrder5KG + '"' + ' data-pnewlead=' + '"' + row.PNewLead + '"' + ' data-pnewleadmobno=' + '"' + row.PNewLeadMobNo + '"' + ' data-premarks=' + '"' + row.PRemarks + '"' + 'data-bareaid=' + '"' + row.BAreaName + '"' + ' data-bshop=' + '"' + row.BShop + '"' + ' data-boldhouse=' + '"' + row.BOldHouse + '"' + ' data-bnewhouse=' + '"' + row.BNewHouse + '"' + ' data-bparking=' + '"' + row.BParking + '"' + ' data-bplazabasement=' + '"' + row.BPlazaBasement + '"' + ' data-bfactoryarea=' + '"' + row.BFactoryArea + '"' + ' data-bmosque=' + '"' + row.BMosque + '"' + ' data-bothers=' + '"' + row.BOthers + '"' + ' data-blead=' + '"' + row.BLead + '"' + ' data-bsampleapplied=' + '"' + row.BSampleApplied + '"' + ' data-bremarks=' + '"' + row.BRemarks + '"' + ' data-statuschecker=' + '"' + row.StatusChecker + '"' + ' data-assigndate=' + '"' + row.AssignDate + '"' + ' data-visiteddate=' + '"' + row.VisitedDate + '"' + 'data-visitdate=' + '"' + row.VisitDate + '"' + 'data-address=' + '"' + row.Address + '"' + '><i class=icon-file-text-alt></i></button>');
+                   return '<button class="btn btn-info delete" data-id=' + row.JobID + '"' + '>' + '<i class=icon-trash></i>' + '</button>';
+
+
+
+
+               }
+           }
+            ], "order": [0, "desc"]
+
+        });
+
+    }
+
+    function addZero(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+
+
+
+</script>
+
+
+<script>
+    function ConvertDateFormat(DateFormat) {
+        var re = /\/Date\(([0-9]*)\)\//;
+        var m = DateFormat.match(re);
+        if (m) { return new Date(parseInt(DateFormat.substr(6))); }
+        else { return "-" };
+    }
+
+    $(document).ready(function () {
+
+        $('#StartingDate1').datepicker(
+              {
+                  dateFormat: 'dd-M-yy',
+                  changeMonth: true,
+                  changeYear: true,
+                  yearRange: '1950:2100'
+              });
+
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+        $("#liJob,#liCheckJobs").addClass("active");
+      
+    });
+
+    function showFullImage(src) {
+        $('#fullImage').attr('src', src);
+        $('#imageModal').modal('show');
+    }
+
+            function LoadHeads() {
+
+            try {
+                var RegionalHeadID = $("#RangeID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetHeadsRelatedtorange", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#RegionalHeadID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RangeID").change(function () {
+
+
+            LoadHeads();
+
+            //$("#RetailerTypeDiv").hide();
+        });
+
+        $("#btnNew").click(function (e) {
+    e.preventDefault(); // Prevent default form submission
+
+    // Validate required fields
+    if (!validateForm()) {
+        return false;
+    }
+
+    // Collect table data with focus area names
+    var focusAreasData = [];
+    var hasError = false;
+    var errorMessages = [];
+
+    $('tbody tr').each(function(index) {
+        var $row = $(this);
+        var focusName = $row.find('.focus-area-name').text();
+        var targetValue = $row.find('.target-value').val();
+        var targetPercentage = $row.find('.target-percentage').val();
+
+        // Skip empty rows if needed, or validate
+        if (focusName) {
+            // Validate if both values are provided (if you want both required)
+            if ((targetValue && !targetPercentage) || (!targetValue && targetPercentage)) {
+                hasError = true;
+                errorMessages.push(focusName + ' requires both Target Value and Target %age');
+            }
+
+            // Add to collection (even if empty, depending on your requirement)
+            focusAreasData.push({
+                FocusAreaName: focusName,
+                TargetValue: targetValue || "0",
+                TargetPercentage: targetPercentage || "0"
+            });
+        }
+    });
+
+    if (hasError) {
+        alertify.error('Please fix the following errors:\n' + errorMessages.join('\n'));
+        return false;
+    }
+
+    // Collect all form data
+    var kpiData = {
+        // Basic form data
+        StartingDate1: $('#StartingDate1').val(),
+        StartingDate2: $('#StartingDate2').val(),
+        RegionalHeadID: $('#RegionalHeadID').val(),
+        SaleOfficerID: $('#SaleOfficerID').val(),
+        SegmentID: $('#SegmentID').val(),
+        SORoleID: $('#SORoleID').val(),
+
+        // Focus areas data with names
+        FocusAreas: focusAreasData,
+
+        // Security token
+        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+    };
+
+    // Show loading state
+    var $btn = $(this);
+    var originalText = $btn.html();
+    $btn.html('<i class="icon-spinner icon-spin"></i> Adding KPI...').prop('disabled', true);
+
+    console.log('Sending data to server:', kpiData); // For debugging
+
+    // Send data to server
+    $.ajax({
+        url: '@Url.Action("AddKPI", "RetailerOrders")',
+        type: 'POST',
+        data: JSON.stringify(kpiData),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                alertify.success('KPI added successfully!');
+                // Optionally reset form
+                resetForm();
+            } else {
+                alertify.error('Error: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            alertify.error('Failed to add KPI. Please try again.');
+            console.error('Error details:', error, xhr.responseText);
+        },
+        complete: function() {
+            $btn.html(originalText).prop('disabled', false);
+        }
+    });
+});
+
+// Form validation
+function validateForm() {
+    var isValid = true;
+    var errors = [];
+
+    // Clear previous error highlights
+    $('.control-group').removeClass('error');
+
+    // Validate dates
+    if (!$('#StartingDate1').val()) {
+        errors.push('Starting Date is required');
+        $('#StartingDate1').closest('.control-group').addClass('error');
+        isValid = false;
+    }
+
+    if (!$('#StartingDate2').val()) {
+        errors.push('Ending Date is required');
+        $('#StartingDate2').closest('.control-group').addClass('error');
+        isValid = false;
+    }
+
+    // Validate dropdowns
+    var dropdowns = [
+        { id: '#RegionalHeadID', name: 'Head' },
+        { id: '#SaleOfficerID', name: 'Sales Officer' },
+        { id: '#SegmentID', name: 'Business Segment' },
+        { id: '#SORoleID', name: 'Role' }
+    ];
+
+    dropdowns.forEach(function(dropdown) {
+        if (!$(dropdown.id).val()) {
+            errors.push(dropdown.name + ' is required');
+            $(dropdown.id).closest('.control-group').addClass('error');
+            isValid = false;
+        }
+    });
+
+    // Validate at least one focus area has data (optional)
+    var hasData = false;
+    $('.target-value, .target-percentage').each(function() {
+        if ($(this).val().trim()) {
+            hasData = true;
+            return false; // Break the loop
+        }
+    });
+
+    if (!hasData) {
+        errors.push('Please enter target values for at least one focus area');
+        isValid = false;
+    }
+
+    if (!isValid) {
+        alertify.error('Please fix the following errors:\n\n' + errors.join('\n'));
+    }
+
+    return isValid;
+}
+
+// Calculate totals
+function calculateTotals() {
+    var totalValue = 0;
+    var totalPercentage = 0;
+
+    $('.target-value').each(function() {
+        var val = parseFloat($(this).val()) || 0;
+        totalValue += val;
+    });
+
+    $('.target-percentage').each(function() {
+        var perc = parseFloat($(this).val()) || 0;
+        totalPercentage += perc;
+    });
+
+    $('#totalTargetValue').text(totalValue.toLocaleString());
+    $('#totalTargetPercentage').text(totalPercentage.toFixed(1) + '%');
+}
+
+// Update totals on input
+$(document).on('input', '.target-value, .target-percentage', function() {
+    calculateTotals();
+});
+
+// Reset form
+function resetForm() {
+    // Clear form inputs
+    $('#StartingDate1, #StartingDate2').val('');
+    $('.target-value, .target-percentage').val('');
+    calculateTotals();
+
+    // Optionally reset dropdowns to first option
+    $('#RegionalHeadID, #SaleOfficerID, #SegmentID, #SORoleID').val('');
+}
+
+// Initialize
+$(document).ready(function() {
+    calculateTotals();
+});
+      function LoadSalesOfficer() {
+
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealerSelectOption", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+                        if ($('#SaleOfficerID').val() != null) {
+
+
+                        }
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RegionalHeadID").change(function () {
+            LoadSalesOfficer();
+
+            //$("#RetailerTypeDiv").hide();
+        });
+
+
+    $("#SaleOfficerID").change(function () {
+        GenerateDetailGrid();
+
+        //$("#RetailerTypeDiv").hide();
+    });
+    
+
+
+
+    $("#ApplyFilter").click(function () {
+        $('#datatab').DataTable().ajax.reload();
+    });
+
+
+
+
+
+
+
+</script>
+

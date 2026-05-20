@@ -1,0 +1,419 @@
+﻿@model FOS.Shared.PlannedRetailerFilter
+@{
+    ViewBag.Title = "Planned Retailers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int plannedCount = 0;
+    int unPlannedCount = 0;
+    //var dealerList = Model.DealerList;
+    var month = "";
+    if(Session["Month"] != null)
+    {
+        month = Session["Month"].ToString();
+        Session["Month"] = null;
+    }
+
+    var regHdId = "";
+    if (Session["RegionalHeadID"] != null)
+    {
+        regHdId = Session["RegionalHeadID"].ToString();
+        Session["RegionalHeadID"] = null;
+    }
+
+    var dealerId = "";
+    if (Session["DealerID"] != null)
+    {
+        dealerId = Session["DealerID"].ToString();
+        Session["DealerID"] = null;
+    }
+
+    var cityId = "";
+    if (Session["CityID"] != null)
+    {
+        cityId = Session["CityID"].ToString();
+        Session["CityID"] = null;
+    }
+
+}
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Planned Retailers</a>
+                @*                    <span class="divider">/</span>*@
+            </li>
+            @*                <li>
+                    <a href="#">Manage Dealer</a>
+                </li>*@
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+<!--form action="/Dealer/Plan" id="planform" method="post"-->
+@using (Html.BeginForm("Plan", "Dealer", FormMethod.Post))
+{
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;margin-right:12px">
+                <label class="control-label">Month</label>
+                <div class="controls" style="margin-left:0px">
+
+                    <select class="chosen-select" id="month" name="month" style="width: 190px;">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April" selected="selected">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="control-group" style="margin-bottom:0px;float:left">
+                <label class="control-label">Regional Head</label>
+                <div class="controls" style="margin-left:0px">
+
+                    <select class="chosen-select" id="RegionalHeadID" name="RegionalHeadID" style="width: 190px;">
+                        <option value="0">Select Any</option>
+                        @{
+                            foreach (FOS.Shared.RegionalHeadData obj in ViewBag.RegionalHead)
+                            {
+                                <option value="@obj.ID">@obj.Name</option>
+                            }
+                        }
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px">
+                <label class="control-label">Distributor</label>
+                <div class="controls" style="margin-left:0px">
+
+                    <select class="chosen-select" id="DealerID" name="DealerID" style="width: 190px;">
+                        <option value="0">Select Any</option>
+                        @{
+                            foreach (FOS.Shared.DealerData obj in ViewBag.Dealers)
+                            {
+                                <option value="@obj.ID">@obj.Name</option>
+                            }
+                        }
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;display:none;">
+                <label class="control-label">Sales Officer</label>
+                <div class="controls" style="margin-left:0px">
+
+                    <select class="chosen-select" id="SaleOfficerID" name="SaleOfficerID" style="width: 190px;">
+                        <option value="0">Select Any</option>
+                        @{
+                            foreach (FOS.Shared.SaleOfficerData obj in ViewBag.SaleOfficer)
+                            {
+                                <option value="@obj.ID">@obj.Name</option>
+                            }
+                        }
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px">
+                <label class="control-label">City</label>
+                <div class="controls" style="margin-left:0px">
+
+                    <select class="chosen-select" id="CityID" name="CityID" style="width: 190px;">
+                        <option value="0">Select Any</option>
+                        @{
+                            foreach (FOS.Shared.CityData obj in ViewBag.City)
+                            {
+                                <option value="@obj.ID">@obj.Name</option>
+                            }
+                        }
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;display:none;">
+                <label class="control-label">Zone</label>
+                <div class="controls" style="margin-left:0px">
+
+                    <select class="chosen-select" id="ZoneID" name="ZoneID" style="width: 190px;">
+                        <option value="0">Select Any</option>
+                        @{
+                            foreach (FOS.Shared.ZoneData obj in ViewBag.Zone)
+                            {
+                                <option value="@obj.ID">@obj.Name</option>
+                            }
+                        }
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;margin-top:28px;">
+                <table style="padding-left:10px;font-size:small;" border="0">
+                    <tr>
+                        <td style="color:#ce0019;font-weight:600;">Total Retailers: </td>
+                        <td><span id="totalRet">&nbsp;&nbsp;</span></td>
+                        @*</tr>
+                            <tr>*@
+                        <td style="color:#ce0019;font-weight:600;padding-left:25px">Planned Retailers: </td>
+                        <td><span id="planRet">&nbsp;&nbsp;</span></td>
+                        <td><span id="planRetExp" style="display:none;"><a href="javascript:exportRpt(3);">Export</a></span></td>
+                        @*</tr>
+                            <tr>*@
+                        <td style="color:#ce0019;font-weight:600;padding-left:25px">Unplanned Retailers: </td>
+                        <td><span id="unPlanRet">&nbsp;&nbsp;</span></td>
+                        <td><span id="unplanRetExp" style="display:none;"><a href="javascript:exportRpt(4);">Export</a></span></td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;margin-top:28px;">
+                <input type="submit" value="Apply" />
+            </div>
+        </div>
+    </div>
+<!--/form-->
+}
+
+    @*<div class="row-fluid">
+
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="">
+                <div class="widget-title">
+                    <h4>Plan Distributor</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>* @
+                        @*<a href="javascript:;" class="icon-remove"></a>* @
+                    </span>
+                </div>
+                <div class="widget-body" style="">
+
+
+
+                    
+
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>
+    </div>*@
+
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Detail</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                    <button id="editable-sample_new" class="btn green">
+                                        Add New <i class="icon-plus"></i>
+                                    </button>
+                                </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab">
+                        <thead>
+                            <tr>
+                                <th style="width: 7% !important">Sr #</th>
+                                <th style="width: 14% !important">City</th>
+                                <th style="width: 14% !important">City Sr #</th>
+                                <th style="width: 15% !important">Distributor</th>
+                                <th style="width: 11% !important">Planned</th>
+                                <th style="width: 11% !important">Unplanned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @{
+                                int i = 1;
+                                int k = 1;
+                                string cityname = "";
+                                foreach (var dist in Model.DealerList)
+                                {
+                                    if (!cityname.Equals(dist.CityName))
+                                    {
+                                        var city = dist.CityName;
+                                        k = 0;
+                                        foreach (var deal in Model.DealerList)
+                                        {
+                                            if (city.Equals(deal.CityName))
+                                            {
+                                                k++;
+                                            <tr>
+                                                <td>@i</td>
+                                                @if (k==1)
+                                                {
+                                                    <td>@dist.CityName</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+                                                <td>@k</td>
+                                                <td>@deal.Name</td>
+                                                @if (deal.RetailersPlanned.Count > 0)
+                                                {
+                                                    <td>
+                                                        <select id="plan">
+                                                            @foreach (var item in deal.RetailersPlanned)
+                                                            {
+                                                                plannedCount++;
+                                                                <option>@item.ShopName</option>
+                                                            }
+                                                            
+                                                        </select>
+                                                        <text>@((100.00 * ((double)deal.RetailersPlanned.Count / (double)(deal.RetailersPlanned.Count + deal.RetailersUnplanned.Count))).ToString("0.00"))%</text>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>&nbsp;</td>
+                                                }
+                                                @if(deal.RetailersUnplanned.Count > 0)
+                                                {
+                                                    <td>
+                                                        <select id="unplan">
+                                                            @foreach (var item in deal.RetailersUnplanned)
+                                                            {
+                                                                unPlannedCount++;
+                                                                <option>@item.ShopName</option>
+                                                            }
+
+                                                        </select>
+                                                        <text>@((100.00 * ((double)deal.RetailersUnplanned.Count / (double)(deal.RetailersPlanned.Count + deal.RetailersUnplanned.Count))).ToString("0.00"))%</text>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td>&nbsp;</td>
+                                                }
+                                            </tr>
+                                            }
+                                        }
+
+                                        cityname = dist.CityName;
+                                        i++;
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+<input type="hidden" id="plannedCount" value="@plannedCount"/>
+<input type="hidden" id="unPlannedCount" value="@unPlannedCount" />
+<input type="hidden" id="hdnMonth" value="@month" />
+<input type="hidden" id="hdnRgHdId" value="@regHdId" />
+<input type="hidden" id="hdnDealerId" value="@dealerId" />
+<input type="hidden" id="hdnCityId" value="@cityId" />
+
+<script type="text/javascript">
+
+    function exportRpt(type) {
+        var RegionalHeadID = $("#RegionalHeadID").val();
+        var DealerID = $("#DealerID").val();
+        var CityID = $("#CityID").val();
+        var Month = $("#month").val();
+        var ZoneID = 0;
+        var SaleOfficerID = 0;
+        window.location = '/Retailer/ExportToCSV?rptType=' + type + '&regHdId=' + RegionalHeadID + '&distId=' + DealerID + '&soId=' + SaleOfficerID + '&cityId=' + CityID + '&zoneId=' + ZoneID + '&month=' + Month;
+    }
+
+    function updatePlannedUnplanned(dealerId) {
+        $.ajax({
+            type: "POST",
+            data: { DealerID: dealerId },
+            url: "@Url.Action("UpdatePlannedUnplanned", "Dealer")",
+            dataType: 'json',
+            success: function (json) {
+
+                window.location.reload();
+            }
+
+        });
+    }
+    $(document).ready(function () {
+        
+        debugger;
+        var plan = parseInt($('#plannedCount').val());
+        var unplan = parseInt($('#unPlannedCount').val());
+        var total = plan + unplan;
+        var planPercent = parseFloat((parseFloat(plan / total)) * 100);
+        var unplanPercent = parseFloat((parseFloat(unplan / total)) * 100);
+        if (isNaN(planPercent)) {
+            planPercent = 0;
+        }
+        if (isNaN(unplanPercent)) {
+            unplanPercent = 0;
+        }
+
+        $('#planRet').html(plan + ' (' + planPercent.toFixed(2) + '%)');
+        $('#unPlanRet').html(unplan + ' (' + unplanPercent.toFixed(2) + '%)');
+        $('#totalRet').html(plan + unplan);
+
+        if (planPercent > 0) {
+            $("#planRetExp").show();
+        }
+        else {
+            $("#planRetExp").hide();
+        }
+
+        if (unplanPercent > 0) {
+            $("#unplanRetExp").show();
+        }
+        else {
+            $("#unplanRetExp").hide();
+        }
+
+        if ($('#hdnMonth').val()) {
+            $('#month').val($('#hdnMonth').val());
+        }
+        if ($('#hdnRgHdId').val()) {
+            $('#RegionalHeadID').val($('#hdnRgHdId').val());
+        }
+        if ($('#hdnDealerId').val()) {
+            $('#DealerID').val($('#hdnDealerId').val());
+        }
+        if ($('#hdnCityId').val()) {
+            $('#CityID').val($('#hdnCityId').val());
+        }
+        
+    });
+</script>

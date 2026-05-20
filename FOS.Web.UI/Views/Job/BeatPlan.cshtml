@@ -1,0 +1,830 @@
+﻿@model FOS.Shared.BeatPlanData
+
+@{
+    ViewBag.Title = "Beat Plan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">*@
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Jobs</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Beat Plan</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+@using (Ajax.BeginForm("AddUpdateBeatPlan", "Job", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal", id = "myForm" }))
+{
+        
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="row-fluid">
+        <div class="span5">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Manage Beat Plan</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 498px;">
+
+                    <div style="float: left">
+
+                        <div class="control-group" style="display:none;">
+                                <label class="control-label">Type</label>
+                                <div class="controls">
+                                    @Html.HiddenFor(model => model.Type)
+                                    <select id="Type" name="Type" disabled>
+                                        <option value="1">Territorial Head</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        <!-- Select Regional Head -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Select Head *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                            </div>
+                        </div>
+
+                        <!-- Select Sale Officer -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.ID)
+                            </div>
+                        </div>
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Cities *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.CityID, new SelectList(Model.Cities, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.CityID)
+                                @Html.HiddenFor(model => model.CityID)
+                            </div>
+                        </div>
+
+                        <div id="THDiv">
+
+                            <!-- Visit Type -->
+                            <div class="control-group" style="margin-bottom: 14px;">
+                                <label class="control-label">Visit Type *</label>
+                                <div class="controls" style="margin-top: 4px;">
+                                    @Html.RadioButton("VisitType", "Shop", new { @checked = true, @style = "margin-top: 0px;" })   <span style="margin-right: 46px; margin-top: 2px">Shop</span>
+                                    @Html.RadioButton("VisitType", "Painter", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px">Painter</span>
+
+                                </div>
+                            </div>
+                            <div id="RetailerTypeDiv">
+                                <!-- Retailer Type -->
+                                <div class="control-group" style="margin-bottom: 14px;">
+                                    <label class="control-label">Retailer Type *</label>
+                                    <div class="controls" style="margin-top: 4px;">
+                                        <input checked="checked" id="RetailerType" name="RetailerType" style="margin-top: 0px;" type="radio" value="Both"><span style="margin-top: 2px;margin-right: 9px;">Both</span>
+                                        @Html.RadioButton("RetailerType", "Regular", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px;margin-right: 9px;">Regular</span>
+                                        @Html.RadioButton("RetailerType", "Focused", new { @style = "margin-top: 0px;" })   <span style=" margin-top: 2px">Focused</span>                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <!-- Select Visit Type -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Beat Plan Type *</label>
+                            <div class="controls">
+                                <select id="BeatPlanType" name="BeatPlanType" onchange="beatPlanTypeChange(this)">
+                                    <option value="4">Specific Days</option>
+                                    <option value="5">Specific Alternate Days</option>
+                                    <option value="6">Once a Month</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;" id="selectivedaysDiv">
+                            <!--label class="control-label">Select</!--label-->
+                            <div class="controls" style="padding:1px;">
+                                <input name="SelectiveDays" type="radio" value="Monday" checked="checked" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Monday</span>
+                                <input name="SelectiveDays" type="radio" value="Tuesday" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Tuesday</span>
+                                <input name="SelectiveDays" type="radio" value="Wednesday" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Wednesday</span>
+                                <br />
+                                <input name="SelectiveDays" type="radio" value="Thursday" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Thursday</span>
+                                <input name="SelectiveDays" type="radio" value="Friday" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Friday</span>
+                                <input name="SelectiveDays" type="radio" value="Saturday" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Saturday</span>
+                                <br />
+                                <input name="SelectiveDays" type="radio" value="Sunday" style="margin-top:0px;" /><span style="margin-left:2px;margin-top:2px;margin-right:5px;">Sunday</span>
+                            </div>
+                        </div>
+                        <div class="control-group" style="margin-bottom:14px;" id="startingDateDiv">
+                            <div id="selectiveDiv">
+                                <label class="control-label">Starting Date *</label>
+                                <div class="controls">
+                                    @Html.TextBoxFor(model => model.StartingDate, new { @readonly = "readonly", PlaceHolder = "dd-MMM-yyyy", @style = "cursor:pointer;"})
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 178px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Create</span>
+                                </button>
+                                <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                                <button type="button" id="btnView" class="btn btn-success">
+                                    <i class="icon-eye-open icon-white" style="padding-right: 8px"></i>View
+                                </button>
+                            </div>
+                        </div>
+
+                        <table class="">
+                            <tr class="">
+                                <td>
+                                    <div class="">
+                                        <button type="button" id="btnReplicate" class="btn btn-primary">
+                                            <i class="icon-calendar icon-white" style="padding-right: 8px"></i>Replicate
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input name="DueDateString" id="DueDateString" readonly="readonly" placeholder="Start Date" style="width:100px;cursor:pointer" />
+                                </td>
+                                <td>
+                                    <input name="DueDateString2" id="DueDateString2" readonly="readonly" placeholder="End Date" style="width:100px;cursor:pointer" />
+                                </td>
+                                <td>
+                                    <select id="RepMonth" name="RepMonth">
+                                        <option value="0">Select Month</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                </td>
+                            <tr />
+                        </table>
+
+                    </div>
+
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+
+
+
+
+        </div>
+
+        <div class="span7">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Selected Sales Officer Retailers List</h4>
+                </div>
+                <div class="widget-body" style="height: 498px; overflow: scroll;">
+                    
+                    @Html.HiddenFor(model => model.SelectedPainters)
+                    @Html.HiddenFor(model => model.SelectedRetailers)
+                    @Html.HiddenFor(model => model.SelectedDealers)
+                    
+                    <div style="float: left; width: 99%;">
+                        <div id="retailers" class="" style="width: 108%; height: 440px;"></div>
+                    </div>
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>
+
+    </div>
+}
+
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<script>
+    var a = [];
+    var b = [];
+
+    $(function () {
+        $('#myForm').submit(function () {
+
+            $("#Type").val("1");
+
+            if ($('input[type=radio][name=VisitType]:checked').val() == "Shop") {
+                $("#SelectedRetailers").val(a);
+                $("#SelectedDealers").val(b);
+                $("#SelectedPainters").val("");
+            }
+            else {
+                $("#SelectedPainters").val(a);
+                $("#SelectedRetailers").val("");
+                $("#SelectedDealers").val("");
+            }
+
+            $('#ID').focusin();
+
+            if ($('#StartingDate').val() == "" || $('#StartingDate').val() == null) {
+
+                alertify.error("Please enter starting date");
+                return false;
+
+            }
+
+        });
+    });
+
+
+    function LoadRegionalHead(RegionalHeadType) {
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: "@Url.Action("GetRegionalHeadAccordingToType", "SaleOfficer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#RegionalHeadID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+                $("#RegionalHeadID").trigger("change");
+            }
+        });
+    }
+
+    function LoadPaintersEdit(SOID, JobID) {
+        try {
+            $.ajax({
+                type: "POST",
+                data: { JobID: JobID, SOID: SOID },
+                url: "@Url.Action("LoadPaintersEdit", "Job")",
+                success: function (json) {
+
+                    var $el = $("#retailers");
+                    $el.empty();
+                    $("#retailers").append(json.Response);
+
+                    a = [];
+                    for (i = 0 ; i < json.PainterIDs.length ; i++) {
+                        a.push(json.PainterIDs[i]);
+                    }
+                    $.each(json.Response, function (value, key) {
+                        if (key.Selected == true) {
+                            $("#retailer" + key.ID + "").attr("checked", true);
+                        }
+                        else { $("#retailer" + key.ID + "").attr("checked", false); }
+                    });
+
+                },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                complete: function () {
+                    $("#progress").hide();
+                },
+                error: function () {
+                    alertify.error("Server is not Responding.");
+                }
+            });
+        }
+        catch (e) {
+            alert(e);
+        }
+    }
+
+    $(document).ready(function () {
+        //var disableddates = ["29-04-2017", "30-04-2017", "31-04-2017"];
+
+        //$('input[name=StartingDate]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $("input[name=StartingDate]").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100',
+            minDate: new Date()
+            //beforeShowDay: function (date) {
+
+            //    if (date.getDate() >= 1 && date.getDate() <= 28) {
+            //        return [true, ''];
+            //    }
+            //    return [false, ''];
+            //}
+        });
+        $("input[name=StartingDate]").change(function () {
+            //console.log('h');
+        });
+        //$("input[name=StartingDate]").trigger('change')
+
+        
+
+        //function DisableSpecificDates(date) {
+
+        //    var m = date.getMonth();
+        //    var d = date.getDate();
+        //    var y = date.getFullYear();
+
+        //    // First convert the date in to the mm-dd-yyyy format 
+        //    // Take note that we will increment the month count by 1 
+        //    var currentdate = (m + 1) + '-' + d + '-' + y;
+
+        //    // We will now check if the date belongs to disableddates array 
+        //    for (var i = 0; i < disableddates.length; i++) {
+
+        //        // Now check if the current date is in disabled dates array. 
+        //        if ($.inArray(currentdate, disableddates) != -1) {
+        //            return [false];
+        //        }
+        //    }
+
+        //}
+
+
+        $("#Type").val("1");
+        //$("#PaintersCity").hide();
+        $("#B2BDiv").hide();
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+
+        $("#Type").change(function () {
+
+            if ($(this).val() == 1) {
+                LoadRegionalHead($(this).val());
+                $("#THDiv").show();
+                $("#B2BDiv").hide();
+            }
+            else {
+                LoadRegionalHead($(this).val());
+                $("#THDiv").hide();
+                $("#B2BDiv").show();
+                //$("#PaintersCity").hide();
+            }
+
+        });
+
+        $('input[type=radio][name=RetailerType]').change(function () {
+            LoadRetailers($(this).val());
+        });
+
+        $('#CityID').change(function () {
+            var $el = $("#retailers");
+            $el.empty(); // remove old options
+            LoadRetailers($('input[type=radio][name=RetailerType]').val());
+
+        }); 
+        $('input[type=radio][name=VisitType]').change(function () {
+            if ($(this).val() == "Shop") {
+                var $el = $("#retailers");
+                $el.empty(); // remove old options
+                $("input[name=RetailerType][value='Both']").prop("checked", true)
+                //$("input[name=RetailerType][value='Focused']").prop("checked", false)
+                $("#RetailerTypeDiv").show();
+                //$("#PaintersCity").hide();
+            }
+            else {
+                var $el = $("#retailers");
+                $el.empty(); // remove old options
+                $("#RetailerTypeDiv").hide();
+                //$("#PaintersCity").show();
+                LoadPainters($("#SaleOfficerID").val());
+            }
+
+        });
+
+        function LoadPainters(SOID) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: SOID },
+                    url: "@Url.Action("LoadPainters", "Job")",
+                    success: function (json) {
+                        var $el = $("#retailers");
+                        $el.empty(); // remove old options
+                        $("#retailers").append(json.Response);
+                    },
+                    beforeSend: function () {
+                        $("#progress").show();
+                    },
+                    complete: function () {
+                        $("#progress").hide();
+                    },
+                    error: function () {
+                        alertify.error("Server Is not Responding.");
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+
+        $("#liJob,#liManageJobs").addClass("active");
+
+        function setRadio(id) {
+            var radio = $('#' + id);
+            radio[0].checked = true;
+            radio.button("refresh");
+        }
+
+        function LoadRetailers(RetailerType) {
+            try {
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                var RegionalHeadID = $("#RegionalHeadID").val();
+                var CityID = $("#CityID").val();
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, SaleOfficerID: SaleOfficerID, RetailerType: RetailerType, CityID: CityID },
+                    url: "@Url.Action("LoadRetailersBeatPlan", "Job")",
+                    success: function (json) {
+                        var $el = $("#retailers");
+                        $el.empty();
+                        $("#retailers").append(json.Response);
+                        $('#datatab').DataTable().ajax.reload();
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        function LoadSalesOfficer() {
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealerSelectOption", "Job")",
+                    success: function (json) {
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+                        if ($('#SaleOfficerID').val() != null) {
+                            $("#retailers").empty();
+                            LoadSOCities($('#SaleOfficerID').val());
+                        }
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        $("#RegionalHeadID").change(function () {
+            LoadSalesOfficer();
+        });
+
+        $("#SaleOfficerID").change(function () {
+            LoadSOCities($(this).val());
+            //LoadRetailerAccordingToSalesOfficer();
+            var $el = $("#retailers");
+            $el.empty(); // remove old options
+
+
+        });
+
+        function LoadRetailerAccordingToSalesOfficer() {
+            try {
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                var RegionalHeadID = $("#RegionalHeadID").val();
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, SaleOfficerID: SaleOfficerID },
+                    url: "@Url.Action("LoadRetailers", "Job")",
+                    success: function (json) {
+                        var $el = $("#retailers");
+                        $el.empty();
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+        function LoadSOCities(SOID) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: SOID },
+                    url: "@Url.Action("GetSOCities", "Job")",
+                    success: function (json) {
+                        var $el = $("#CityID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.Name));
+                        });
+
+                        if ($('#CityID').val() != null) {
+                            $("#retailers").empty();
+                        }
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        function LoadCitiesAndAreas(SOID) {
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, SaleOfficerID: SOID, RetailerType: $("#Type").val() },
+                    url: "@Url.Action("LoadCitiesAndAreas", "Job")",
+                    success: function (json) {
+                        var $el = $("#retailers");
+                        $el.empty(); 
+                        $("#retailers").append(json.Response);
+                        $('#datatab').DataTable().ajax.reload();
+                    }
+            });
+        } catch (e) {
+            alert(e);
+        }
+    }
+
+        $("#btnRefresh").click(function () {
+            ClearForm();
+        });
+        $("#btnView").click(function () {
+            viewBeatPlan();
+        });
+
+        $("#btnReplicate").click(function () {
+
+            if ($('#DueDateString').val() == '') {
+                alert('Please select start date');
+                $('#DueDateString').focus();
+                return;
+            }
+            if ($('#DueDateString2').val() == '') {
+                alert('Please select end date');
+                $('#DueDateString2').focus();
+                return;
+            }
+            if ($('#RepMonth').val() == 0) {
+                alert('Please select month');
+                $('#RepMonth').focus();
+                return;
+            }
+            if ($("#SaleOfficerID").val() == 0) {
+                alert('Please select sales officer');
+                $('#SaleOfficerID').focus();
+                return;
+            }
+            var yes = confirm("Are you sure to replicate the jobs of " + $("#SaleOfficerID option:selected").text() + " for " + $("#RepMonth").val() + " month(s)?");
+            if (yes) {
+                var soId = $("#SaleOfficerID").val();
+                var monthCount = $('#RepMonth').val();
+                var dueDate = $('#DueDateString').val();
+                var dueDate2 = $('#DueDateString2').val();
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: soId, monthCount: monthCount, beatPlanOrMonthly: 'beat', startDate: dueDate, endDate: dueDate2 },
+                    url: "@Url.Action("ReplicateJobs", "Job")",
+                    success: function (json) {
+                        if (json.Response == 'Done') {
+                            alert("Jobs replicated successfully");
+                        }
+                        else if (json.Response == 'Failed') {
+                            alert("Jobs couldn't be replicated");
+                        }
+                        else if (json.Response == 'Nothing found') {
+                            alert("No job found to replicate");
+                        }
+                        else {
+                            alert("Something goes wrong!");
+                        }
+                    },
+                    error: function (response) {
+                        alert("Something goes wrong!");
+                    }
+                });
+            }
+            else {
+                //NO
+            }
+        });
+
+    });
+
+
+    function RefreshTable(tableId, urlData) {
+        $.getJSON(urlData, null, function (json) {
+            table = $(tableId).dataTable();
+            oSettings = table.fnSettings();
+
+            table.fnClearTable(this);
+
+            for (var i = 0; i < json.aaData.length; i++) {
+                table.oApi._fnAddData(oSettings, json.aaData[i]);
+            }
+
+            oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+            table.fnDraw();
+        });
+    }
+
+    function ClearForm() {
+
+        a = [];
+        b = [];
+        $('#ID').val(0);
+        $('#JobNo').val('');
+        $('#create').text('Create');
+        //$('#retailers').empty();
+        
+        //$("#SaleOfficerID").trigger("change");
+        //$("#SaleOfficerID").trigger("chosen:update");
+
+        //$('#VisitPlanWeeklyDays').val("0");
+        //$('#VisitPlanWeeklyDays').trigger("chosen:update");
+
+        //$("#days").css("display", "none");
+
+        //$("input[type=radio][name=RetailerType]").attr('disabled', false);
+
+        var $el = $("#retailers");
+        $el.empty();
+
+        $("#CityID").val("0");
+
+        $("#StartingDate").val("");
+        $("#SelectedRetailers").val("");
+        $("#SelectedPainters").val("");
+        $("#SelectedDealers").val("");
+        $("input[name=VisitType][value='Shop']").prop("checked", true);
+        $("#RetailerTypeDiv").show();
+        $("input[name=RetailerType][value='Both']").prop("checked", true);
+        $("#BeatPlanType").val("1");
+        beatPlanTypeChange($("#BeatPlanType"));
+        $("input[name=SelectiveDays][value='Monday']").prop("checked", true);
+        
+        //$("#RegionalHeadID").val("1");
+        //$("#RegionalHeadID").trigger("change");
+    }
+
+    function dateFormatter(date) {
+        var d = date;
+
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+
+        var output = (('' + day).length < 2 ? '0' : '') + day + '-' + (('' + month).length < 2 ? '0' : '') + month + '-' + d.getFullYear();
+        return output;
+    }
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Beat Plan saved successfully");
+            $('#create').text('Create');
+            ClearForm();
+        }
+        else if (response == "2") {
+            alertify.error("Please Select Any Retailer For Job");
+        }
+        else if (response == "3") {
+            alertify.error("Please Select Any Painter For Job");
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Save Job.");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+
+    $(document).ajaxComplete(function () {
+
+        //alert('ajaxcomplete');
+
+        $("input[name='retailer[]']").bind().change(function () {
+
+            a = [];
+            b = [];
+
+            $("input[name='retailer[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    a.push($(this).attr('data-id'));
+                }
+
+            });
+
+            $("input[name='retailer[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    b.push($(this).attr('data-dealerid'));
+                }
+
+            });
+
+
+        });
+
+    });
+
+    function beatPlanTypeChange(dropdown) {
+        if ($(dropdown).val() == 6) {
+            $("#selectivedaysDiv").hide();
+            //$("#startingDateDiv").show();
+        }
+        else {
+            $("#selectivedaysDiv").show();
+            //$("#startingDateDiv").hide();
+        }
+        
+    }
+    function viewBeatPlan() {
+        if ($("#SaleOfficerID").val() == 0) {
+            alert("Please select sales officer");
+        }
+        else {
+            var params = [
+            'height=' + screen.height,
+            'width=' + screen.width,
+            'fullscreen=yes' // only works in IE, but here for completeness
+            ].join(',');
+            var popup = window.open("/Job/ShowPlans?soId=" + $("#SaleOfficerID").val() + "&plan=all&beat=1", "popup_window", params);
+            popup.moveTo(0, 0);
+        }
+    }
+
+    $(document).ready(function () {
+
+        $('#DueDateString').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+        $('#DueDateString2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+    });
+</script>
+

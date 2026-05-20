@@ -1,0 +1,727 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link href="~/Content/Style/morris.css" rel="stylesheet" />*@
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Dashboard</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+  
+
+
+<div class="row-fluid" style="padding-bottom:30px; margin-top: 15px;">
+    <div class="span4">
+        <div class="span12" style="box-shadow: 0px 0px 7px grey;margin-bottom: 5px;text-align: -webkit-center;background-image: linear-gradient(to bottom, #4a8bc2, #59b3ff);color: #ffffff;border: 1px solid;">
+            <h3 style="font-size: 18px;width: 100%;font-weight: 700;float: left;margin: 0px;">Customers Info</h3>
+        </div>
+
+        <div class="span12" style="box-shadow: 0px 0px 7px grey;background-image: linear-gradient(to bottom, #ffffff, #f3f3f3);color: #000000;margin-left:0px;border: 1px solid #4c8fc8;padding: 15px;">
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Trade Customers</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.retailers</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Housing Customers</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.Housing</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Corporate Customers</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.Corporate</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Shops Added This Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.CurrentMonthAddedShops</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Shops Added Previous Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.PreviousMonthAddedShops</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Trade Visits Current Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.Lastmonthsale</span>
+            </div>
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Trade Visits Previous Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.PrevMonthTrade</span>
+            </div>
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Housing Visits Current Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.ThisMonthSale</span>
+            </div>
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Housing Visits Previous Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.PrevHouseMonthSale</span>
+            </div>
+
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Corporate Visits Current Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.ThisMonthSaleDone</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Corporate Visits Previous Month</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.PrevcorporateDone</span>
+            </div>
+            @*<div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+            <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Samples Delievered Today</h5>
+            <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.TodaySaleDone</span>
+        </div>*@
+
+            @*<div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+             <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Points Reedemed by Painter</h5>
+             <span style="float: right;width: 30%;text-align: -webkit-right;">-</span>
+         </div>
+
+        <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+             <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Points Awarded To Retailer</h5>
+             <span style="float: right;width: 30%;text-align: -webkit-right;">-</span>
+         </div>*@
+        </div>
+    </div>
+
+    <div class="span4" style="margin-left: 2.46%;">
+        <div class="span12" style="box-shadow: 0px 0px 7px grey;margin-bottom: 5px;text-align: -webkit-center;background-image: linear-gradient(to bottom, #ff5722, #ff825a);color: #ffffff;border: 1px solid;">
+            <h3 style="font-size: 18px;width: 100%;font-weight: 700;float: left;margin: 0px;">Todays Info</h3>
+        </div>
+
+        <div class="span12" style="box-shadow: 0px 0px 7px grey;background-image: linear-gradient(to bottom, #ffffff, #f3f3f3);color: #000000;    border: 1px solid #ff5925;padding: 15px;margin-left:0px">
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">SO Present Today</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.SOPresentToday</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">SO Absent Today</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.SOAbsentToday</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">SO OnLeave Today</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.SOLeave</span>
+            </div>
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Trade Visits Today</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.FSVisitedToday</span>
+            </div>
+
+            @*<div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+            <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Distributor Orders Today</h5>
+            <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.RSPlannedToday</span>
+        </div>*@
+
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Housing Visits Today</h5>
+                <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.RSVisitedToday</span>
+            </div>
+            <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Corporate Visits Today</h5>
+            <span style="float: right;width: 30%;text-align: -webkit-right;">@ViewBag.RSPlannedToday</span>
+        </div>
+
+            @*<div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+             <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Painter Plan Today</h5>
+             <span style="float: right;width: 30%;text-align: -webkit-right;">-</span>
+         </div>
+
+        <div class="span12" style="padding: 5px;    margin-left: 0px;border-bottom: 1px solid gainsboro;">
+             <h5 style="font-size: 13px;width: 70%;font-weight: 700;float: left;margin: 0px;">Painter Visited Today</h5>
+             <span style="float: right;width: 30%;text-align: -webkit-right;">-</span>
+         </div>*@
+        </div>
+    </div>
+
+    <div class="span4" style="margin-left: 2.46%;">
+        <div class="span12" style="box-shadow: 0px 0px 7px grey;margin-bottom: 5px;text-align: -webkit-center;background-image: linear-gradient(to bottom, #9C27B0, #c877d6);color: #ffffff;border: 1px solid;">
+            <h3 style="font-size: 18px;width: 100%;font-weight: 700;float: left;margin: 0px;">Reports For MIS</h3>
+        </div>
+
+        <div class="span12" style="        box-shadow: 0px 0px 7px grey;
+        background-image: linear-gradient(to bottom, #ffffff, #f3f3f3);
+        margin-left: 0px;
+        color: #4c91cb;
+        border: 1px solid #9C27B0;
+        padding: 15px;
+        overflow-y: scroll;
+        height: 300px;">
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/RetailerSummery" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Retailers Information Summary </a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/PresentSOReport" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Present SO/Attendance Report</a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/PresentSOReportSummary" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">SO/Attendance Report Summary</a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/PresentSOReportDetail" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">SO/Attendance Report Detail</a>
+            </div>
+
+
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/SSSaleSummary" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Team Visit Summary Report</a>
+            </div>
+
+
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/RetailerInfo" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Retailers Information Report </a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/SaleOfficerDetail" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">SaleOfficer Information Report </a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/RetailerOrdersDetail" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Market Visit Detail Report </a>
+            </div>
+
+
+
+
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/OrderSummaryReport" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Daily Sales Report</a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/SOPayments" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">SO Payments Information Report</a>
+            </div>
+
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/VisitsCountReport" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Daily Team Performance Report</a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/ClaimSummary" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Claim Summary Report</a>
+            </div>
+
+            <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/ClaimDetail" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Claim Detail Report</a>
+            </div>
+
+ <div class="span12" style="cursor: -webkit-grab;padding: 5px;margin-left: 0px;border-bottom: 1px solid gainsboro;">
+                @*<a data-toggle="modal" data-target="#ChooseDates1" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">FOS Wise Order Intake/Delivered Report</a>*@
+                <a href="~/Reports/ClaimSummarySOWise" target="_blank" data-toggle="modal" id="FOSWiseOrderIntakeDeliveredReport" style="font-size: 13px;width: 100%;float: left;margin: 0px;">Claim Summary SO Wise Report</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+@*<div class="row-fluid" style="min-height: 600px; margin-top: 15px;">
+        <div class="span4">
+            <div class="span12" style="box-shadow: 0px 0px 7px grey;margin-bottom: 5px;text-align: -webkit-center;background-image: linear-gradient(to bottom, #4a8bc2, #59b3ff);color: #ffffff;border: 1px solid;">
+                <h3 style="font-size: 18px;width: 100%;font-weight: 700;float: left;margin: 0px;">Top 10 Sales This Month</h3>
+            </div>
+
+            <table class="table">
+                <tr>
+                    <th style="margin-bottom: 5px;text-align: -webkit-center";>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th style="margin-bottom: 5px;text-align: -webkit-center">
+                        @Html.DisplayNameFor(model => model.Sales)
+                    </th>
+
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="margin-bottom: 5px;text-align: -webkit-center">
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td style="margin-bottom: 5px;text-align: -webkit-center">
+                            @Html.DisplayFor(modelItem => item.Sales)
+                        </td>
+
+                    </tr>
+                }
+
+            </table>
+    </div>
+    </div>*@
+
+
+<div class="control-group">
+    <label class="control-label">RegionID  *</label>
+    <div class="controls">
+        @Html.DropDownListFor(model => model.RegionID, new SelectList(Model.SORegion, "ID", "Type"), new { @class = "", style = "220px" })
+        @Html.ValidationMessageFor(model => model.RegionID)
+        @Html.HiddenFor(model => model.RegionID)
+    </div>
+    <button type="button" id="ApplyFilter" class="btn btn-primary">
+        <i class="icon-ok icon-white" style="padding-right: 2px"></i><span style="width:50px">Apply Filter</span>
+    </button>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Current Day Detail</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                <button id="editable-sample_new" class="btn green">
+                                    Add New <i class="icon-plus"></i>
+                                </button>
+                            </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab" style="width: 100%;">
+                        <thead>
+                            <tr>
+
+                                <th style-="8%">Sr #</th>
+                                <th style="width:15%">
+                                    SSName
+                                </th>
+                               
+                                <th style="width:15%">
+                                    Attendance Start Time
+                                </th>
+                                <th style="width:15%">
+                                    Attendance End Time
+                                </th>
+                                <th style="width:12%">
+                                    Location
+                                </th>
+                                <th style="width:12%">
+                                    Total Visits
+                                </th>
+
+                                <th style="width:15%">
+                                    Productive Visits
+                                </th>
+                                <th style="width:15%">
+                                    Follow Ups
+                                </th>
+                                <th style="width:15%">
+                                    Market Start Time
+                                </th>
+
+                                <th style="width:15%">
+                                    Market End Time
+                                </th>
+                                <th style="width:15%">
+                                    Elapse Time
+                                </th>
+           
+                                <th style="width:10%">TotalSaleIncarton</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+
+
+
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Yesterdays Detail</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                <button id="editable-sample_new" class="btn green">
+                                    Add New <i class="icon-plus"></i>
+                                </button>
+                            </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab1" style="width: 100%;">
+                        <thead>
+                            <tr>
+
+                                <th style-="8%">Sr #</th>
+                                <th style="width:15%">
+                                    SSName
+                                </th>
+                                
+                               
+                                <th style="width:15%">
+                                    Attendance Start Time
+                                </th>
+                                <th style="width:15%">
+                                    Attendance End Time
+                                </th>
+                                <th style="width:12%">
+                                    Location
+                                </th>
+
+                                <th style="width:12%">
+                                    Total Visits
+                                </th>
+
+                                <th style="width:15%">
+                                    Productive Visits
+                                </th>
+                                <th style="width:15%">
+                                    Follow Ups
+                                </th>
+                                <th style="width:15%">
+                                    Market Start Time
+                                </th>
+
+                                <th style="width:15%">
+                                    Market End Time
+                                </th>
+                                <th style="width:15%">
+                                    Elapse Time
+                                </th>
+
+                                <th style="width:10%">TotalSaleIncarton</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblbodyPrev"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+
+
+
+
+<script src="@Url.Content("~/Scripts/js/jquery.fileDownload.js")"></script>
+
+<script>
+
+     function GenerateDetailGrid() {
+        debugger;
+         var RegionalHeadType = $("#RegionID").val();
+
+        $.ajax({
+              type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: '@Url.Action("GetAllData", "SaleOfficer")',
+            dataType: 'json',
+
+            success: function (json) {
+                $("#tblbody").html("");
+                debugger;
+                var i=0;
+                $.each(json, function (value, key) {
+                    i++;
+                    $("#datatab tbody").append("<tr ><td hidden='hidden'>" + key.ID + "</td><td>" + i + "</td><td>" + key.SoName +
+                        "</td><td>" + key.Attstartstring + "</td><td>" + key.Attendstring + "</td><td>" + key.Locations + "</td><td>" + key.totalVisits + "</td><td>" + key.ProductiveShops + "</td><td>" + key.NonProductive + "</td><td>" + key.startstring + "</td><td>" + key.endstring + "</td><td>" + key.ElapseTime + "</td><td>" + key.totalSale + "</td></tr>");
+
+                });
+            }
+        });
+    }
+
+
+      function GenerateDetailGridPrevious() {
+        debugger;
+          var RegionalHeadType = $("#RegionID").val();
+
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: '@Url.Action("GetAllDataPrevious", "SaleOfficer")',
+            dataType: 'json',
+
+
+            success: function (json) {
+                $("#tblbodyPrev").html("");
+                debugger;
+                var i=0;
+                $.each(json, function (value, key) {
+                    i++;
+                    $("#datatab1 tbody").append("<tr ><td hidden='hidden'>" + key.ID + "</td><td>" + i + "</td><td>" + key.SoName +
+                        "</td><td>" + key.Attstartstring + "</td><td>" + key.Attendstring + "</td><td>" + key.Locations + "</td><td>" + key.totalVisits + "</td><td>" + key.ProductiveShops + "</td><td>" + key.NonProductive + "</td><td>" + key.startstring + "</td><td>" + key.endstring + "</td><td>" + key.ElapseTime + "</td><td>" + key.totalSale + "</td></tr>");
+
+                });
+            }
+        });
+    }
+
+
+
+
+        $(document).ready(function () {
+            $("#ApplyFilter").click(function () {
+                // $('#datatab').DataTable().ajax.reload();
+
+                GenerateDetailGrid();
+                GenerateDetailGridPrevious();
+            });
+            $('input[name=StartingDate1]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate1]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=StartingDate1]").trigger('change');
+
+            $('input[name=EndingDate1]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=EndingDate1]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=EndingDate1]").trigger('change');
+
+            $('input[name=StartingDate2]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate2]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=StartingDate2]").trigger('change');
+
+            $('input[name=EndingDate2]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=EndingDate2]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=EndingDate2]").trigger('change');
+
+            $('input[name=StartingDate3]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate3]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=StartingDate3]").trigger('change');
+
+            $('input[name=EndingDate3]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=EndingDate3]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=EndingDate3]").trigger('change');
+
+            $('input[name=StartingDate4]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate4]').datepicker({ dateFormat: "MM-yy" });
+            $("input[name=StartingDate4]").trigger('change');
+
+            $('input[name=StartingDate5]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate5]').datepicker({ dateFormat: "MM-yy" });
+            $("input[name=StartingDate5]").trigger('change');
+
+            $('input[name=StartingDate6]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate6]').datepicker({ dateFormat: "MM-yy" });
+            $("input[name=StartingDate6]").trigger('change');
+
+            $('input[name=EndingDate6]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=EndingDate6]').datepicker({ dateFormat: "MM-yy" });
+            $("input[name=EndingDate6]").trigger('change');
+
+            $('input[name=StartingDate7]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+            $('input[name=StartingDate7]').datepicker({ dateFormat: "dd-MM-yy" });
+            $("input[name=StartingDate7]").trigger('change');
+
+            //BUTTONS CLICK REPORTS
+
+            $("#GenerateReport1").click(function () {
+                if ($("#StartingDate1").val() != "" || $("#EndingDate1").val() != "") {
+                    if ($("#cbCheck1").is(':checked') == true) {
+                        window.open("@Url.Action("FosDateWiseReport", "Retailer")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#EndingDate1").val() + "", "_top");
+                    }
+                    else {
+                        window.open("@Url.Action("FosMonthWiseReport", "Retailer")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#EndingDate1").val() + "", "_top");
+                    }
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#GenerateReport2").click(function () {
+                if ($("#StartingDate2").val() != "" || $("#EndingDate2").val() != "") {
+                    if ($("#cbCheck2").is(':checked') == true) {
+                        window.open("@Url.Action("CityDateWiseRetailerReport", "Retailer")" + "?StartingDate=" + $("#StartingDate2").val() + "&EndingDate=" + $("#EndingDate2").val() + "", "_top");
+                    }
+                    else {
+                        window.open("@Url.Action("CityMonthWiseRetailerReport", "Retailer")" + "?StartingDate=" + $("#StartingDate2").val() + "&EndingDate=" + $("#EndingDate2").val() + "", "_top");
+                    }
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#GenerateReport3").click(function () {
+                if ($("#StartingDate3").val() != "" || $("#EndingDate3").val() != "") {
+                    if ($("#cbCheck3").is(':checked') == true) {
+                        window.open("@Url.Action("RetailerShopDateWiseReport", "Retailer")" + "?StartingDate=" + $("#StartingDate3").val() + "&EndingDate=" + $("#EndingDate3").val() + "", "_top");
+                    }
+                    else {
+                        window.open("@Url.Action("RetailerShopMonthWiseReport", "Retailer")" + "?StartingDate=" + $("#StartingDate3").val() + "&EndingDate=" + $("#EndingDate3").val() + "", "_top");
+                    }
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#GenerateReport4").click(function () {
+                if ($("#StartingDate4").val() != "") {
+                    window.open("@Url.Action("CityWiseFosReport", "Retailer")" + "?StartingDate=" + $("#StartingDate4").val() + "", "_top");
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#GenerateReport5").click(function () {
+                if ($("#StartingDate5").val() != "") {
+                    window.open("@Url.Action("CityMktRtlrWiseReport", "Retailer")" + "?StartingDate=" + $("#StartingDate5").val() + "", "_top");
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#GenerateReport6").click(function () {
+                if ($("#StartingDate6").val() != "" || $("#EndingDate6").val() != "") {
+                    window.open("@Url.Action("PosAvailabilityReport", "Retailer")" + "?StartingDate=" + $("#StartingDate6").val() + "&EndingDate=" + $("#EndingDate6").val() + "", "_top");
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#FOSWiseOrderIntakeDeliveredReport").click(function myfunction() {
+                $('input[name=StartingDate1]').val("");
+                $('input[name=EndingDate1]').val("");
+            });
+
+            $("#CityWiseOrderIntakeDeliveredReport").click(function myfunction() {
+                $('input[name=StartingDate2]').val("");
+                $('input[name=EndingDate2]').val("");
+            });
+
+            $("#CityWiseFOS").click(function myfunction() {
+                $('input[name=StartingDate3]').val("");
+                $('input[name=EndingDate3]').val("");
+            });
+
+            $("#CityMarketRetailerWiseReport").click(function myfunction() {
+                $('input[name=StartingDate4]').val("");
+                $('input[name=EndingDate4]').val("");
+            });
+
+            $("#ShopWiseOrderIntakeDeliveredReport").click(function myfunction() {
+                $('input[name=StartingDate5]').val("");
+                $('input[name=EndingDate5]').val("");
+            });
+
+            $("#PaintersReportCityWise").click(function myfunction() {
+                $('input[name=StartingDate6]').val("");
+                $('input[name=EndingDate6]').val("");
+            });
+
+            $("#PaintersReportMarketWise").click(function myfunction() {
+                $('input[name=StartingDate7]').val("");
+                $('input[name=EndingDate7]').val("");
+            });
+
+            $("#PaintersReportRetailerWise").click(function myfunction() {
+                $('input[name=StartingDate8]').val("");
+                $('input[name=EndingDate8]').val("");
+            });
+
+            $("#RetailersPointSummary").click(function myfunction() {
+                window.open("@Url.Action("RetailerPointSummary", "Retailer")", "_top");
+            });
+
+            @*$("#CityWisePainterReport").click(function myfunction() {
+            //window.open("@Url.Action("CityWisePaintersReport", "Retailer")", "_top");
+        });*@
+            $("#GenerateReport7").click(function () {
+                if ($("#StartingDate7").val() != "") {
+                    window.open("@Url.Action("CityWisePaintersReport", "Retailer")" + "?StartingDate=" + $("#StartingDate7").val() + "", "_top");
+                }
+                else {
+                    alertify.error("Please Enter Dates")
+                }
+
+            });
+
+            $("#RetailersLedgerReport").click(function myfunction() {
+                $('input[name=StartingDate10]').val("");
+                $('input[name=EndingDate10]').val("");
+            });
+
+            $("#RetailersRedemptionReport").click(function myfunction() {
+                $('input[name=StartingDate11]').val("");
+                $('input[name=EndingDate11]').val("");
+            });
+
+            $("#MagneticCardReport").click(function myfunction() {
+                $('input[name=StartingDate12]').val("");
+                $('input[name=EndingDate12]').val("");
+            });
+
+            $("#POSAvailabilityReport").click(function myfunction() {
+                $('input[name=StartingDate13]').val("");
+                $('input[name=EndingDate13]').val("");
+            });
+
+            $("#FOSPlanningReport").click(function myfunction() {
+                $('input[name=StartingDate14]').val("");
+                $('input[name=EndingDate14]').val("");
+            });
+
+        });
+</script>

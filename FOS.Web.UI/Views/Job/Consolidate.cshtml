@@ -1,0 +1,234 @@
+﻿@model FOS.Shared.ConsolidateModel
+@{
+    ViewBag.Title = "Consolidate View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Jobs / Consolidate View</a>
+                @*                    <span class="divider">/</span>*@
+            </li>
+            @*                <li>
+                    <a href="#">Manage Dealer</a>
+                </li>*@
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        
+        @*<div class="control-group" style="margin-bottom:0px;float:left">
+            <label class="control-label">Regional Head</label>
+            <div class="controls" style="margin-left:0px">
+
+                <select class="form-control chosen-select" id="regionalHead" style="width: 190px;">
+                    <option>Select Any</option>
+                    @{
+                        foreach (FOS.Shared.RegionalHeadData obj in ViewBag.RegionalHead)
+                        {
+                            <option value="@obj.ID">@obj.Name</option>
+                        }
+                    }
+                </select>
+
+            </div>
+        </div>
+
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px">
+            <label class="control-label">Distributor</label>
+            <div class="controls" style="margin-left:0px">
+
+                <select class="form-control chosen-select" id="dealer" style="width: 190px;">
+                    <option>Select Any</option>
+                    @{
+                        foreach (FOS.Shared.DealerData obj in ViewBag.Dealers)
+                        {
+                            <option value="@obj.ID">@obj.Name</option>
+                        }
+                    }
+                </select>
+
+            </div>
+        </div>*@
+
+        <table align="right">
+            <tr>
+                <td>
+                    <a href="#" onclick="exportToExcel();" style="color:white;line-height:3;font-size:large;font-weight:400;background-color:#85b73a;border:1px solid #6a9627;padding: 5px;margin-right: 0px;">Export</a>
+                </td>
+            </tr>
+        </table>
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px">
+            <label class="control-label">Sales Officer</label>
+            <div class="controls" style="margin-left:0px">
+
+                <select class="form-control chosen-select" id="saleOfficer" style="width: 190px;">
+                    <option value="0">Select Any</option>
+                    @{
+                        foreach (FOS.Shared.SaleOfficerData obj in ViewBag.SaleOfficer)
+                        {
+                            <option value="@obj.ID">@obj.Name</option>
+                        }
+                    }
+                </select>
+
+            </div>
+        </div>
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;margin-right:12px;display:none;">
+            <label class="control-label">Month</label>
+            <div class="controls" style="margin-left:0px">
+
+                <select class="form-control chosen-select" id="month" style="width: 190px;">
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April" selected="selected">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
+
+            </div>
+        </div>
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;">
+            <div id="selectiveDiv">
+                <label class="control-label">Starting Date</label>
+                <div class="controls">
+                    @Html.TextBoxFor(model => model.StartDate, new { @readonly = "readonly", PlaceHolder = "dd-MMM-yyyy", @style = "cursor:pointer;" })
+                </div>
+            </div>
+        </div>
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;">
+            <div id="selectiveDiv2">
+                <label class="control-label">End Date</label>
+                <div class="controls">
+                    @Html.TextBoxFor(model => model.EndDate, new { @readonly = "readonly", PlaceHolder = "dd-MMM-yyyy", @style = "cursor:pointer;" })
+                </div>
+            </div>
+        </div>
+        
+
+        @*<div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px">
+            <label class="control-label">City</label>
+            <div class="controls" style="margin-left:0px">
+
+                <select class="form-control chosen-select" id="city" style="width: 190px;">
+                    <option>Select Any</option>
+                    @{
+                        foreach (FOS.Shared.CityData obj in ViewBag.City)
+                        {
+                            <option value="@obj.ID">@obj.Name</option>
+                        }
+                    }
+                </select>
+
+            </div>
+        </div>
+
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px">
+            <label class="control-label">Zone</label>
+            <div class="controls" style="margin-left:0px">
+
+                <select class="form-control chosen-select" id="zone" style="width: 190px;">
+                    <option>Select Any</option>
+                    @{
+                        foreach (FOS.Shared.ZoneData obj in ViewBag.Zone)
+                        {
+                            <option value="@obj.ID">@obj.Name</option>
+                        }
+                    }
+                </select>
+
+            </div>
+        </div>
+        
+        <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;margin-top:28px;">
+            <table style="padding-left:10px;font-size:small;" border="0">
+                <tr>
+                    <td style="color:#ce0019;font-weight:600;">Total Retailers: </td>
+                    <td><span id="totalRet">&nbsp;&nbsp;</span></td>
+                @*</tr>
+                <tr>* @
+                    <td style="color:#ce0019;font-weight:600;padding-left:25px">Planned Retailers: </td>
+                    <td><span id="planRet">&nbsp;&nbsp;</span></td>
+                @*</tr>
+                <tr>* @
+                    <td style="color:#ce0019;font-weight:600;padding-left:25px">Unplanned Retailers: </td>
+                    <td><span id="unPlanRet">&nbsp;&nbsp;</span></td>
+                </tr>
+            </table>
+
+        </div>*@
+
+    </div>
+</div>
+
+
+
+    @*<div class="row-fluid">
+
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="">
+                <div class="widget-title">
+                    <h4>Plan Distributor</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>* @
+                        @*<a href="javascript:;" class="icon-remove"></a>* @
+                    </span>
+                </div>
+                <div class="widget-body" style="">
+
+
+
+                    
+
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>
+    </div>*@
+
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script type="text/javascript">
+    function exportToExcel() {
+        window.location = '/job/ExportToExcelConsolidate?soId='
+            + $('#saleOfficer').val() + '&month='
+            + $('#month').val() + '&startDate='
+            + $('#StartDate').val() + '&endDate='
+            + $('#EndDate').val();
+    }
+    $(document).ready(function () {
+
+        $("input[name=StartDate]").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+        $("input[name=EndDate]").datepicker({
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+    });
+
+</script>

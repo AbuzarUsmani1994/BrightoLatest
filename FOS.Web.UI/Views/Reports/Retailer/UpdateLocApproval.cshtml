@@ -1,0 +1,524 @@
+﻿@model FOS.Shared.RetailerPendingData
+@{
+    ViewBag.Title = "Retailer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    #map-canvas {
+    }
+ 
+       .map-wrap{
+  height:0;
+  width:0;
+  overflow:hidden;
+}
+
+</style>
+
+
+
+
+
+
+    <!-- BEGIN PAGE HEADER-->
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN THEME CUSTOMIZER-->
+            <!-- END THEME CUSTOMIZER-->
+            <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+            <h3 class="page-title"></h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">Retailer</a>
+                    <span class="divider">/</span>
+                </li>               
+                 <li>
+                    <a href="#">Manage Update Locations</a>
+                </li>
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+
+
+@using (Ajax.BeginForm("UpdateLocApprovalSave", "Retailer", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true)
+    <!-- BEGIN EDITABLE TABLE widget-->
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN datatab TABLE widget-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Pending Update Locations</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body">
+                    <div>
+                        <div class="clearfix">
+                            @*<div class="btn-group">
+                                    <button id="editable-sample_new" class="btn green">
+                                        Add New <i class="icon-plus"></i>
+                                    </button>
+                                </div>*@
+                            <div class="btn-group pull-right"></div>
+                        </div>
+                        @*<div class="control-group">
+                                @Html.LabelFor(model => model.DealerID, "Select Dealer", new { @class = "control-label" })
+                                <div class="controls">
+                                    @Html.DropDownListFor(model => model.DealerID, new SelectList(Model.Dealers, "ID", "Name"), new { @class = "" })
+                                    @Html.ValidationMessageFor(model => model.DealerID)
+                                </div>
+                            </div>*@
+                         @Html.HiddenFor(model => model.strDealerID)
+                        @Html.HiddenFor(model => model.strRetailerID)
+                        <div class="control-group">
+                            <div class="form-actions" style="padding-left:0px;">
+                                <button type="submit" id="btnPost" class="btn btn-primary" style="height: 30px;letter-spacing: 1px;">
+                                    <i class="icon-ok icon-white" style="padding-right:8px;"></i>Approve Selected
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space15"></div>
+                       
+                        
+                        
+                         <table class="table table-striped table-hover table-bordered display select" id="datatab" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th><input name="select_all" id="select_all" value="1" type="checkbox"></th>
+                                    <th  style="width:6% !important">
+                                        @Html.DisplayNameFor(model => model.ID)
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Shop Name
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Distributor
+                                    </th>
+                                    <th style="width:17%">
+                                        Sales Officer
+                                    </th>
+                                    <th style="width:17% !important;">
+                                       Location(x,y)
+                                    </th>
+                                    <th style="width:17% !important">
+                                        Location Name
+                                    </th>
+                                    <th style="width:10% !important">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END datatab TABLE widget-->
+        </div>
+    </div>
+    <!-- END EDITABLE TABLE widget-->
+    
+}
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog" style="left: 17%;width: 65%;height: 83%;">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="margin-left: 25px;margin-right: 25px;box-shadow: inset 0px 0px 7px #656565;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-weight: 900; color: #4a8bc2;">Map</h4>
+            </div>
+            <div class="modal-body" style="height:445px;">
+
+                <div id="map-canvas" style="height:445px;"></div>
+
+             </div>
+
+        </div>
+   </div>
+</div>
+
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7X3GhN_ShrwYqU1Wc0gJbX3CMOMPZIs4"></script>
+
+<script>
+
+    function GenerateDetailGrid() {
+
+        var table = $('#datatab').DataTable({
+            "ajax": {
+                "type": "POST",
+                "url": '@Url.Action("UpdateLocApprovalDataHandler", "Retailer")',
+                "contentType": 'application/json; charset=utf-8',
+                'data': function (data) {
+                    //data.ID = $('#DealerID').val();
+                    return data = JSON.stringify(data);
+                },
+            },
+            "sAjaxDataProp": "",
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+                {
+                    "sClass": "center-align-td",
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        return '<input type="checkbox" class="case" data-id=' + data.ID + '>';
+                    }
+                },
+                { "data": "ID", "bVisible": false },
+                { "data": "ShopName" },
+                { "data": "DealerName" },
+                { "data": "SaleOfficerName" },
+                
+                @*{
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        var ddlID = "row-" + row.ID;
+                        var ddl = "<select class='input-medium' id='" + ddlID + "'></select>";
+
+                        $.ajax({
+                            type: "POST",
+                            data: { ID: row.SaleOfficerID, rid : row.RegionalHeadID },
+                            url: "@Url.Action("GetDealerListBySaleOfficerID", "Retailer")",
+                            dataType: 'json',
+                            success: function (json) {
+
+                                var $el = $("#" + ddlID);
+                                $el.empty(); // remove old options
+                                $.each(json, function (value, key) {
+
+                                    $el.append($("<option></option>")
+                                            .val(key.ID).html(key.Name))
+                                });
+
+                                $el.val(data.DealerID).find("option[value=" + data.DealerID + "]").attr('selected', true);
+
+                            }
+                        });
+                        return ddl;
+
+                    }
+                },*@
+                
+                {
+                    //"data": "Location", "bSortable": false
+
+                    "sClass": "center-align-td",
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        return '<a class="showMap" data-id=' + row.ID + ' style="cursor: pointer;" data-toggle="modal" data-target="#myModal">' + row.Location + '</a>';
+                    }
+                },
+                { "data": "LocationName" },
+                {
+                    "sClass": "center-align-td",
+                    "mData": null,
+                    "bSortable": false,
+                    "mRender": function (data, type, row) {
+                        return '<button title="Approve" class="btn btn-success approve" data-id=' + row.ID + '>' + '<i class=icon-ok></i>' + '</button>&nbsp;<button title="Delete" class="btn btn-info delete" data-id=' + row.ID + '>' + '<i class=icon-trash></i>' + '</button>';
+                    }
+                }
+            ],
+            'order': [3, 'asc'],
+            "fnDrawCallback": function (osetting) {
+
+                var UpdateCheck = "0";
+                var DeleteCheck = "0";
+
+                $(".case").on("click", function () {
+
+                    if ($(".case").length == $(".case:checked").length) {
+                        $("#select_all").attr("checked", "checked");
+                    } else {
+                        $("#select_all").removeAttr("checked");
+                    }
+
+                });
+
+                if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                else {
+                    $(".delete").on("click", function (e) {
+
+                        var ReatailerID = $(this).attr("data-id");
+
+                        e.preventDefault();
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("UpdateLocApprovalApproval", "Retailer")",
+                                    data: { ID: ReatailerID },
+                                    success: function (data) {
+
+                                        if (data == "0") {
+                                            alertify.success('Record Deleted Successfully');
+                                            var dt = $('#datatab').DataTable();
+                                            dt.ajax.reload();
+                                            GetcountPendingRetailer();
+                                        }
+
+                                        else { alertify.error('Please Retry.'); }
+                                    }
+
+                                });
+
+                            } else { }
+                        });
+
+                    });
+                }
+
+                $(".showMap").on("click", function (e) {
+
+                    var map = null, marker = null, langset = null;
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("GetOneRetailerLocation", "Retailer")",
+                        data: { RetailerID: $(this).attr("data-id") },
+                        success: function (data) {
+
+                            if (data != null) {
+                                var array = data.Location.split(",");
+
+                                var name = data.ShopName;
+                                var address = data.Address;
+                                mapInitialize(name, array[0], array[1], address);
+
+                            }
+                            else {
+                            }
+
+
+                        }
+
+                    });
+
+
+                });
+
+                if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+                else {
+
+                    $(".approve").on("click", function (e) {
+
+                        var ReatailerID = $(this).attr("data-id");
+                        e.preventDefault();
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Approve This Record ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("UpdateLocApprovalApproved", "Retailer")",
+                            data: { ID: ReatailerID },
+                            success: function (data) {
+
+                                if (data == "1") {
+                                    alertify.success('Record Updated Successfully');
+                                    //var table = $('#datatab').DataTable();
+                                    //table.row(this).remove().draw(false);
+                                    var dt = $('#datatab').DataTable();
+                                    dt.ajax.reload();
+                                    GetcountPendingRetailer();
+                                }
+
+                                else { alertify.error('An Error Occured, Try Again...'); }
+                            }
+
+                        });
+
+                    } else { }
+                });
+
+            });
+        }
+    },
+    });
+    }
+
+
+
+    function mapInitialize(Name, Lat, Long, LocationName) {
+
+        var i;
+
+        myOptions = {
+            center: new google.maps.LatLng(Lat, Long),
+            zoom: 14,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+
+        var name = Name;
+        var lat = Lat;
+        var long = Long;
+        var locationName = LocationName;
+
+        latlngset = new google.maps.LatLng(lat, long);
+
+        marker = new google.maps.Marker({
+            map: map,
+            title: name,
+            position: latlngset,
+            animation: google.maps.Animation.DROP
+        });
+
+        var content = "<b> " + name + " </b>(" + locationName + ")";
+        var infowindow = new google.maps.InfoWindow()
+
+        google.maps.event.addListenerOnce(map, 'idle', function () {
+            google.maps.event.trigger(map, 'resize');
+        });
+
+        google.maps.event.addListener(marker, 'click', (function (marker, content, infowindow) {
+            return function () {
+                infowindow.setContent(content);
+                infowindow.open(map, marker);
+            };
+        })(marker, content, infowindow));
+
+    }
+
+    function GetcountPendingRetailer() {
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetCount", "Home")",
+            data: {},
+            success: function (data) {
+
+                if (data != null) {
+
+                    $(".getCount").html(data);
+
+                }
+                if (data == '0')
+                { alertify.warning('No Retailer To Approve'); }
+
+            }
+
+        });
+
+    }
+
+    $(document).ready(function () {
+
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnPost").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#liRetailer,#liPendingRetailer").addClass("active");
+
+        GetcountPendingRetailer();
+        GenerateDetailGrid();
+
+        $("#select_all").click(function () {
+            $('.case').attr('checked', this.checked);
+        });
+
+        $("#btnPost").click(function (e) {
+
+            var form = $("#form0");
+            var table = $("#datatab").DataTable();
+            var RetailerID = "";
+            var DealerID = "";
+            // Iterate over all selected checkboxes
+
+            table.$('tr').each(function (index, rowhtml) {
+               
+
+                var checked = $('input[type="checkbox"]:checked', rowhtml).length;
+                if (checked == 1) {
+                    var DID = $("#row-" + $('input[type="checkbox"]:checked', rowhtml).attr("data-id"));
+                    RetailerID += $('input[type="checkbox"]:checked', rowhtml).attr("data-id") + ",";
+                    DealerID += DID.val() + ",";
+                    
+                }
+            });
+            if (RetailerID != "") {
+                $('#strRetailerID').val(RetailerID);
+                $("#strDealerID").val(DealerID);
+            }
+            else {
+                alertify.error("No Retailer Selected");
+                return false;
+            }
+
+            // FOR DEMONSTRATION ONLY
+
+            // Output form data to a console
+            $('#datatab-console').text($(form).serialize());
+
+            //console.log("Form submission", $(form).serialize());
+            // Prevent actual form submission
+            //e.preventDefault();
+        });
+
+        $("#DealerID").change(function () {
+
+            
+            $('#datatab').dataTable().fnDestroy();
+            GenerateDetailGrid();
+
+        });
+
+
+
+
+
+
+
+    });
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Retailer Saved Successfully");
+            var dt = $('#datatab').DataTable();
+            dt.ajax.reload();
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Save Retailer.");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+</script>

@@ -1,0 +1,393 @@
+﻿@model FOS.Shared.DealerCityData
+@{
+    ViewBag.Title = "Distributor Cities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+<script src="~/Content/Style/jquery-ui.min.js"></script> 
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Manage Cities and Areas of Distributor</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+<div class="row-fluid">
+        
+            @*<div class="widget-title">
+                <h4>Manage Cities and Areas of Dealers</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>* @
+                    @ *<a href="javascript:;" class="icon-remove"></a>* @
+                </span>
+            </div>*@
+                
+    <div class="span12">
+        
+            <div class="control-group" style="display:none;">
+                <label class="control-label">Head Type</label>
+                <div class="controls">
+                    <select id="Type" name="Type" disabled>
+                        <option value="1">Territorial Head</option>
+                    </select>
+                </div>
+            </div>
+
+            @if (FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser() == 0)
+            {
+                <!-- Select RegionalHead -->
+                <div class="control-group" style="margin-bottom:0px;float:left">
+                    <label class="control-label">Regional Head</label>
+                    <div class="controls" style="margin-left:0px">
+                        @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHeads, "ID", "Name"), new { @class = "", @style = "width: 190px;" })
+
+                        @Html.HiddenFor(model => model.HiddenRegionalHeadID)
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        $("#HiddenRegionalHeadID").val("@FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser()");
+                            });
+                </script>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.HiddenRegionalHeadID)
+                <script>
+                    $(document).ready(function () {
+                        $("#HiddenRegionalHeadID").val("@FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser()");
+                    });
+                </script>
+            }
+
+            <div class="control-group" style="margin-bottom:0px;margin-left:10px;float:left">
+                <label class="control-label">Select Distributor</label>
+                <div class="controls" style="margin-left:0px">
+                    @Html.DropDownListFor(model => model.DealerID, new SelectList(Model.Dealers, "ID", "Name"), "", new { @class = "" })
+
+                </div>
+            </div>
+
+        <div class="control-group" style="margin-bottom:0px;margin-left:10px;float:left">
+            <label class="control-label" id="lblcity">Select City</label>
+            <div class="controls">
+                @Html.DropDownListFor(model => model.CityID, new SelectList(Model.Cities, "ID", "Name"), "", new { @class = "" })
+
+            </div>
+        </div>
+        <div class="control-group" style="margin-bottom:0px;margin-top:20px;float:right">
+            <div class="controls">
+                <input type="button" class="btn btn-primary" value="Save" id="btnSave" onclick="saveDealerAreas();" />
+            </div>
+        </div>
+        <div class="control-group" style="margin-bottom:0px;margin-top:20px;margin-right:20px;float:right">
+            <div class="controls">
+                <input type="radio" name="sel" id="rdoCity" onchange="cityWiseChange();" />Citywise
+                <input type="radio" name="sel" id="rdoArea" onchange="cityWiseChange();" checked="checked" />Areawise
+            </div>
+        </div>
+        
+            
+        <div id="DealerCityAreaDiv"></div>
+
+
+    </div>
+</div>
+
+<script>
+
+    function cityWiseChange() {
+        
+        if ($('#rdoArea').is(':checked') == true) {
+            $('#CityID').show();
+            $('#lblcity').show();
+            $('#CityID').val(0);
+            $('#DealerID').val(0);
+            $('#RegionalHeadID').val(0);
+            $('#RegionalHeadID').trigger('change');
+        }
+        else {
+            $('#CityID').hide();
+            $('#lblcity').hide();
+            $('#CityID').val(0);
+            $('#DealerID').val(0);
+            $('#RegionalHeadID').val(0);
+            $('#RegionalHeadID').trigger('change'); 
+        }
+    }
+    function saveDealerAreas() {
+        if ($('#RegionalHeadID').val() == 0 || $('#DealerID').val() == 0) {
+            alert('There is no data to save');
+            return;
+        }
+        if ($('#rdoArea').is(':checked') == true) {
+
+            var DealerID = $('#DealerID').val();
+            var CityID = $('#CityID').val();
+            var trs = $('.table').find('tr');
+            var str = '';
+            for (var i = 0; i < trs.length; i++) {
+
+                if ($(trs[i]).find('input').attr('checked') == 'checked') {
+                    var cityid = $(trs[i]).find('input').attr('city-id');
+                    var areaid = $(trs[i]).find('input').attr('area-id');
+                    if (cityid > 0 && areaid > 0) {
+                        str = str + ';' + cityid + '-' + areaid;
+                    }
+                }
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveDealerCityAndAreas", "Dealer")",
+                data: { DealerID: DealerID, cityAreas: str, CityID: CityID },
+                success: function (result) {
+
+                    if (result == "ok") {
+                        alert("Saved successfully");
+                        $('#CityID').val(0);
+                        $("#CityID").trigger("change");
+                    }
+                    else if (result == "deleteok") {
+                        alert("City unallocated successfully");
+                        $('#CityID').val(0);
+                        $("#CityID").trigger("change");
+                    }
+                    else {
+                        alertify.error("Unable to save distributor city and areas");
+                        $('#CityID').val(0);
+                        $("#CityID").trigger("change");
+                    }
+                }
+            });
+        }
+        else {
+
+            var DealerID = $('#DealerID').val();
+            var trs = $('.table').find('tr');
+            var str = '';
+            for (var i = 0; i < trs.length; i++) {
+
+                if ($(trs[i]).find('input').attr('checked') == 'checked') {
+                    var cityid = $(trs[i]).find('input').attr('city-id');
+                    if (cityid > 0) {
+                        str = str + ';' + cityid;
+                    }
+                }
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveDealerCityAndAreasCitywise", "Dealer")",
+                data: { DealerID: DealerID, cities: str },
+                success: function (result) {
+
+                    if (result == "ok") {
+                        alert("Citywise saved successfully");
+                        $('#rdoArea').attr('checked', 'checked');
+                        $('#lblcity').show();
+                        $('#CityID').show();
+                        $('#CityID').val(0);
+                        $("#CityID").trigger("change");
+                    }
+                    else {
+                        alertify.error("Unable to save distributor cities");
+                        //$('#CityID').val(0);
+                        //$("#CityID").trigger("change");
+                    }
+                }
+            });
+        }
+    }
+    function GetDealerCityAndAreas() {
+        debugger;
+        if ($('#rdoArea').is(':checked') == true) {
+            var DealerID = $('#DealerID').val();
+            var CityID = $('#CityID').val();
+            if (DealerID > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetDealerCityAndAreas", "Dealer")",
+                    data: { CityID: CityID, DealerID: DealerID },
+                    success: function (result) {
+
+                        var $el = $("#DealerCityAreaDiv");
+                        $el.empty();
+                        $el.append(result);
+                    }
+                });
+            }
+            else {
+                var $el = $("#DealerCityAreaDiv");
+                $el.empty();
+            }
+        }
+        else {
+            var DealerID = $('#DealerID').val();
+            if (DealerID > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetDealerCityAndAreasCitywise", "Dealer")",
+                    data: { DealerID: DealerID },
+                    success: function (result) {
+
+                        var $el = $("#DealerCityAreaDiv");
+                        $el.empty();
+                        $el.append(result);
+                    }
+                });
+            }
+            else {
+                var $el = $("#DealerCityAreaDiv");
+                $el.empty();
+            }
+        }
+    }
+
+    function GetCityAndAreaList(RegionalHeadID) {
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetCityListByRegionHeadIDSelectAllText", "Dealer")",
+            data: { RegionalHeadID: RegionalHeadID },
+            success: function (json) {
+
+                var $el = $("#CityID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+                    $el.append($("<option></option>").val(key.ID).text(key.Name));
+                });
+
+                //GetAreaList($("#CityID option:first").val());
+            }
+        });
+    }
+
+    function chkboxAllChange(chkbox) {
+        if ($(chkbox).attr('checked') == 'checked') {
+            // select all chckboxes
+            $('.table').find('tr').each(function () {
+                $(this).find('input').attr('checked', true);
+            });
+        }
+        else {
+            // un select all chkboxes
+            $('.table').find('tr').each(function () {
+                $(this).find('input').attr('checked', false);
+            });
+
+        }
+    }
+
+    @*function GetAreaList(CityID) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetAreaListByCityID", "Dealer")",
+            data: { CityID: CityID == null ? 0 : CityID },
+            success: function (json) {
+
+                var $el = $("#AreaID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+                    $el.append($("<option></option>").val(key.ID).text(key.Name));
+                });
+            }
+
+        });
+    }*@
+
+    function GetDealersList(regionalHeadID) {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetDealersByRegionalHeadId", "Dealer")",
+            data: { RegionalHeadID: regionalHeadID },
+            success: function (json) {
+
+                var $el = $("#DealerID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+                    $el.append($("<option></option>").val(key.ID).text(key.Name));
+                });
+            }
+
+        });
+    }
+
+    $(document).ready(function () {
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            //$("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#CityID").change(function () {
+            GetDealerCityAndAreas();
+        });
+
+        $("#DealerID").change(function () {
+            GetDealerCityAndAreas();
+        });
+
+        $("#RegionalHeadID").change(function () {
+            $("#HiddenRegionalHeadID").val($(this).val())
+            GetDealersList($(this).val());
+            GetCityAndAreaList($(this).val());
+            var $el = $("#DealerCityAreaDiv");
+            $el.empty();
+
+        });
+
+        var $el = $("#DealerID");
+        $el.empty(); // remove old options
+        $el.append($("<option></option>").val(0).text('Select'));
+
+        $el = $("#CityID");
+        $el.empty(); // remove old options
+        $el.append($("<option></option>").val(0).text('All'));
+
+    });
+</script>
+
+@*<script type="text/javascript">
+
+    
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Dealer Saved Successfully");
+            ClearForm();
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Save Dealer.");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+
+</script>*@

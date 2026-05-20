@@ -1,0 +1,534 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Calendar View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Job / Calendar View</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="row-fluid">
+
+    <div class="span12">
+        <!-- BEGIN SAMPLE FORMPORTLET-->
+        <div class="widget green" style="min-height: 132px !important;">
+            <div class="widget-title">
+                <h4>Show All Jobs</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body" style="">
+                <div class="span12">
+                    <div class="control-group" style="margin-bottom: 14px;float: left;margin-right: 20px;">
+                        <label class="control-label">Regional Head</label>
+                        <div class="controls">
+                            <select class="form-control chosen-select" id="RegionalHeadID" style="width: 190px;">
+                                <option value="0">All</option>
+                                @{
+                                    foreach (FOS.Shared.RegionalHeadData obj in ViewBag.RegionalHead)
+                                    {
+                                        <option value="@obj.ID">@obj.Name</option>
+                                    }
+                                }
+                            </select>
+                            @*<input style="line-height:2;margin-bottom:7px!important;" type="button" value="Regional Headwise" onclick="viewRegionalHeadwise()" />*@
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-bottom: 14px;float: left;margin-right: 20px;">
+                        <label class="control-label">Sales Officer</label>
+                        <div class="controls">
+                            <select class="form-control chosen-select" id="saleOfficer" style="width: 190px;">
+                                @{
+                                    foreach (FOS.Shared.SaleOfficerData obj in ViewBag.SaleOfficer)
+                                    {
+                                        <option value="@obj.ID">@obj.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group" style="margin-bottom:0px;float:left;margin-left:12px;margin-top:28px;">
+                        <table style="padding-left:10px;font-size:small;" border="0">
+                            <tr>
+                                @*<td style="color:#ce0019;font-weight:600;">Total Jobs: </td>
+                                    <td><span id="totalJobs">0</span></td>*@
+                                @*</tr>
+                                    <tr>*@
+                                @*<td style="color:#ce0019;font-weight:600;padding-left:25px">Visited: </td>
+                                    <td><span id="totalVisited">0</span></td>*@
+                                @*</tr>
+                                    <tr>*@
+                                @*<td style="color:#ce0019;font-weight:600;padding-left:25px">Unvisited: </td>
+                                    <td><span id="totalUnvisited">0</span></td>*@
+                            </tr>
+                        </table>
+                        <span id="spanLoader" style="display:none;"><img src="/content/images/spin.gif" height="50" width="50" /></span>
+                    </div>
+                    @*
+                        <div style="float: left;margin-right: 5px;margin-top: 24.5px;">
+                            <button style="color:white;background-color:#f44336;border: 0px;padding: 6px;">Weekly</button>
+                        </div>
+                        <div style="margin-top: 24.5px;">
+                            <button style="color:white;background-color:#3f51b5;border: 0px;padding: 6px;">Monthly</button>
+                        </div>
+                    *@
+                    <table align="right" border="0">
+                        @*<tr>
+                                <td align="right">Visited</td>
+                                <td width="20px" style="background-color:#4CAF50">&nbsp;</td>
+                                <td align="right">Unvisited</td>
+                                <td width="20px" style="background-color:#ce0019">&nbsp;</td>
+                            </tr>*@
+                        <tr>
+                            @*<td colspan="4" align="right">
+                                    <input type="button" value="Full Year" onclick="viewFullYearCal()" />
+                                </td>*@
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="span12" style="margin-left:0 !important">
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>Plans</h4>
+            </div>
+            <div class="widget-body" style="padding: 0px;">
+
+                <div class="span12" style="">
+                    <div id='calendar'></div>
+
+                    <div style='clear: both'></div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="row-fluid"></div>
+
+<style>
+    .fc-title {
+        line-height: 2;
+        /*font-size:12px;*/
+        cursor: pointer;
+    }
+
+    .fc-content {
+        cursor: pointer;
+    }
+
+    .h5_RetailerInfo {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        font-weight: 700;
+        color: #3F51B5;
+    }
+
+    .h5_RetailerValue {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    #external-events {
+        float: left;
+        padding: 0 2px;
+        background: #fff;
+        text-align: left;
+        margin-bottom: 20px;
+        height: 613px;
+    }
+
+        #external-events h4 {
+            font-size: 16px;
+            margin-top: 0;
+            padding-top: 0.4em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-size: 18px;
+            font-weight: bolder;
+            color: #3F51B5;
+        }
+
+        #external-events .fc-event {
+            margin: 2px 2px;
+            padding: 3px;
+            float: left;
+            cursor: pointer;
+            width: 44.5%;
+        }
+
+        #external-events p {
+            margin: 1.5em 0;
+            font-size: 11px;
+            color: #666;
+        }
+
+            #external-events p input {
+                margin: 0;
+                vertical-align: middle;
+            }
+
+    #calendar {
+        float: right;
+        width: 100%;
+    }
+
+    .fc th {
+        background-image: linear-gradient(to bottom, #797979, #545454);
+        color: white;
+        padding: 6px;
+    }
+</style>
+
+
+<script>
+    var showOrNot = true;
+    $("#RegionalHeadID").change(function () {
+        LoadSalesOfficer();
+    });
+    function LoadSalesOfficer() {
+
+        try {
+            var RegionalHeadID = $("#RegionalHeadID").val();
+            $.ajax({
+                type: "POST",
+                data: { RegionalHeadID: RegionalHeadID },
+                url: "@Url.Action("GetAllSaleOfficerListByRegHeadId", "Job")",
+                success: function (json) {
+
+                    var $el = $("#saleOfficer");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>")
+                                .val(key.ID).text(key.Name));
+                    });
+                    $("#saleOfficer").trigger("change");
+                }
+            });
+        } catch (e) {
+            alert(e);
+            //  $('#datatab').dataTable().fnDestroy();
+        }
+    }
+
+    var a = [];
+    var b = [];
+    var JobList = "";
+    var totalVisited = 0;
+    var totalUnvisited = 0;
+    function GetJobs(SOID, month, plan) {
+        showOrNot = true;
+        $('#spanLoader').show();
+        $('#totalJobs').html('Calculating...');
+        $('#totalVisited').html('...');
+        $('#totalUnvisited').html('...');
+        if (SOID > 0) {
+            totalVisited = 0;
+            totalUnvisited = 0;
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetJobsMonthwise", "Job")",
+                dataType: 'json',
+                data: { SOID: SOID, month: month, plan: plan },
+                success: function (Response) {
+                    //debugger;
+                    $('#calendar').fullCalendar('removeEvents');
+
+                    //count visited and unvisited
+                    $.each(Response, function (i, l) {
+                        if (l.Status == true) {
+                            totalVisited++;
+                        }
+                        else {
+                            totalUnvisited++;
+                        }
+                    });
+
+                    setTimeout(function () {
+                        var visitedPercent = parseFloat((parseFloat(totalVisited / (totalVisited + totalUnvisited))) * 100);
+                        var unvisitedPercent = parseFloat((parseFloat(totalUnvisited / (totalVisited + totalUnvisited))) * 100);
+                        if (isNaN(visitedPercent)) {
+                            visitedPercent = 0;
+                        }
+                        if (isNaN(unvisitedPercent)) {
+                            unvisitedPercent = 0;
+                        }
+                        $('#totalJobs').html(totalVisited + totalUnvisited);
+                        $('#totalVisited').html(totalVisited + ' (' + visitedPercent.toFixed(2) + '%)');
+                        $('#totalUnvisited').html(totalUnvisited + ' (' + unvisitedPercent.toFixed(2) + '%)');
+                        $('#spanLoader').hide();
+                    }, 500);
+
+                    $.each(Response, function (i, l) {
+                        var newEvent = new Object();
+
+                        newEvent.title = l.ShopName;
+                        newEvent.start = dateFormatter(l.JobDate);
+                        newEvent.allDay = true;
+                        newEvent.stick = true;
+                        newEvent.jobId = l.JobID;
+                        newEvent.jobDetailId = l.JobDetailID;
+                        newEvent.visitPlanType = l.VisitPlanType;
+                        newEvent.retailerId = l.RetailerID;
+                       // newEvent.DealerName = l.DealerName;
+                        newEvent.Status = l.Status;
+                        newEvent.RetailerName = l.RetailerName;
+                        if (l.DateComplete != null) {
+                            newEvent.DateComplete = dateFormatter(l.DateComplete);
+                        }
+                        else {
+                            newEvent.DateComplete = "";
+                        }
+
+                        //debugger;
+                        if (newEvent.Status == true) {
+                            newEvent.color = '#4CAF50';//#458b00';//#228b22';
+                            newEvent.textColor = 'white';
+                            //totalVisited++;
+                        }
+                        else {
+                            newEvent.color = '#ce0019';//#0000cd';//#3F51B5';
+                            newEvent.textColor = 'white';
+                            //totalUnvisited++;
+                        }
+
+                        setTimeout(function () {
+                            $('#calendar').fullCalendar('renderEvent', newEvent, true);
+                            $('#calendar').fullCalendar('option', 'height', 'auto');
+                        }, 1);
+                    });
+                }
+            });
+        }
+        else {
+            $('#calendar').fullCalendar('removeEvents');
+            $('#calendar').fullCalendar('option', 'height', 600);
+            $('#totalJobs').html(0);
+            $('#totalVisited').html(0);
+            $('#totalUnvisited').html(0);
+            $('#spanLoader').hide();
+        }
+
+    }
+
+    function GetJobsRegionHeadwise(regHeadId, month, plan) {
+        showOrNot = false;
+        $('#spanLoader').show();
+        $('#totalJobs').html('Calculating...');
+        $('#totalVisited').html('...');
+        $('#totalUnvisited').html('...');
+        totalVisited = 0;
+        totalUnvisited = 0;
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("GetJobsMonthwiseOfRegHead", "Job")",
+            dataType: 'json',
+            data: { regionalHeadId: regHeadId, month: month, plan: plan },
+            success: function (Response) {
+                //debugger;
+                $('#calendar').fullCalendar('removeEvents');
+
+                //count visited and unvisited
+                $.each(Response, function (i, l) {
+                    if (l.Status == true) {
+                        totalVisited = totalVisited + l.Count;
+                    }
+                    else {
+                        totalUnvisited = totalUnvisited + l.Count;
+                    }
+                });
+
+                setTimeout(function () {
+                    var visitedPercent = parseFloat((parseFloat(totalVisited / (totalVisited + totalUnvisited))) * 100);
+                    var unvisitedPercent = parseFloat((parseFloat(totalUnvisited / (totalVisited + totalUnvisited))) * 100);
+                    if (isNaN(visitedPercent)) {
+                        visitedPercent = 0;
+                    }
+                    if (isNaN(unvisitedPercent)) {
+                        unvisitedPercent = 0;
+                    }
+                    $('#totalJobs').html(totalVisited + totalUnvisited);
+                    $('#totalVisited').html(totalVisited + ' (' + visitedPercent.toFixed(2) + '%)');
+                    $('#totalUnvisited').html(totalUnvisited + ' (' + unvisitedPercent.toFixed(2) + '%)');
+                    $('#spanLoader').hide();
+                }, 500);
+
+                $.each(Response, function (i, l) {
+                    var newEvent = new Object();
+
+                    newEvent.title = l.ShopName;
+                    newEvent.start = dateFormatter(l.JobDate);
+                    newEvent.allDay = true;
+                    newEvent.stick = true;
+                    newEvent.Status = l.Status;
+                    if (l.DateComplete != null) {
+                        newEvent.DateComplete = dateFormatter(l.DateComplete);
+                    }
+                    else {
+                        newEvent.DateComplete = "";
+                    }
+
+                    //debugger;
+                    if (newEvent.Status == true) {
+                        newEvent.color = '#4CAF50';//#458b00';//#228b22';
+                        newEvent.textColor = 'white';
+                        //totalVisited++;
+                    }
+                    else {
+                        newEvent.color = '#ce0019';//#0000cd';//#3F51B5';
+                        newEvent.textColor = 'white';
+                        //totalUnvisited++;
+                    }
+
+                    setTimeout(function () {
+                        $('#calendar').fullCalendar('renderEvent', newEvent, true);
+                        $('#calendar').fullCalendar('option', 'height', 'auto');
+                    }, 1);
+                });
+            }
+        });
+
+    }
+
+    function dateFormatter(dateString) {
+        //debugger;
+        var re = /\/Date\(([0-9]*)\)\//;
+        var m = dateString.match(re);
+        if (m) return new Date(parseInt(dateString.substr(6)));
+        else return null;
+    }
+
+    $(document).ready(function () {
+        $('#RegionalHeadID').val(1);
+        $("#saleOfficer").change(function () {
+            var mo = ($("#calendar").fullCalendar('getDate')._d + '').substring(3, 7);
+            var yr = ($("#calendar").fullCalendar('getDate')._d + '').substring(10, 15);
+            GetJobs($(this).val(), mo + ' ' + yr, 'all');
+        });
+    });
+
+    $('#external-events .fc-event').each(function () {
+
+        // make the event draggable using jQuery UI
+        $(this).draggable({
+            zIndex: 999,
+            revert: true,      // will cause the event to go back to its
+            revertDuration: 0  //  original position after the drag
+        });
+
+    });
+
+
+    $('#calendar').fullCalendar({
+        //windowResize: function(view) {
+        //    alert('The calendar has adjusted to a window resize');
+        //},
+        header: {
+            left: 'prev,today,next',
+            center: 'title',
+            right: 'basicWeek,month'
+            //right: 'month'
+        },
+        defaultView: 'month',
+        // This Allows Droppeable Things To Calendar Limits On Showing...
+        //eventLimit: true, // for all non-agenda views
+        //views: {
+        //    agenda: {
+        //        eventLimit: 5 // adjust to 6 only for agendaWeek/agendaDay
+        //    }
+        //},
+        droppable: false,
+        eventStartEditable: false, //or editable:true,
+
+        viewRender: function (view) {
+
+            if (view.type == 'month') {
+                GetJobs($('#saleOfficer').val(), view.title, "all");
+            }
+
+        },
+        eventClick: function (calEvent, jsEvent, view) {
+            //alert(calEvent.DateComplete);
+            if (showOrNot) {
+                var plan = 'Monthly Plan';
+                if (calEvent.visitPlanType == 4) {
+                    plan = 'Beat Plan Selective days'
+                }
+                else if (calEvent.visitPlanType == 5) {
+                    plan = 'Beat Plan Alternate days'
+                }
+                else if (calEvent.visitPlanType == 6) {
+                    plan = 'Beat Plan Once a month'
+                }
+
+                if (calEvent.DateComplete == '') {
+                    alert('Shop Name: ' + calEvent.title + '\n' +
+                        'Retailer Name: ' + calEvent.RetailerName + '\n' +
+                        'Dealer Name: ' + calEvent.DealerName + '\n' +
+                        'Plan Type: ' + plan);
+                }
+                else {
+                    var stDate = calEvent.DateComplete + '';
+                    stDate = stDate.substring(0, 15);
+                    alert('Shop Name: ' + calEvent.title + '\n' +
+                        'Retailer Name: ' + calEvent.RetailerName + '\n' +
+                        'Dealer Name: ' + calEvent.DealerName + '\n' +
+                        'Plan Type: ' + plan + '\n' +
+                        'Visited Date: ' + stDate);
+                }
+
+                //alert('Stick: ' + calEvent.stick);
+                //alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                //alert('View: ' + view.name);
+
+                // change the border color that its read or clicked info
+                $(this).css('border-color', 'blue');
+            }
+        }
+    });
+
+    function viewFullYearCal() {
+        var params = [
+            'height=' + screen.height,
+            'width=' + screen.width,
+            'fullscreen=yes' // only works in IE, but here for completeness
+        ].join(',');
+        var popup = window.open("/Job/ShowFullYearCal?soId=" + $("#saleOfficer").val() + "&plan=fullyear", "popup_window", params);
+        popup.moveTo(0, 0);
+    }
+    function viewRegionalHeadwise() {
+        $('#saleOfficer').val(0);
+        var regHdId = $('#RegionalHeadID').val();
+        var mo = ($("#calendar").fullCalendar('getDate')._d + '').substring(3, 7);
+        var yr = ($("#calendar").fullCalendar('getDate')._d + '').substring(10, 15);
+
+        GetJobsRegionHeadwise(regHdId, mo + ' ' + yr, 'all');
+    }
+</script>

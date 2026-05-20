@@ -1,0 +1,858 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Jobs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link href="~/Content/Style/datepicker.css" rel="stylesheet" />*@
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Jobs</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Manage Jobs</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+@using (Ajax.BeginForm("AddUpdateB2BJob", "Job", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal", id = "myForm" }))
+{
+        
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="row-fluid">
+        <div class="span5">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Manage Jobs</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 498px;">
+
+                    <div style="float: left">
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Job Title *</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.JobTitle, new { @class = "", @style = "", name = "JobTitle" })
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                                <label class="control-label">Type</label>
+                                <div class="controls">
+                                    <select id="Type" name="Type" disabled>
+                                        <option value="1">B2B Head</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        <!-- Select Regional Head -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Select Head *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                            </div>
+                        </div>
+
+                        <!-- Select Sale Officer -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.ID)
+                            </div>
+                        </div>
+
+
+                        <!-- Select Visit Type -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Visit Plan *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.VisitPlanID, new SelectList(Model.VisitPlan, "ID", "Type"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.VisitPlanID)
+                                @Html.HiddenFor(model => model.VisitPlanHiddenID)
+                            </div>
+                        </div>
+
+
+                        <div class="control-group" style="margin-bottom: 14px;" id="startingDateDiv">
+                            <label class="control-label">Starting Job Date</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.StartingDate, new { @class = "", @style = "", name = "startDate" })
+
+                            </div>
+                        </div>
+
+
+                        <!-- Select Week Day -->
+                        <div class="control-group" style="margin-bottom: 14px;" id="weekSelectDay">
+                            <label class="control-label">Week Day</label>
+                            <div class="controls">
+
+                                @{
+    List<SelectListItem> listItems = new List<SelectListItem>();
+    listItems.Add(new SelectListItem
+    {
+        Text = "-- Select Day --",
+        Value = "0"
+    });
+    listItems.Add(new SelectListItem
+         {
+             Text = "Monday",
+             Value = "Monday"
+         });
+    listItems.Add(new SelectListItem
+         {
+             Text = "Tuesday",
+             Value = "Tuesday",
+         });
+    listItems.Add(new SelectListItem
+         {
+             Text = "Wednesday",
+             Value = "Wednesday"
+         });
+    listItems.Add(new SelectListItem
+        {
+            Text = "Thursday",
+            Value = "Thursday"
+        });
+    listItems.Add(new SelectListItem
+        {
+            Text = "Friday",
+            Value = "Friday"
+        });
+    listItems.Add(new SelectListItem
+        {
+            Text = "Saturday",
+            Value = "Saturday"
+        });
+    listItems.Add(new SelectListItem
+        {
+            Text = "Sunday",
+            Value = "Sunday"
+        });
+                                }
+
+                                @Html.DropDownListFor(model => model.VisitPlanWeeklyDays, listItems)
+                            </div>
+                        </div>
+
+
+                        <!-- Select Days -->
+                        <div id="days" style="margin-top: 0px; display: none; text-align: center; padding-left: 160px">
+
+                            @* <div class="span6">
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Monday, new { @class = "", style = "margin-right: 2px;" }) <span style="font-size: 10px">MON</span>
+                                </p>
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Tuesday, new { @class = "", style = "margin-right: 2px;margin-left: -4px;" }) <span style="font-size: 10px">TUE</span>
+                                </p>
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Wednesday, new { @class = "", style = "margin-right: 2px;" }) <span style="font-size: 10px">WED</span>
+                                </p>
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Thursday, new { @class = "", style = "margin-right: 2px;margin-left: -4px;" }) <span style="font-size: 10px">THU</span>
+                                </p>
+                            </div>
+                            <div class="span6">
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Friday, new { @class = "", style = "margin-right: 2px;margin-left: -4px;" }) <span style="font-size: 10px">FRI</span>
+                                </p>
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Saturday, new { @class = "", style = "margin-right: 2px;" }) <span style="font-size: 10px">SAT</span>
+                                </p>
+                                <p>
+                                    @Html.CheckBoxFor(model => model.VisitPlanEach.Sunday, new { @class = "", style = "margin-right: 2px;" }) <span style="font-size: 10px">SUN</span>
+                                </p>
+                            </div>
+*@
+                        </div>
+
+
+                        <!-- Buttons -->
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 238px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Create</span>
+                                </button>
+                                <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+
+
+
+
+        </div>
+
+        <div class="span7">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Selected Sales Officer Areas List</h4>
+                </div>
+                <div class="widget-body" style="height: 498px; overflow: scroll;">
+                    <div id="progress" style="display: none; position: absolute; margin-top: 180px; margin-left: 245px;">
+                        <h3>Loading . . . </h3>
+                    </div>
+                    @Html.HiddenFor(model => model.SelectedAreas)
+
+                    <div id="PaintersCity">
+                         <div class="control-group">
+                            <label class="control-label" style="width: 45px;">Cities</label>
+                             <div class="controls" style="margin-left: 50px;">
+                                 @Html.DropDownListFor(model => model.CityID, new SelectList(Model.Cities, "ID", "Name"), new { @class = "" })
+                             </div>
+                          </div>
+                        <hr />
+                    </div>
+                    <div style="float: left; width: 99%;">
+                        <div id="areaZone" class="" style="width: 108%; height: 440px;"></div>
+                    </div>
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+        </div>
+
+    </div>
+}
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Detail</h4>
+                <span class="tools">
+                    @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                    @*<a href="javascript:;" class="icon-remove"></a>*@
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                    <button id="editable-sample_new" class="btn green">
+                                        Add New <i class="icon-plus"></i>
+                                    </button>
+                                </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" style="width: 100%;" id="datatab">
+                        <thead>
+                            <tr>
+                                <th>@Html.DisplayNameFor(model => model.ID)</th>
+                                <th>@Html.DisplayNameFor(model => model.RegionalHeadID)</th>
+                                <th>@Html.DisplayNameFor(model => model.SaleOfficerID)</th>
+
+                                <th style="width: 10% !important">Sr #</th>
+                                <th style="width: 16% !important">Job Title 
+                                </th>
+                                <th style="width: 16% !important">Regional Head
+                                </th>
+
+                                <th style="width: 16% !important">Sales Officer
+                                </th>
+
+                                <th style="width: 16% !important">Visit Type
+                                </th>
+
+                                <th style="width: 16% !important">Assigned On
+                                </th>
+
+                                <th style="width: 16% !important">Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+@*<script src="~/Scripts/js/moment.min.js"></script>
+<script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<script>
+
+    //var a = [];
+    //var RP = [];
+
+    //function painterSelected(obj) {
+
+
+    //    var painterID = $(obj).attr("data-id");
+    //    var i = findObj(RP, ID);
+
+    //    if (obj.checked && i == -1) {
+    //        RP.push(ID);
+    //    }
+
+    //    if (!obj.checked && i > -1) {
+    //        RP.splice(i, 1); //('"'+painterID+'"');
+    //    }
+    //    console.log(RP);
+    //}
+
+    //function findObj(arr, val) {
+    //    for (i = 0; i < arr.length ; i++) {
+    //        if (arr[i] == val) {
+    //            return i;
+    //        }
+    //    }
+    //    return -1;
+    //}
+
+
+    var a = [];
+
+    $(function () {
+        $('#myForm').submit(function () {
+
+
+
+            if ($('#JobTitle').val() == "" || $('#JobTitle').val() == null) {
+                alertify.error("Please Enter Job Title");
+                return false;
+            }
+            $("#Type").val("2");
+            $("#SelectedAreas").val(a);
+
+        });
+    });
+
+    function GenerateDetailGrid() {
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "paging": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "bRestore": true,
+            "ajax": {
+                "type": "POST",
+                "contentType": "application/json; charset=utf-8",
+                "dataType": "json",
+                "url": '@Url.Action("JobDataHandler", "Job")',
+                'data': function (data) {
+                    data.RegionalHeadID = $('#RegionalHeadID').val() == null ? 0 : $('#RegionalHeadID').val();
+                    data.SaleOfficerID = $('#SaleOfficerID').val() == null ? 0 : $('#SaleOfficerID').val();
+                    return data = JSON.stringify(data);
+                },
+            },
+            "fnDrawCallback": function (osetting) {
+
+                var UpdateCheck = "0";
+                var DeleteCheck = "0";
+
+                if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+                else {
+                    $(".edit").on("click", function () {
+
+                        $('#ID').val($(this).attr("data-id"));
+                        $('#JobTitle').val($(this).attr("data-jobtitle"));
+                        $('#create').text('Update');
+                        $("#RegionalHeadID").val($(this).attr("data-regionalheadid"));
+                        $("#SaleOfficerID").val($(this).attr("data-saleofficerid"));
+                       
+                        $("#CityID").val($(this).attr("data-cityid"));
+                        $('#VisitPlanID').val($(this).attr("data-visitplantype"));
+                        $("#VisitPlanID").trigger("chosen:update");
+                        $("#VisitPlanID").trigger("change");
+                        $("#VisitPlanWeeklyDays").val($(this).attr("data-visitplandays"));
+                        $("#VisitPlanWeeklyDays").trigger("chosen:update");
+                        $("#StartingDate").val($(this).attr("data-startingdate"));
+                        $("#VisitPlanWeeklyDays").trigger("chosen:update");
+
+                        $("#VisitPlanHiddenID").val($(this).attr("data-visitplantype"));
+
+                        var arr = $(this).attr("data-visitplandays").split(',');
+
+                        $('html, body').animate({
+                            scrollTop: $("#main-content").offset().top
+                        }, 500);
+
+                        LoadAreasEdit($(this).attr("data-id"),$(this).attr("data-saleofficerid"), $(this).attr("data-cityid"), $(this).attr("data-areas"));
+
+                        $('#VisitPlanID').attr('disabled', true);
+
+
+                        $('html, body').animate({
+                            scrollTop: $("#main-content").offset().top
+                        }, 500);
+                        
+                    });
+                }
+
+                if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                else {
+                    $(".delete").on("click", function () {
+
+                        var JobID = $(this).attr("data-id");
+
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Delete This Job ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("DeleteJob", "Job")",
+                                    data: { JobID: JobID },
+                                    success: function (data) {
+
+                                        if (data == "0") {
+                                            alertify.success('Record Deleted Successfully');
+                                            var table = $('#datatab').DataTable();
+                                            table.row(this).remove().draw(false);
+                                            ClearForm();
+                                        }
+
+                                        else { alertify.error('An Error Occured, Try Again.'); }
+                                    }
+
+                                });
+
+                            } else { }
+                        });
+
+                    });
+                }
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search jobs : " },
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "RegionalHeadID", "bVisible": false },
+           { "data": "SaleOfficerID", "bVisible": false },
+           { "data": "ID" },
+           { "data": "JobTitle" },
+           { "data": "RegionalHeadName" },
+           { "data": "SaleOfficerName" },
+           { "data": "VisitPlanName" },
+           { "data": "DateOfAssign" },
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+                   return '<button class="btn btn-success edit" data-id=' + '"' + row.ID + '" data-jobtitle=' + '"' + row.JobTitle + '"' + '  data-saleofficerid=' + '"' + row.SaleOfficerID + '"' + ' data-regionalheadid=' + '"' + row.RegionalHeadID + '"' + '  data-visitplantype=' + '"' + row.VisitPlanID + '"' + 'data-startingdate=' + '"' + row.StartingDate + '"' + 'data-visitplandays=' + '"' + row.VisitPlanDays + '"' + ' data-cityid=' + '"' + row.CityID + '"' + ' data-areas=' + '"' + row.SelectedAreas + '"' + ' ><i class=icon-pencil></i></button>&nbsp;<button class="btn btn-info delete" data-id=' + '"' + row.ID + '"' + '><i class=icon-trash></i></button>';
+               }
+           }], "order": [0, "asc"]
+
+        });
+
+    }
+
+    function LoadAreasEdit(JobID, SOID, CityID, Areas) {
+        try {
+            $.ajax({
+                type: "POST",
+                data: { JObID:JobID,SOID: SOID, CityID: CityID },
+                url: "@Url.Action("GetAreasRelatedToCityIDEdit", "Job")",
+                    success: function (json) {
+
+                        a = [];
+                        for (i = 0 ; i < Areas.length ; i++) {
+                            a.push(Areas[i]);
+                        }
+                        var $el = $("#areaZone");
+                        $el.empty();
+                        $("#areaZone").append(json.Response);
+
+                    }
+
+                });
+
+            }
+            catch (e) {
+                alert(e);
+            }
+        }
+
+        $("#btnRefresh").click(function () {
+            ClearForm();
+        });
+
+
+    function LoadRegionalHead(RegionalHeadType) {
+
+
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: "@Url.Action("GetRegionalHeadAccordingToType", "SaleOfficer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#RegionalHeadID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+                $("#RegionalHeadID").trigger("change");
+            }
+
+        });
+    }
+
+    $(document).ready(function () {
+
+        $('input[name=StartingDate]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $("input[name=StartingDate]").datepicker({ dateFormat: "dd-MM-yy" });
+        $("input[name=StartingDate]").trigger('change')
+
+        $('#startingDateDiv').hide();
+       
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#liJob,#liManageJobs").addClass("active");
+
+        function LoadSalesOfficer() {
+
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealer", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+                        $("#SaleOfficerID").trigger("chosen:updated");
+                        $("#SaleOfficerID").trigger("change");
+
+                    }
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RegionalHeadID").change(function () {
+            LoadSalesOfficer();
+           
+        });
+
+        $("#SaleOfficerID").change(function () {
+            LoadCities($("#RegionalHeadID").val(),$(this).val());
+            var dt = $('#datatab').DataTable();
+            dt.ajax.reload();
+        });
+
+        $("#CityID").change(function () {
+            LoadAreas($("#SaleOfficerID").val(),$(this).val());
+        });
+
+        function LoadCities(RHID,SOID) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RHID },
+                    url: "@Url.Action("GetCitiesRelatedToRegionalHead", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#CityID");
+                        $el.empty(); 
+                        $.each(json, function (value, key) {
+                            $el.append($("<option></option>").val(key.ID).text(key.Name));
+                        });
+
+                        try {
+                            $.ajax({
+                                type: "POST",
+                                data: { SOID: SOID == undefined ? 0 : SOID, CityID: $("#CityID option:first").val() == undefined ? 0 : $("#CityID option:first").val() },
+                                url: "@Url.Action("GetAreasRelatedToCityID", "Job")",
+                                success: function (json) {
+
+                                    var $el = $("#areaZone");
+                                    if (json.Response == "" || json.Response == null) {
+                                        $el.empty();
+                                    }
+                                    else {
+                                        $el.empty();
+                                        $("#areaZone").append(json.Response);
+                                    }
+
+                                }
+
+                            });
+
+                        }
+                        catch (e) {
+                            alert(e);
+                        }
+
+
+                    }
+
+                });
+
+            }
+            catch (e) {
+                alert(e);
+            }
+        }
+
+        function LoadAreas(SOID,CityID)
+        {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: SOID == undefined ? 0 : SOID, CityID: CityID},
+                    url: "@Url.Action("GetAreasRelatedToCityID", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#areaZone");
+                        if (json.Response == "" || json.Response == null) {
+                            $el.empty();
+                        }
+                        else {
+                            $el.empty();
+                            $("#areaZone").append(json.Response);
+                        }
+                        
+                    }
+
+                });
+
+            }
+            catch (e) {
+                alert(e);
+            }
+        }
+
+
+
+        $('#VisitPlanID').change('change', function () {
+            if ($(this).val() == 1) {
+                $('#startingDateDiv').show();
+                $('#weekSelectDay').hide();
+                $('#weekSelectDay').val("0");
+                $("#days").css("display", "none");
+                $("#days").val(",,,,,,,");
+            }
+            else if ($(this).val() == 2) {
+                $('#startingDateDiv').hide();
+                $('#weekSelectDay').show();
+                $("#days").css("display", "none");
+                $("#days").val(",,,,,,,");
+            }
+            else if ($(this).val() == 3) {
+                $('#startingDateDiv').hide();
+                $('#weekSelectDay').hide();
+                //$('#VisitPlanWeekDay').val("0");
+                //$("#days").css("display", "flex");
+            }
+        });
+
+        GenerateDetailGrid();
+
+        $("#btnRefresh").trigger('click');
+        $("#CityID").trigger('change');
+
+    });
+
+
+    function RefreshTable(tableId, urlData) {
+        $.getJSON(urlData, null, function (json) {
+            table = $(tableId).dataTable();
+            oSettings = table.fnSettings();
+
+            table.fnClearTable(this);
+
+            for (var i = 0; i < json.aaData.length; i++) {
+                table.oApi._fnAddData(oSettings, json.aaData[i]);
+            }
+
+            oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+            table.fnDraw();
+        });
+    }
+
+
+    function ClearForm() {
+
+        a = [];
+        $('#ID').val(0);
+        $('#JobTitle').val('');
+        $('#JobNo').val('');
+        $('#VisitPlanID').val(1);
+        $('#VisitPlanID').trigger("chosen:update");
+        $("#VisitPlanID").trigger("change");
+        $('#create').text('Create');
+
+        $('#VisitPlanWeeklyDays').val("0");
+        $('#VisitPlanWeeklyDays').trigger("chosen:update");
+
+        $("#days").css("display", "none");
+
+        $("#StartingDate").val("");
+        $("#SelectedRetailers").val("");
+        $("#SelectedPainters").val("");
+        $("#SelectedDealers").val("");
+        $("#VisitPlanHiddenID").val("");
+        $("#ContactPerson").val("");
+        $("#B2BVisitAddress").val("");
+        $("#Description").val("");
+        $('#VisitPlanID').attr('disabled', false);
+        $("#SaleOfficerID").trigger('change');
+    }
+
+
+    function dateFormatter(date) {
+        var d = date;
+
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+
+        var output = d.getFullYear() + '-' + (('' + month).length < 2 ? '0' : '') + month + '-' + (('' + day).length < 2 ? '0' : '') + day;
+        return output;
+    }
+
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Job Saved Successfully");
+            $('#create').text('Create');
+            var dt = $('#datatab').DataTable();
+            dt.ajax.reload();
+            ClearForm();
+        }
+        else if (response == "2") {
+            alertify.error("Please Select Any Retailer For Job");
+        }
+        else if (response == "3") {
+            alertify.error("Please Select Any Retailer For Job");
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Save Job.");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+
+
+    $(document).ajaxComplete(function () {
+    
+        $("input[name='area[]']").bind().change(function () {
+
+            a = [];
+            b = [];
+
+            $("input[name='area[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    a.push($(this).attr('data-id'));
+                }
+
+            });
+
+            $("input[name='area[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    b.push($(this).attr('data-dealerid'));
+                }
+
+            });
+
+            //if ($('input[type=radio][name=VisitType]').val() == "Shop")
+            //{
+            //    $("#SelectedRetailers").val(a);
+            //    $("#SelectedDealers").val(b);
+            //    $("#SelectedPainters").val("");
+            //}
+            //else
+            //{
+            //    $("#SelectedPainters").val(a);
+            //    $("#SelectedRetailers").val("");
+            //    $("#SelectedDealers").val("");
+            //}
+            
+        });
+
+    });
+
+
+</script>
+

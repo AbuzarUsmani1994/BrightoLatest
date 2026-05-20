@@ -1,0 +1,113 @@
+﻿ 
+ @{
+        ViewBag.Title = "Retailer";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+ <!-- BEGIN PAGE HEADER-->
+    <div class="row-fluid">
+        <div class="span12">
+            <h3 class="page-title"></h3>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+            </ul>
+            <!-- END PAGE TITLE & BREADCRUMB-->
+        </div>
+    </div>
+
+@using (Html.BeginForm())
+                {
+<div class="modal-body">
+
+                <div class="span12" style="margin-left: 35px;">
+                    <div class="span6">
+                        <div class="control-group" style="margin-bottom: 14px;">
+                           <label class="control-label">Starting Date</label>
+                           <div class="controls">
+                              <input class="text-box single-line" id="StartingDate" name="StartingDate" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                           </div>
+                        </div>
+                    </div>
+
+                    <div class="span6">
+                        <div class="control-group" style="margin-bottom: 14px;">
+                           <label class="control-label">Ending Date</label>
+                           <div class="controls">
+                              <input class="text-box single-line" id="EndingDate" name="EndingDate"  style="height: 22px; width: 202px; margin-bottom: 0px;">
+                           </div>
+                        </div>
+
+                        <button type="submit" id="GenerateReport" class="btn btn-primary" style="float: right;margin-right: 70px;">
+                          <span id="create">Generate Report</span>
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+  <div id="ChooseDates1" class="modal fade" role="dialog" style="width: 45%;left: 29%;height: 30%;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-header" style="background-color: #3F51B5;box-shadow: 0px 3px 8px grey;">
+                <button type="button" class="close" data-dismiss="modal" style="margin-top: -8px;color: #ffffff;opacity: 0.8;">&times;</button>
+                <h4 class="modal-title" style="font-weight: 900;color: #ffffff;margin-top: 0px;margin-bottom: 0px;">Retailer Information</h4>
+            </div>
+            
+            @*<div class="modal-body">
+
+                <div class="span12" style="margin-left: 35px;">
+                    <div class="span6">
+                        <div class="control-group" style="margin-bottom: 14px;">
+                           <label class="control-label">Starting Date</label>
+                           <div class="controls">
+                              <input class="text-box single-line" id="StartingDate" name="StartingDate" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                           </div>
+                        </div>
+                    </div>
+
+                    <div class="span6">
+                        <div class="control-group" style="margin-bottom: 14px;">
+                           <label class="control-label">Ending Date</label>
+                           <div class="controls">
+                              <input class="text-box single-line" id="EndingDate" name="EndingDate"  style="height: 22px; width: 202px; margin-bottom: 0px;">
+                           </div>
+                        </div>
+
+                        <button type="submit" id="GenerateReport" class="btn btn-primary" style="float: right;margin-right: 70px;">
+                          <span id="create">Generate Report</span>
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>*@
+       </div>
+    </div>
+ </div>
+
+                }
+
+<script>
+
+    $(document).ready(function () {
+
+        $('input[name=StartingDate]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $('input[name=StartingDate]').datepicker({ dateFormat: "MM-yy" });
+        $("input[name=StartingDate]").trigger('change')
+
+        $('input[name=EndingDate]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $('input[name=EndingDate]').datepicker({ dateFormat: "MM-yy" });
+        $("input[name=EndingDate]").trigger('change')
+
+    });
+
+</script>

@@ -1,0 +1,423 @@
+﻿@model FOS.Shared.ReportsInputData
+
+
+@{
+    ViewBag.Title = "Painter";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>*@
+<script src="~/Scripts/jquery.sumoselect.js" type="text/javascript"></script>
+<link href="~/Content/dropdownliststyle.css" rel="stylesheet" type="text/css" />
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li><a href="#">Painter</a>
+            <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Manage Painters</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- END PAGE HEADER-->
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row-fluid">
+
+        <div class="span5">
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4>Manage Painter</h4>
+                    <span class="tools"></span>
+                </div>
+                <div class="widget-body" style="height: 440px;">
+
+                    <!-- Select Start Date -->
+                    <div class="control-group" style="margin-bottom: 14px;">
+                           <label class="control-label">Starting</label>
+                           <div class="controls">
+                              <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                           </div>
+                        </div>
+
+                    <!-- Select End Date -->
+                    <div class="control-group" style="margin-bottom: 14px;">
+                           <label class="control-label">Ending</label>
+                           <div class="controls">
+                              <input class="text-box single-line" id="EndingDate1" name="EndingDate1"  style="height: 22px; width: 202px; margin-bottom: 0px;">
+                           </div>
+                        </div>                    
+                    <div class="control-group">
+                                    <label class="control-label">Territory:</label>
+                                    <div class="controls">
+                                       @*@Html.DropDownListFor(model => model.TID, new SelectList(Model.Territories, "ID", "TeritoryName"), new {@multiple="multiple", @class = "SlectBox" })*@
+                                        @Html.DropDownListFor(model => model.TID, new SelectList(Model.Territories, "ID", "TeritoryName"), "---Select ---", new {@class = ""})
+                                    </div>
+                                 </div>  
+
+                    <div class="control-group">
+                                    <label class="control-label">FOS:</label>
+                                    <div class="controls">
+                                       @*@Html.DropDownListFor(model => model.TID, new SelectList(Model.Territories, "ID", "TeritoryName"), new {@multiple="multiple", @class = "SlectBox" })
+                                        @Html.DropDownListFor(model => model.FosID, new SelectList(Model.FosNames, "ID", "Name"), "---Select ---", new {})*@
+                                        @Html.DropDownListFor(x => x.FosID, Model.FosNames, "---Select FOS---", new { @class = "" })
+                                    </div>
+                                 </div>  
+                    <div class="control-group">
+                        <div class="form-actions" style="padding-left: 238px;">
+                            <button type="button" id="btnNew" value="Create" class="btn btn-primary">
+                                <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Create</span>
+                            </button>
+                            <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="span7">
+            <div class="widget green">
+                <div class="widget-title">
+                    <h4 >Painters List</h4>
+                    <h4 style="float: right;font-weight: 600;">Total Painters: <span  style="font-weight: 300;" id="totalpainters"></span></h4>
+                    <h4 style="float: right;font-weight: 600;border-right: 1px solid;border-left: 1px solid;">Cities: <span  style="font-weight: 300;" id="cities"></span></h4>
+                </div>
+                <div class="widget-body" style="padding: 10px; height: 450px; overflow: scroll; background-color: #ebffdf;">
+                    <div id="progress" style="display: none; position: absolute; margin-top: 180px; margin-left: 245px;">
+                        <h3>Loading . . . </h3>
+                    </div>
+                    
+                    
+                    @* <div class="control-group">
+                                    <label class="control-label">Territory:</label>
+                                    <div class="controls">
+                                       @Html.DropDownListFor(model => model.TID, new SelectList(Model.Territories, "ID", "TeritoryName"), "---Select ---", new {})
+                                    </div>
+                                 </div> *@ 
+                           
+                    <hr />
+                    <div id="painters" class="" style="width: 108%; height: 440px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    @*</div>*@
+                    
+}
+
+
+
+<script src="~/Scripts/js/sugar.min.js"></script>
+
+<script>
+    $("#TID").on("change", function (e) {        
+        var $TID = $(this).val();
+        sPainters = [];
+        var $citylist = $("#CID");
+        var $fos = $("#FosID");
+        $.ajax({
+            url: '@Url.Action("getFosNames", "Painter")',
+             type: "post",
+             dataType: 'json',
+             data: {
+                 TID: $TID,
+             },
+             success: function (data) {
+                 
+                 $fos.filter(function () { return $($fos).find('option[value!=""]').remove() });
+                 $.each(data, function (k, v) {
+                     $("<option/>", { value: v.Value, text: v.Text }).appendTo($fos);
+                 });
+             },
+             error: function (jxhr) {
+                 alert("error");
+                 if (typeof console != 'undefined') {
+                     console.log(jxhr.responseText);
+                 }
+             }
+         });
+
+
+         $.ajax({
+             url: '@Url.Action("getCities", "Painter")',
+            type: "post",
+            dataType: 'json',
+            data: {
+                TID: $TID,
+            },
+            success: function (json) {
+                var $el = $("#painters");
+                $el.empty();
+                $("#painters").append(json.Response);
+                
+            },
+            error: function (jxhr) {
+                alert("error");
+                if (typeof console != 'undefined') {
+                    console.log(jxhr.responseText);
+                }
+            }
+         });
+
+       
+     });
+
+    //var a = [];
+    var sPainters = [];
+
+    function painterSelected(obj) {
+
+      
+        var painterID = $(obj).attr("data-id");
+        var i = findPainter(sPainters, painterID);
+
+        if (obj.checked && i == -1)
+        {
+            sPainters.push(painterID);
+        }
+
+        if (!obj.checked && i > -1)
+        {
+            sPainters.splice(i,1); //('"'+painterID+'"');
+        }
+        console.log(sPainters);
+    }
+
+    function findPainter(arr, val)
+    {
+        for (i = 0; i < arr.length ; i++)
+        {
+            if (arr[i] == val)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+    $('#btnNew').click(function () {
+        //var selected = $("#CID option:selected");
+        var message = "";
+        for (i = 0; i < sPainters.length ; i++) {
+            message += sPainters[i] + ",";
+            //if (sPainters[i] == val) {
+            //    return i;
+            //}
+        }
+        //selected.each(function () {
+        //    // message += $(this).text() + " " + $(this).val() + "\n";
+        //    message += $(this).val() + ",";
+        //});
+        var $FosID = $("#FosID").val();
+        var $TID = $("#TID").val();
+        var $sdate = $("#StartingDate1").val();
+        var $edate = $("#EndingDate1").val();
+        //alert(message);
+        //alert(sdate);
+        //alert(edate);
+        //alert(message);
+        //alert(FosID);
+        window.open("@Url.Action("CityDateWiseRetailerReport", "Retailer")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#EndingDate1").val() + "&TID=" + $("#TID").val() + "&FOSID=" + $("#FosID").val() + "&message=" + message + "", "_top");
+        //string StartingDate, string EndingDate, string TID, string FOSID, string message
+        @*$.ajax({
+                 url: '@Url.Action("CityDateWiseRetailerReport", "Painter")',
+                type: "post",
+                dataType: 'json',
+                data: {
+                     StartingDate: $sdate,
+                     EndingDate: $edate,
+                 TID: $TID,
+                 FOSID: $FosID,
+                 message: message,
+             },
+             success: function (data) {
+                 
+                 alert("success");
+             },
+             error: function (jxhr) {
+                 alert("error");
+                 if (typeof console != 'undefined') {
+                     console.log(jxhr.responseText);
+                 }
+             }
+        });*@
+
+        // StartingDate: $sdate,
+        // EndingDate: $edate,
+        //TID: $TID,
+        //FOSID: $FosID,
+        //message: message
+        //sPainters: sPainters,
+    });
+    $(function () {
+        $('#form0').submit(function () {
+
+            $("#City").val($("#PainterCityID").find("option:selected").text());
+            $("#SelectedPainters").val(sPainters);
+        });
+
+        
+
+        //$(".pCheckBox input[name='painter[]']").bind().change(function () {
+        //    alert(this.attr("data-id"));
+        //});
+
+
+    });
+
+
+    function LoadPainters(CityName) {
+        try {
+            $.ajax({
+                type: "POST",
+                data: { RegionalHeadID: $("#RegionalHeadID").val(), SaleOfficerID: $("#SaleOfficerID").val(), RetailerID: $("#RetailerID").val(), CityName: CityName },
+                url: "@Url.Action("LoadPaintersEdit", "Painter")",
+                success: function (json) {
+                    
+                    var $el = $("#painters");
+                    $el.empty(); // remove old options
+                    $("#painters").append(json.Response);
+
+                    sPainters = [];
+                    for (i = 0 ; i < json.PainterIDs.length ; i++)
+                    {
+                        sPainters.push(json.PainterIDs[i]);
+                    }
+                    
+                    $.each(json.Response, function (value, key) {
+
+                        if (key.Selected == true) {
+                            $("#painter" + key.ID + "").attr("checked", true);
+                           
+                        }
+                        else { $("#painter" + key.ID + "").attr("checked", false); }
+                        //sPainters.push(key.ID);
+                    });
+
+
+                },
+                beforeSend: function () {
+                    $("#progress").show();
+                },
+                complete: function () {
+                    $("#progress").hide();
+                },
+                error: function () {
+                }
+
+            });
+        } catch (e) {
+            alert(e);
+
+        }
+    }
+
+    function LoadRegionalHead() {
+
+        var RegionalHeadType = $("#Type").val();
+
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: "@Url.Action("GetRegionalHeadAccordingToType", "SaleOfficer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#RegionalHeadID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+                $("#RegionalHeadID").trigger("change");
+            }
+
+        });
+    }
+
+    $(document).ready(function () {
+        //$("#liPainter,#liManagePainter").addClass("active");
+
+
+        $('input[name=StartingDate1]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $('input[name=StartingDate1]').datepicker({ dateFormat: "dd-MM-yy" });
+        $("input[name=StartingDate1]").trigger('change');
+
+        $('input[name=EndingDate1]').css({ "height": "22px", "width": "202px", "margin-bottom": "0px" });
+        $('input[name=EndingDate1]').datepicker({ dateFormat: "dd-MM-yy" });
+        $("input[name=EndingDate1]").trigger('change');
+       // window.asd = $('.SlectBox').SumoSelect({ csvDispCount: 4 });
+        
+
+        
+
+        //$("#btnRefresh").click(function () {
+        //    LoadPainters($("#PainterCityID").find("option:selected").text());
+        //    ClearForm();
+        //});
+
+        //$("#btnRefresh").trigger('click');
+        //$("#PainterCityID").trigger('change');
+
+    });
+
+
+     function ClearForm() {
+         $('#ID').val(0);
+         $('#Title').val('');
+         $('#create').text('Create');
+         $("#RegionalHeadID").trigger("change");
+         $("#RegionalHeadID").trigger("chosen:update");
+         $("#SelectedPainters").val("");
+     }
+
+     function OnSuccess(response) {
+         if (response == "1") {
+             alertify.success("Association Saved Successfully");
+             $('#create').text('Create');
+             LoadPainters($("#PainterCityID").find("option:selected").text());
+             ClearForm();
+         }
+         else if (response == "2") {
+             alertify.error("Please Select Any Painter For Association");
+         }
+         else if (response == "3") {
+             alertify.error("Please Select Any Painter For Association");
+         }
+         else if (response == "0") {
+             alertify.error("Unable To Save Association.");
+         }
+         else {
+             alertify.error(response);
+         }
+
+     }
+
+     function OnFailure(response) {
+         if (response.status == 422) {
+             var errors = JSON.parse(response.responseText);
+             alertify.error(errors.errors);
+         }
+         else {
+             alertify.error(response);
+         }
+     }
+
+</script>
+

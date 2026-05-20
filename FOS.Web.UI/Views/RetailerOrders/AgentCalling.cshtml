@@ -1,0 +1,1715 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Jobs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    #preview {
+        position: absolute;
+        border: 1px solid #ccc;
+        background: #333;
+        padding: 1px;
+        display: none;
+        color: #fff;
+        z-index: 3000;
+    }
+</style>
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Calling</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Agent Calling</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>AgentCalling</h4>
+
+            </div>
+
+            <div class="container" style="margin-top:2px;">
+                <div class="row">
+                    <form class="form-inline">
+                        <label class="control-label" style="display:inline">Starting*</label>
+                        <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 180px; margin-bottom: 0px;">
+                        <label class="control-label" style="display:inline">Ending*</label>
+                        <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 180px; margin-bottom: 0px;">
+
+
+
+
+                        <label class="control-label">Head *</label>
+
+                        @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.RegionalHeadID)
+
+
+
+                        <label class="control-label">Data Type *</label>
+
+                        @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficers, "ID", "Name"), new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                        @Html.HiddenFor(model => model.ID)
+                        @Html.HiddenFor(model => model.SelectedRetailers)
+
+                        <button type="button" id="ApplyFilter" class="btn btn-primary">
+                            <i class="icon-ok icon-white" style="padding-right: 2px"></i><span style="width:50px">Apply Filter</span>
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <label class="control-label" style="display:inline">Starting Date *</label>
+                                <div class="controls" style="display:inline">
+                                    <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                                </div>
+                            </div>*@
+
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <label class="control-label" style="display:inline">Ending Date *</label>
+                                <div class="controls" style="display:inline">
+                                    <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                                </div>
+                            </div>*@
+
+
+
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <label class="control-label" style="display:inline">Sales Officer *</label>
+                                <div class="controls" style="display:inline">
+                                    @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+
+                                </div>
+                            </div>*@
+                        @*<div class="control-group" style="margin-bottom: 14px; display:inline">
+                                <button type="button" class="btn btn-success" id="btn_search">Search</button>
+
+                            </div>*@
+
+
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" style="width: 100%;" id="datatab">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th style="width: 4% !important">Sr #</th>
+
+                                <th style="width:6% !important">
+                                    Visit ID
+                                </th>
+                                <th style="width:16% !important">
+                                    Sales Officer
+                                </th>
+
+
+                                <th style="width:16% !important">
+                                    Customer Name
+                                </th>
+                                <th style="width:16% !important">
+                                    Customer Contact
+                                </th>
+                                <th style="width:10% !important">
+                                    Caller Name
+                                </th>
+                                <th style="width:10% !important">
+                                    Call Status
+                                </th>
+
+                                <th style="width:16% !important">
+                                    Next Visit Date
+                                </th>
+                                <th style="width:16% !important">
+                                    Created Date
+                                </th>
+
+                                <th style="width:10% !important">
+                                    Customer Status
+                                </th>
+
+                                <th style="width:20% !important">
+                                    Last Call Date
+                                </th>
+
+
+
+                                <th style="width:10% !important">Action</th>
+
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+<!-- Shop Modal -->
+<div id="ShopModal" class="modal hide fade in" role="dialog" style="width: 95%; height: 95%; top: 2.5%; left: 2.5%; overflow-y: scroll;">
+    <div class="modal-dialog" style="width: 100%; max-width: none; margin: 0;">
+        <!-- Modal content-->
+        <div class="modal-content" style="height: 95vh; margin: 0;">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e5e5; padding: 10px 15px;">
+                <h4 class="modal-title" style="margin: 0; color: #333; font-weight: bold;">Customer Interaction Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        style="font-size: 30px; font-weight: bold; color: #000; opacity: 0.8; margin-top: -10px;">
+                    &times;
+                </button>
+            </div>
+
+            <div class="modal-body" style="max-height: 85vh; overflow-y: auto; padding: 0; display: flex;">
+
+                <!-- Left Column: Data Entry Form -->
+                <div style="width: 50%; padding: 15px; border-right: 2px solid #ddd; height: 100%; overflow-y: auto;">
+                    <h3 style="color: #376892; border-bottom: 2px solid #376892; padding-bottom: 8px; margin-top: 0; margin-bottom: 20px;">
+                        Data Entry Form
+                    </h3>
+
+                    <form>
+                        <input type="hidden" id="JobID" name="JobID" value="" />
+                        <table class="table table-bordered" style="margin-bottom: 20px; width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 40%; padding: 12px; font-weight: 600; background-color: #f5f9fd;">Call Date</td>
+                                    <td style="width: 60%; padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <div style="position: relative; display: inline-block;">
+                                                <input class="text-box single-line" id="CallDate" name="CallDate"
+                                                       style="height: 22px; width: 140px; margin-bottom: 0px; padding: 2px 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 13px;">
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 11px; color: #718096; margin-top: 4px; margin-left: 2px;">
+                                            Click calendar icon to select date
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Customer Type</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="customerType" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="Owner">Owner</option>
+                                                <option value="PaintContractor">Paint Contractor</option>
+                                                <option value="ConstructionContractor">Construction Contractor</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Construction Stage</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="constructionStage" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="UnderConstruction">Under Construction</option>
+                                                <option value="GreyStructure">Grey Structure</option>
+                                                <option value="ReadyToPaint">Ready To Paint</option>
+
+
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Site Status</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="siteStatus" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="ApplyingBrighto">Applying Brighto</option>
+                                                <option value="Compititor">Compititor</option>
+                                                <option value="YetToDecide">Yet To Decide</option>
+                                                <option value="WorkOnHold">Work On Hold</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Category</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="category" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="Prospect">Prospect</option>
+                                                <option value="Complaint">Complaint</option>
+                                                <option value="NotIntrested">Not Intrested</option>
+                                                <option value="Satisfied">Satisfied</option>
+                                                <option value="BrightoCustomer">Brighto Customer</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Next Expected visit</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="nextExpectedVisit" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="OneWeek">One Week</option>
+                                                <option value="TwoWeek">Two Week</option>
+                                                <option value="ThreeWeek">Three Week</option>
+                                                <option value="OneMonth">One Month</option>
+                                                <option value="TwoMonth">Two Month</option>
+                                                <option value="ThreeMonth">Three Month</option>
+                                                <option value="NotSure">Not Sure</option>
+                                                <option value="ImmediateVisitRequired">Immediate Visit Required</option>
+                                            </select>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                                @*<tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Caller name</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <input type="text" class="form-control" id="callerName" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                        </div>
+                                    </td>
+                                </tr>*@
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Nature of Call</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="natureOfCall" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="NotAnswering/Busy">Not Answering/ Busy</option>
+                                                <option value="NotResponding">Not Responding</option>
+                                                <option value="Callbacklater">Call back later</option>
+                                                <option value="Wrong/incompleteData">Wrong / incomplete Data</option>
+                                                <option value="WrongNumber">Wrong Number</option>
+                                                <option value="Poweredoff">Powered off</option>
+                                                <option value="CompleteFeedback">Complete Feedback</option>
+                                                <option value="PartialFeedback">Partial Feedback</option>
+                                                <option value="DoNotCall">Do Not Call</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Call Rating (1 to 10)</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="callRating" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="1">1 - Poor</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5 - Average</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10 - Excellent</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px; font-weight: 600; background-color: #f5f9fd;">Objections</td>
+                                    <td style="padding: 12px;">
+                                        <div class="form-group" style="margin: 0;">
+                                            <select class="form-control" id="objections" style="width: 180px; padding: 4px 8px; font-size: 13px; height: 28px;">
+                                                <option value="">Select</option>
+                                                <option value="N/A">N/A</option>
+                                                <option value="Pricetoohigh">Price too high</option>
+                                                <option value="Productnotavailable">Product not available</option>
+                                                <option value="Shadenotavailable">Shade not available</option>
+                                                <option value="TechnicalSupportrequired">Technical Support required</option>
+                                                <option value="DealerInfluenceonsale">Dealer Influence on sale</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="font-weight: 600; color: #376892; display: block; margin-bottom: 8px; font-size: 14px;">Caller Remarks</label>
+                            <textarea class="form-control" id="callerRemarks" rows="3" style="width: 400px; padding: 8px 12px; resize: vertical; font-size: 13px;"></textarea>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <button type="submit" class="btn btn-primary" style="padding: 6px 25px; font-weight: 600; font-size: 14px;">Submit Call Data</button>
+                        </div>
+                    </form>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-weight: 600; color: #376892; display: block; margin-bottom: 8px; font-size: 14px;">Send SMS to Customer</label>
+                        <textarea class="form-control" id="sms" rows="3" style="width: 400px; height: 250px; padding: 8px 12px; resize: vertical; font-size: 13px;"></textarea>
+                        <button type="submit" class="btn btn-primary" style="padding: 6px 25px; font-weight: 600; font-size: 14px;">Submit SMS</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-weight: 600; color: #376892; display: block; margin-bottom: 8px; font-size: 14px;">Send WhatsApp to Customer</label>
+                        <textarea class="form-control" id="whatsaap" rows="6" style="width: 400px; height: 250px; padding: 8px 12px; resize: vertical; font-size: 13px;"></textarea>
+                        <button type="submit" class="btn btn-primary" style="padding: 6px 25px; font-weight: 600; font-size: 14px;">Submit WhatsApp</button>
+                    </div>
+
+
+                </div>
+
+                <!-- Right Column: Customer Visit Data (Read Only) -->
+                <div style="width: 50%; padding: 15px; height: 100%; overflow-y: auto; background-color: #f8f9fa;">
+                    <h3 style="color: #62c462; border-bottom: 2px solid #62c462; padding-bottom: 8px; margin-top: 0; margin-bottom: 20px;">
+                        Customer Visit Data
+                    </h3>
+
+                    <div style="height: calc(100% - 50px);">
+                        <div style="height: 100%; overflow-y: auto; padding-right: 5px;">
+
+                            <!-- Main Customer Info Table -->
+                            <table class="table table-bordered" style="margin-bottom: 20px; width: 100%;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 40%; padding: 12px; font-weight: 600; background-color: #e8f5e8;">VisitID</td>
+                                        <td style="width: 60%; padding: 12px; background-color: #fff;">
+                                            <span id="visitIdDisplay">VIS-2023-00123</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px; font-weight: 600; background-color: #e8f5e8;">CustomerID</td>
+                                        <td style="padding: 12px; background-color: #fff;">
+                                            <span id="customerIdDisplay">CUST-04567</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px; font-weight: 600; background-color: #e8f5e8;">CreatedDate</td>
+                                        <td style="padding: 12px; background-color: #fff;">
+                                            <span id="createdDateDisplay">2023-10-15</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px; font-weight: 600; background-color: #e8f5e8;">Next Visit Date</td>
+                                        <td style="padding: 12px; background-color: #fff;">
+                                            <span id="visitDateDisplay">2023-11-20</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- 50/50 Split for Customer Details -->
+                            <div style="display: flex; margin-bottom: 20px; gap: 15px;">
+                                <!-- Left Column: Customer Info -->
+                                <div style="flex: 1; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px;">
+                                    <h5 style="color: #376892; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                        Customer Information
+                                    </h5>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Owner Name</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="ownerNameDisplay">John Smith</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Customer Name</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="customerNameDisplay">Smith Construction Co.</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Mobile No</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="mobileNoDisplay">+1 (555) 123-4567</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">SaleOfficer Name</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="saleOfficerDisplay">Michael Johnson</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Business Info -->
+                                <div style="flex: 1; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px;">
+                                    <h5 style="color: #62c462; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                        Business Information
+                                    </h5>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Competitors</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="competitorsDisplay">ABC Paints, XYZ Coatings</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Business Status</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="businessStatusDisplay" style="color: #28a745; font-weight: 600;">Active</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Estimated Value</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee; color: #28a745; font-weight: 600;">
+                                            <span id="estimatedValueDisplay">$50,000</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Site Won</label>
+                                        <div style="padding: 8px 10px; background-color: #f0f8ff; border-radius: 3px; border: 1px solid #cce5ff;">
+                                            <span id="siteWonDisplay">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 50/50 Split for Address and Project Details -->
+                            <div style="display: flex; margin-bottom: 20px; gap: 15px;">
+                                <!-- Left Column: Address -->
+                                <div style="flex: 1; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px;">
+                                    <h5 style="color: #376892; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                        Address & Location
+                                    </h5>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Full Address</label>
+                                        <div style="padding: 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee; min-height: 80px;">
+                                            <span id="addressDisplay">123 Main Street, Suite 400<br>New York, NY 10001<br>United States</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Plot Size</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="plotSizeDisplay">5000 sq ft</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Project Details -->
+                                <div style="flex: 1; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px;">
+                                    <h5 style="color: #62c462; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                        Project Details
+                                    </h5>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Scope</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="scopeDisplay">Complete building exterior painting</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Nature</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="natureDisplay">Commercial Construction</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Construction Stage</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="constructionStageDisplay">Finishing</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Color Scheme</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="colorSchemeDisplay">Beige and White</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 50/50 Split for Additional Information -->
+                            <div style="display: flex; margin-bottom: 20px; gap: 15px;">
+                                <!-- Left Column: Order Details -->
+                                <div style="flex: 1; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px;">
+                                    <h5 style="color: #376892; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                        Order Information
+                                    </h5>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Order Volume</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="orderVolumeDisplay">500 units</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Off take From</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="offtakeFromDisplay">Warehouse #3</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 20px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Regional Head</label>
+                                        <div style="padding: 8px 10px; background-color: #f0f8ff; border-radius: 3px; border: 1px solid #cce5ff;">
+                                            <span id="regionalHeadDisplay" style="color: #376892; font-weight: 600;">Sarah Williams</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Contractor Information -->
+                                <div style="flex: 1; background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px;">
+                                    <h5 style="color: #62c462; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                        Contractor Information
+                                    </h5>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Contractor Name</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="contractorNameDisplay">-</span>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 12px;">
+                                        <label style="font-weight: 600; font-size: 13px; color: #555; display: block; margin-bottom: 4px;">Contractor Number</label>
+                                        <div style="padding: 8px 10px; background-color: #f9f9f9; border-radius: 3px; border: 1px solid #eee;">
+                                            <span id="contractorNumberDisplay">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Call History Table Section -->
+                            <div style="background-color: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+                                <h5 style="color: #376892; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 15px;">
+                                    Call History
+                                </h5>
+
+                                <div style="max-height: 300px; overflow-y: auto;">
+                                    <table class="table table-bordered" style="width: 100%; margin-bottom: 0;">
+                                        <thead style="background-color: #f8f9fa; position: sticky; top: 0; z-index: 1;">
+                                            <tr>
+                                                <th style="padding: 10px; font-weight: 600; font-size: 13px; color: #555; width: 20%;">Call Date</th>
+                                                <th style="padding: 10px; font-weight: 600; font-size: 13px; color: #555; width: 25%;">Caller Name</th>
+                                                <th style="padding: 10px; font-weight: 600; font-size: 13px; color: #555; width: 15%;">Rating</th>
+                                                <th style="padding: 10px; font-weight: 600; font-size: 13px; color: #555; width: 40%;">Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="callHistoryTableBody">
+                                            <!-- This will be populated dynamically with multiple records -->
+                                            <tr>
+                                                <td style="padding: 10px; font-size: 13px;">2023-11-15</td>
+                                                <td style="padding: 10px; font-size: 13px;">Sarah Williams</td>
+                                                <td style="padding: 10px; font-size: 13px;">
+                                                    <span style="color: #28a745; font-weight: 600;">Good</span>
+                                                </td>
+                                                <td style="padding: 10px; font-size: 13px;">Discussed project timeline and color preferences. Customer interested in premium products.</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px; font-size: 13px;">2023-11-10</td>
+                                                <td style="padding: 10px; font-size: 13px;">Michael Johnson</td>
+                                                <td style="padding: 10px; font-size: 13px;">
+                                                    <span style="color: #ffc107; font-weight: 600;">Average</span>
+                                                </td>
+                                                <td style="padding: 10px; font-size: 13px;">Followed up on quote. Customer requested sample materials.</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px; font-size: 13px;">2023-11-05</td>
+                                                <td style="padding: 10px; font-size: 13px;">Sarah Williams</td>
+                                                <td style="padding: 10px; font-size: 13px;">
+                                                    <span style="color: #28a745; font-weight: 600;">Excellent</span>
+                                                </td>
+                                                <td style="padding: 10px; font-size: 13px;">Initial contact. Customer provided project details and requested site visit.</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px; font-size: 13px;">2023-10-28</td>
+                                                <td style="padding: 10px; font-size: 13px;">David Chen</td>
+                                                <td style="padding: 10px; font-size: 13px;">
+                                                    <span style="color: #dc3545; font-weight: 600;">Poor</span>
+                                                </td>
+                                                <td style="padding: 10px; font-size: 13px;">Customer unavailable. Left voicemail with callback request.</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px; font-size: 13px;">2023-10-20</td>
+                                                <td style="padding: 10px; font-size: 13px;">Michael Johnson</td>
+                                                <td style="padding: 10px; font-size: 13px;">
+                                                    <span style="color: #28a745; font-weight: 600;">Good</span>
+                                                </td>
+                                                <td style="padding: 10px; font-size: 13px;">Provided initial quote and product information. Customer requested competitor comparison.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                             
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer" style="border-top: 1px solid #e5e5e5; padding: 10px 15px;">
+                <button type="button" class="btn btn-default" data-dismiss="modal" style="padding: 8px 20px;">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Shop Modal -->
+<!-- Modal to show full image -->
+<!-- Full Image Modal -->
+<style>
+    /* Soft backdrop */
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.75);
+    }
+
+    /* Modal styling */
+    #imageModal .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        background-color: #ffffff;
+    }
+
+    #imageModal .modal-header {
+        background-color: #376892;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding: 1rem 1.25rem;
+    }
+
+        #imageModal .modal-header .close {
+            color: white;
+            opacity: 1;
+            font-size: 1.5rem;
+        }
+
+    #imageModal .modal-body img {
+        max-width: 100%;
+        max-height: 80vh;
+        border-radius: 8px;
+        border: 4px solid #f1f1f1;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+        #imageModal .modal-body img:hover {
+            transform: scale(1.02);
+            border-color: #376892;
+        }
+</style>
+
+<!-- Modal -->
+<div id="imageModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-image" style="margin-right: 8px;"></i> Claim Full Image
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="fullImage" src="" alt="Claim Image" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Painter Modal -->
+<div id="PainterModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 7%;left: 15%; overflow-y:scroll;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">Claim Details</h2>
+
+                    <div class="span12" style="padding:2px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="PsaleOfficer" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">School/ShopName</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="PSchool" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Type</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="PvisitPlan" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="Pstatus" style="color:#62c462"></span></td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+
+
+
+                </div>
+
+
+                <div class="span6" style="margin-left:0px;padding:5px">
+
+
+                </div>
+
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END Painter Modal -->
+<!-- B2B Modal -->
+<div id="B2BModal" class="modal hide fade in" role="dialog" style="width: 71%;height: 100%;top: 0%;left: 15%;">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+                <div class="span12">
+
+                    <h2 style="margin-top: -10px;text-align:center;color: #62c462;font-weight: bolder;border-bottom: 1px solid #62c462;border-top: 1px solid #62c462;padding-bottom: 10px;padding-top: 10px;" id="jobstatus">Claim Details</h2>
+
+                    <div class="span6" style="padding:5px">
+
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 19px  0px 19px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sales Officer</span></td>
+                                    <td style="padding: 19px  0px 19px  5px;"><span id="BsaleOfficer" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visit Type</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitPlan" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Status</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="Bstatus" style="color:#62c462"></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Date</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitedDate" style=""></span></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 18px  0px 18px  5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Visted Time</span></td>
+                                    <td style="padding: 18px  0px 18px  5px;"><span id="BvisitedTime" style=""></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="span6" style="margin-left:0px;padding:5px">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="width:46%;text-align:center;background: #545454;color: white;" colspan="2">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Area</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BArea">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Shop</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BShop">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Old house</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BOldHouse">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New House</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BNewHouse">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Plaza/Basement</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BPB">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Factory Area</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BFactory">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Mosque</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BMosque">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Others</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BOthers">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">New Lead</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BLead">-</h4></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Sample Applied</span></td>
+                                    <td style="width:65%;padding: 0px 0px 0px 5px;text-align:center"><h4 id="BSampleApplied">-</h4></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="width:35%;padding: 0px 0px 0px 5px;"><span style="margin: 0px 0px 0px 0px;font-weight: 600;color: #376892;">Remarks</span></td>
+                                    <td style="width:65%;text-align:center;" colspan="3">
+                                        <textarea disabled id="BRemarks" style="width:95%;height:70px;font-size: 10px;resize:none"></textarea>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END B2B Modal -->
+<!-- Buttons -->
+<button id="ShopModalButton" data-toggle="modal" data-target="#ShopModal" style="display:none"></button>
+<button id="PainterModalButton" data-toggle="modal" data-target="#PainterModal" style="display:none"></button>
+<button id="B2BModalButton" data-toggle="modal" data-target="#B2BModal" style="display:none"></button>
+
+<script src="~/Scripts/js/preview.js"></script>
+
+<script>
+
+    function GenerateDetailGrid() {
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "paging": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "ajax": {
+                "type": "POST",
+                 "url": '@Url.Action("AgentCallingDataHandler", "RetailerOrders")',
+                "contentType": "application/json; charset=utf-8",
+                'data': function (data) {
+                    debugger;
+
+                    data.StartingDate1 = $('#StartingDate1').val();
+                    data.StartingDate2 = $('#StartingDate2').val();
+                    data.ZoneID = $('#RegionalHeadID').val();
+                    data.SOID = $('#SaleOfficerID').val();
+                   return data = JSON.stringify(data);
+                },
+            },
+            "fnDrawCallback": function (osetting) {
+                //$("#ApplyFilter").click(function () {
+                //    debugger;
+                //    oTable.clear().draw();
+                //});
+                $(".view").on("click", function () {
+                    debugger;
+
+
+                        //Left Values
+
+                    var jobID = $(this).attr("data-id");
+                    // Set the JobID in the hidden field
+                    $("#JobID").val(jobID);
+
+
+                       // $("#dealer").text($(this).attr("data-dealer"));
+                        $("#saleOfficer").text($(this).attr("data-saleofficer"));
+                        $("#SchoolShopName").text($(this).attr("data-ShopName"));
+
+                    //$("#ClaimPicture").html('<img src="' + $(this).attr("data-VisitPlanName") + '" alt="Claim Image" style="width: 100%; height: auto;" />');
+                    // In your JavaScript
+                    $("#ClaimPicture").html(`
+                        <img src="` + $(this).attr("data-VisitPlanName") + `"
+                             alt="Claim Image"
+                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer; border: 1px solid #ccc; border-radius: 4px;"
+                             onclick="showFullImage(this.src)" />
+                    `);
+
+
+                        $("#visitedDate").text($(this).attr("data-assigndate"));
+                        //if ($(this).attr("data-address") == 'null') { $("#address").text("-"); }
+                        //else { $("#address").text($(this).attr("data-address")); }
+
+                        if ($("#status").text() == "PENDING")
+                        { $("#status").css('color', '#b94a48'); }
+                        else {
+                            $("#status").css('color', '#62c462');
+                        }
+
+
+                        //Dates Work ...
+                        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                        ];
+                        var dateString = $(this).attr("data-assigndate").substr(6);
+                        var currentTime = new Date(parseInt(dateString));
+                        var month = monthNames[currentTime.getMonth()];
+                        var day = currentTime.getDate("DD");
+                        var year = currentTime.getFullYear();
+                        var date = month + " " + day + " " + year;
+
+                        if (isNaN(year)) {
+                            $('#visitedDate').text("-");
+                        }
+                        else {
+                            $('#visitedDate').text(date);
+                        }
+
+                        var time = currentTime.toLocaleTimeString().toLowerCase();
+
+                        if (time == 'invalid date') {
+                            $("#visitedTime").text("-");
+                        }
+                        else {
+                            $('#visitedTime').text(time);
+                        }
+                        //END Date Work ...
+
+                        //END Left Values
+
+
+
+                        if ($(this).attr("data-savailability") == "true") {
+                            $("#Available").text("Yes");
+                        }
+                        else if ($(this).attr("data-savailability") == "false") {
+                            $("#Available").text("No");
+                        }
+                        else {
+                            $("#Available").text("-");
+                        }
+
+                        if ($(this).attr("data-squantity1kg") == "null") {
+                            $("#Available1KG").val("");
+                        }
+                        else {
+                            $("#Available1KG").val($(this).attr("data-squantity1kg"));
+                        }
+
+                        if ($(this).attr("data-squantity5kg") == "null") {
+                            $("#Available5KG").val("");
+                        }
+                        else {
+                            $("#Available5KG").val($(this).attr("data-squantity5kg"));
+                        }
+
+                        if ($(this).attr("data-sneworder") == "true") {
+                            $("#NewOrder").text("Yes");
+                        }
+                        else if ($(this).attr("data-sneworder") == "false") {
+                            $("#NewOrder").text("No");
+                        }
+                        else {
+                            $("#NewOrder").text("-");
+                        }
+
+                        if ($(this).attr("data-snewquantity1kg") == "null") {
+                            $("#NewOrder1KG").val("");
+                        }
+                        else {
+                            $("#NewOrder1KG").val($(this).attr("data-snewquantity1kg"));
+                        }
+
+                        if ($(this).attr("data-snewquantity5kg") == "null") {
+                            $("#NewOrder5KG").val("");
+                        }
+                        else {
+                            $("#NewOrder5KG").val($(this).attr("data-snewquantity5kg"));
+                        }
+
+                        if ($(this).attr("data-spreviousorder1kg") == "null") {
+                            $("#PreviousOrder1KG").val("");
+                        }
+                        else {
+                            $("#PreviousOrder1KG").val($(this).attr("data-spreviousorder1kg"));
+                        }
+
+                        if ($(this).attr("data-spreviousorder5kg") == "null") {
+                            $("#PreviousOrder5KG").val("");
+                        }
+                        else {
+                            $("#PreviousOrder5KG").val($(this).attr("data-spreviousorder5kg"));
+                        }
+
+                        if ($(this).attr("data-sposmaterialavailable") == "true") {
+                            $("#POSMaterialAvailable").text("Yes");
+                        }
+                        else if ($(this).attr("data-sposmaterialavailable") == "false") {
+                            $("#POSMaterialAvailable").text("No");
+                        }
+                        else {
+                            $("#POSMaterialAvailable").text("-");
+                        }
+
+                        if ($(this).attr("data-snote") == "null") {
+                            $("#SNote").text("");
+                        }
+                        else {
+                            $("#SNote").text($(this).attr("data-snote"));
+                        }
+
+                        if ($(this).attr("data-simage") == "null") {
+                            $("#IfNoImage").show();
+                            $("#IfImage").hide(); //IMAGE_SHOP
+                            $("#IMAGE_SHOP").attr("src", "");
+                        }
+                        else {
+                            $("#IfNoImage").hide();
+                            $("#IfImage").show(); //IMAGE_SHOP
+
+                            $("#IMAGE_SHOP_HREF").attr("href", $(this).attr("data-simage"));
+                            $("#IMAGE_SHOP").attr("src", $(this).attr("data-simage"));
+                        }
+
+                        var JobID = ($(this).attr("data-id"));
+                        debugger;
+                     // Get customer visit details via AJAX
+    $.ajax({
+        type: "POST",
+        data: { JobID: jobID },
+        url: "@Url.Action("CustomerVisitDetail", "RetailerOrders")",
+        dataType: 'json',
+        success: function (json) {
+            debugger;
+
+            // Populate the Customer Visit Data section
+            if (json && json.length > 0) {
+                var customerData = json[0]; // Assuming first record contains customer data
+
+                // Populate main customer info
+                $("#visitIdDisplay").text(customerData.VisitID || "-");
+                $("#customerIdDisplay").text(customerData.CustomerID || "-");
+                $("#createdDateDisplay").text(customerData.CreatedDate || "-");
+                $("#visitDateDisplay").text(customerData.VisitDate || "-");
+
+                // Populate customer information
+                $("#ownerNameDisplay").text(customerData.OwnerName || "-");
+                $("#customerNameDisplay").text(customerData.CustomerName || "-");
+                $("#mobileNoDisplay").text(customerData.MobileNo || "-");
+                $("#saleOfficerDisplay").text(customerData.SaleOfficerName || "-");
+
+                // Populate business information
+                $("#competitorsDisplay").text(customerData.Competitors || "-");
+                $("#businessStatusDisplay").text(customerData.BusinessStatus || "-");
+                $("#estimatedValueDisplay").text(customerData.EstimatedValue || "-");
+                $("#siteWonDisplay").text(customerData.SiteWon || "-");
+
+                // Populate address & location
+                $("#addressDisplay").text(customerData.Address || "-");
+                $("#plotSizeDisplay").text(customerData.PlotSize || "-");
+
+                // Populate project details
+                $("#scopeDisplay").text(customerData.Scope || "-");
+                $("#natureDisplay").text(customerData.Nature || "-");
+                $("#constructionStageDisplay").text(customerData.ConstructionStage || "-");
+                $("#colorSchemeDisplay").text(customerData.ColorScheme || "-");
+
+                // Populate order information
+                $("#orderVolumeDisplay").text(customerData.OrderVolume || "-");
+                $("#offtakeFromDisplay").text(customerData.OfftakeFrom || "-");
+                $("#regionalHeadDisplay").text(customerData.RegionalHeadName || "-");
+
+                // Populate contractor information
+                $("#contractorNameDisplay").text(customerData.ContractorName || "-");
+                $("#contractorNumberDisplay").text(customerData.ContractorNumber || "-");
+
+
+
+
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error loading customer data:", error);
+            alertify.error("Error loading customer visit details");
+            clearCustomerDataFields();
+        }
+    });
+
+
+$.ajax({
+    type: "POST",
+    data: { JobID: jobID },
+    url: "@Url.Action("CustomerCallDetail", "RetailerOrders")",
+    dataType: 'json',
+    success: function (response) {
+        debugger;
+
+        // Clear the table body
+        $('#callHistoryTableBody').empty();
+
+        // Check if response has error
+        if (response.error) {
+            $('#callHistoryTableBody').html('<tr><td colspan="4" style="text-align: center; padding: 20px; color: #dc3545;">' + response.error + '</td></tr>');
+            return;
+        }
+
+        // Get the call history array from the response
+        var callHistoryData = response.CallHistory || [];
+
+        // Check if response is empty or has no data
+        if (!callHistoryData || callHistoryData.length === 0) {
+            $('#callHistoryTableBody').html('<tr><td colspan="4" style="text-align: center; padding: 20px;">No call history found</td></tr>');
+            return;
+        }
+
+        // Populate the table with call history data
+        $.each(callHistoryData, function(index, call) {
+            // Determine rating color
+            var ratingColor = "#555"; // Default color
+            var ratingText = call.Rating || "-";
+
+            if (ratingText && ratingText !== "-") {
+                var ratingLower = ratingText.toLowerCase();
+                if (ratingLower.includes("excellent") || ratingLower.includes("good") || ratingLower.includes("high")) {
+                    ratingColor = "#28a745";
+                } else if (ratingLower.includes("average") || ratingLower.includes("medium")) {
+                    ratingColor = "#ffc107";
+                } else if (ratingLower.includes("poor") || ratingLower.includes("low") || ratingLower.includes("bad")) {
+                    ratingColor = "#dc3545";
+                }
+            }
+
+            // Format date if needed
+            var callDate = call.CallDate || "-";
+
+            // Create table row
+            var row = '<tr>' +
+                '<td style="padding: 10px; font-size: 13px;">' + callDate + '</td>' +
+                '<td style="padding: 10px; font-size: 13px;">' + (call.CallerName || "-") + '</td>' +
+                '<td style="padding: 10px; font-size: 13px;">' +
+                    '<span style="color: ' + ratingColor + '; font-weight: 600;">' + ratingText + '</span>' +
+                '</td>' +
+                '<td style="padding: 10px; font-size: 13px;">' + (call.CallRemarks || "-") + '</td>' +
+            '</tr>';
+
+            $('#callHistoryTableBody').append(row);
+        });
+
+        // Optional: Add summary row if needed
+        if (callHistoryData.length > 0) {
+            var summaryRow = '<tr style="background-color: #f8f9fa;">' +
+                '<td colspan="4" style="padding: 8px 10px; font-size: 12px; text-align: right; color: #555;">' +
+                '<strong>Total Calls: ' + callHistoryData.length + '</strong>' +
+                '</td>' +
+            '</tr>';
+            $('#callHistoryTableBody').append(summaryRow);
+        }
+
+    },
+    error: function (xhr, status, error) {
+        console.error("Error loading call history:", error);
+        $('#callHistoryTableBody').html('<tr><td colspan="4" style="text-align: center; padding: 20px; color: #dc3545;">Error loading call history</td></tr>');
+        alertify.error("Error loading call history");
+    }
+});
+
+    // Continue with existing code for other modal data...
+    $("#ShopModalButton").trigger("click");
+
+
+
+                });
+
+
+                $(".delete").on("click", function () {
+                    debugger;
+                    var RetailerID = ($(this).attr("data-id"));
+
+                    // confirm dialog
+                    alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                        if (e) {
+
+                            $.ajax({
+                                type: "POST",
+                                url: "@Url.Action("DeleteOrder", "Retailer")",
+                                data: { OrderID: RetailerID },
+                                success: function (data) {
+
+                                    if (data == "0") {
+                                        alertify.success('Record Deleted Successfully');
+                                        var table = $('#datatab').DataTable();
+                                        table.row(this).remove().draw(false);
+                                    }
+
+                                    else { alertify.error('An Error Occured, Try Again...'); }
+                                }
+
+                            });
+
+                        } else { }
+                    });
+
+                });
+
+            },
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search : " },
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "DealerID", "bVisible": false },
+           { "data": "SaleOfficerID", "bVisible": false },
+           { "data": "ID" },
+
+           { "data": "JobID" },
+
+                { "data": "SaleOfficerName" },
+                { "data": "RetailerName" },
+                { "data": "OwnerMob" },
+                { "data": "CallerName" },
+
+
+                { "data": "CallStatus", "sClass": "center-align-td", },
+
+            {
+
+                "data": "VisitDateFormatted",
+                "type": "date ",
+
+
+                },
+                {
+
+                    "data": "ClaimDateFormatted",
+                    "type": "date ",
+
+
+                },
+
+
+                { "data": "CustomerStatus", "sClass": "center-align-td", },
+                {
+
+                    "data": "CallDateFormatted",
+                    "type": "date ",
+
+
+                },
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+
+                   // alert('<button class="btn btn-primary view" data-id=' + row.ID + '' + ' data-saleofficer=' + '"' + row.SaleOfficerName + '"' + ' data-ShopName=' + '"' + row.ShopName + '"' + ' data-VisitPlanName=' + '"' + row.VisitPlanName + '"' + ' data-RetailerType=' + '"' + row.RetailerType + '"' + ' data-visitplan=' + '"' + row.VisitPlanName + '"' + ' data-visittype=' + '"' + row.VisitType + '"' + ' data-retailertype=' + '"' + row.RetailerType + '"' + ' data-savailability=' + '"' + row.SAvailable + '"' + ' data-squantity1kg=' + '"' + row.SQuantity1KG + '"' + ' data-squantity5kg=' + '"' + row.SQuantity5KG + '"' + 'data-sneworder=' + '"' + row.SNewOrder + '"' + ' data-snewquantity1kg=' + '"' + row.SNewQuantity1KG + '"' + ' data-snewquantity5kg=' + '"' + row.SNewQuantity5KG + '"' + ' data-spreviousorder1kg=' + '"' + row.SPreviousOrder1KG + '"' + ' data-spreviousorder5kg=' + '"' + row.SPreviousOrder5KG + '"' + ' data-sposmaterialavailable=' + '"' + row.SPOSMaterialAvailable + '"' + ' data-simage=' + '"' + row.SImage + '"' + 'data-snote=' + '"' + row.SNote + '"' + 'data-pusewc=' + '"' + row.PUseWC + '"' + ' data-pusewc1kg=' + '"' + row.PUseWC1KG + '"' + ' data-pusewc5kg=' + '"' + row.PUseWC5KG + '"' + ' data-pneworder=' + '"' + row.PNewOrder + '"' + ' data-pneworder1kg=' + '"' + row.PNewOrder1KG + '"' + ' data-pneworder5kg=' + '"' + row.PNewOrder5KG + '"' + ' data-pnewlead=' + '"' + row.PNewLead + '"' + ' data-pnewleadmobno=' + '"' + row.PNewLeadMobNo + '"' + ' data-premarks=' + '"' + row.PRemarks + '"' + 'data-bareaid=' + '"' + row.BAreaName + '"' + ' data-bshop=' + '"' + row.BShop + '"' + ' data-boldhouse=' + '"' + row.BOldHouse + '"' + ' data-bnewhouse=' + '"' + row.BNewHouse + '"' + ' data-bparking=' + '"' + row.BParking + '"' + ' data-bplazabasement=' + '"' + row.BPlazaBasement + '"' + ' data-bfactoryarea=' + '"' + row.BFactoryArea + '"' + ' data-bmosque=' + '"' + row.BMosque + '"' + ' data-bothers=' + '"' + row.BOthers + '"' + ' data-blead=' + '"' + row.BLead + '"' + ' data-bsampleapplied=' + '"' + row.BSampleApplied + '"' + ' data-bremarks=' + '"' + row.BRemarks + '"' + ' data-statuschecker=' + '"' + row.StatusChecker + '"' + ' data-assigndate=' + '"' + row.AssignDate + '"' + ' data-visiteddate=' + '"' + row.VisitedDate + '"' + 'data-visitdate=' + '"' + row.VisitDate + '"' + 'data-address=' + '"' + row.Address + '"' + '><i class=icon-file-text-alt></i></button>');
+                   //return '<button class="btn btn-primary view" data-id=' + row.JobID + '' + ' data-saleofficer=' + '"' + row.SaleOfficerName + '"' + ' data-ShopName=' + '"' + row.ShopName + '"' + ' data-VisitPlanName=' + '"' + row.VisitPlanName + '"' + ' data-RetailerType=' + '"' + row.RetailerType + '"' + ' data-visitplan=' + '"' + row.VisitPlanName + '"' + ' data-visittype=' + '"' + row.VisitType + '"' + ' data-retailertype=' + '"' + row.RetailerType + '"' + ' data-savailability=' + '"' + row.SAvailable + '"' + ' data-squantity1kg=' + '"' + row.SQuantity1KG + '"' + ' data-squantity5kg=' + '"' + row.SQuantity5KG + '"' + 'data-sneworder=' + '"' + row.SNewOrder + '"' + ' data-snewquantity1kg=' + '"' + row.SNewQuantity1KG + '"' + ' data-snewquantity5kg=' + '"' + row.SNewQuantity5KG + '"' + ' data-spreviousorder1kg=' + '"' + row.SPreviousOrder1KG + '"' + ' data-spreviousorder5kg=' + '"' + row.SPreviousOrder5KG + '"' + ' data-sposmaterialavailable=' + '"' + row.SPOSMaterialAvailable + '"' + ' data-simage=' + '"' + row.SImage + '"' + 'data-snote=' + '"' + row.SNote + '"' + 'data-pusewc=' + '"' + row.PUseWC + '"' + ' data-pusewc1kg=' + '"' + row.PUseWC1KG + '"' + ' data-pusewc5kg=' + '"' + row.PUseWC5KG + '"' + ' data-pneworder=' + '"' + row.PNewOrder + '"' + ' data-pneworder1kg=' + '"' + row.PNewOrder1KG + '"' + ' data-pneworder5kg=' + '"' + row.PNewOrder5KG + '"' + ' data-pnewlead=' + '"' + row.PNewLead + '"' + ' data-pnewleadmobno=' + '"' + row.PNewLeadMobNo + '"' + ' data-premarks=' + '"' + row.PRemarks + '"' + 'data-bareaid=' + '"' + row.BAreaName + '"' + ' data-bshop=' + '"' + row.BShop + '"' + ' data-boldhouse=' + '"' + row.BOldHouse + '"' + ' data-bnewhouse=' + '"' + row.BNewHouse + '"' + ' data-bparking=' + '"' + row.BParking + '"' + ' data-bplazabasement=' + '"' + row.BPlazaBasement + '"' + ' data-bfactoryarea=' + '"' + row.BFactoryArea + '"' + ' data-bmosque=' + '"' + row.BMosque + '"' + ' data-bothers=' + '"' + row.BOthers + '"' + ' data-blead=' + '"' + row.BLead + '"' + ' data-bsampleapplied=' + '"' + row.BSampleApplied + '"' + ' data-bremarks=' + '"' + row.BRemarks + '"' + ' data-statuschecker=' + '"' + row.StatusChecker + '"' + ' data-assigndate=' + '"' + row.AssignDate + '"' + ' data-visiteddate=' + '"' + row.VisitedDate + '"' + 'data-visitdate=' + '"' + row.VisitDate + '"' + 'data-address=' + '"' + row.Address + '"' + '><i class=icon-file-text-alt></i></button>&nbsp;<button class="btn btn-info delete" data-id=' + row.JobID + '"' + '>' + '<i class=icon-file></i>' + '</button>';
+
+                   return '<button class="btn btn-primary view" data-id="' + row.JobID + '"' +
+                       ' data-saleofficer="' + row.SaleOfficerName + '"' +
+
+                       ' data-ShopName="' + row.ShopName + ' / ' + row.TradePartyName + '"' +
+                       ' data-VisitPlanName="' + row.Picture + '"' +
+                       ' data-RetailerType="' + row.RetailerType + '"' +
+                       ' data-visitplan="' + row.VisitPlanName + '"' +
+                       ' data-visittype="' + row.VisitType + '"' +
+                       ' data-retailertype="' + row.RetailerType + '"' +
+                       ' data-savailability="' + row.SAvailable + '"' +
+                       ' data-squantity1kg="' + row.SQuantity1KG + '"' +
+                       ' data-squantity5kg="' + row.SQuantity5KG + '"' +
+                       ' data-sneworder="' + row.SNewOrder + '"' +
+                       ' data-snewquantity1kg="' + row.SNewQuantity1KG + '"' +
+                       ' data-snewquantity5kg="' + row.SNewQuantity5KG + '"' +
+                       ' data-spreviousorder1kg="' + row.SPreviousOrder1KG + '"' +
+                       ' data-spreviousorder5kg="' + row.SPreviousOrder5KG + '"' +
+                       ' data-sposmaterialavailable="' + row.SPOSMaterialAvailable + '"' +
+                       ' data-simage="' + row.SImage + '"' +
+                       ' data-snote="' + row.SNote + '"' +
+                       ' data-pusewc="' + row.PUseWC + '"' +
+                       ' data-pusewc1kg="' + row.PUseWC1KG + '"' +
+                       ' data-pusewc5kg="' + row.PUseWC5KG + '"' +
+                       ' data-pneworder="' + row.PNewOrder + '"' +
+                       ' data-pneworder1kg="' + row.PNewOrder1KG + '"' +
+                       ' data-pneworder5kg="' + row.PNewOrder5KG + '"' +
+                       ' data-pnewlead="' + row.PNewLead + '"' +
+                       ' data-pnewleadmobno="' + row.PNewLeadMobNo + '"' +
+                       ' data-premarks="' + row.PRemarks + '"' +
+                       ' data-bareaid="' + row.BAreaName + '"' +
+                       ' data-bshop="' + row.BShop + '"' +
+                       ' data-boldhouse="' + row.BOldHouse + '"' +
+                       ' data-bnewhouse="' + row.BNewHouse + '"' +
+                       ' data-bparking="' + row.BParking + '"' +
+                       ' data-bplazabasement="' + row.BPlazaBasement + '"' +
+                       ' data-bfactoryarea="' + row.BFactoryArea + '"' +
+                       ' data-bmosque="' + row.BMosque + '"' +
+                       ' data-bothers="' + row.BOthers + '"' +
+                       ' data-blead="' + row.BLead + '"' +
+                       ' data-bsampleapplied="' + row.BSampleApplied + '"' +
+                       ' data-bremarks="' + row.BRemarks + '"' +
+                       ' data-statuschecker="' + row.StatusChecker + '"' +
+                       ' data-assigndate="' + row.AssignDate + '"' +
+                       ' data-visiteddate="' + row.VisitedDate + '"' +
+                       ' data-visitdate="' + row.VisitDate + '"' +
+                       ' data-address="' + row.Address + '"' +
+                       '>CSR View</button>';
+
+
+
+               }
+           }
+            ], "order": [0, "desc"]
+
+        });
+
+    }
+
+    function addZero(i) {
+        if (i < 10) {
+            i = "0" + i;
+        }
+        return i;
+    }
+
+
+
+</script>
+
+
+<script>
+    function ConvertDateFormat(DateFormat) {
+        var re = /\/Date\(([0-9]*)\)\//;
+        var m = DateFormat.match(re);
+        if (m) { return new Date(parseInt(DateFormat.substr(6))); }
+        else { return "-" };
+    }
+
+    $(document).ready(function () {
+
+        $('#StartingDate1').datepicker(
+              {
+                  dateFormat: 'dd-M-yy',
+                  changeMonth: true,
+                  changeYear: true,
+                  yearRange: '1950:2100'
+              });
+
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+            });
+
+        $('#CallDate').datepicker(
+            {
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:2100'
+            });
+
+        $('#NextDate').datepicker(
+            {
+                dateFormat: 'dd-M-yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1950:2100'
+            });
+        $("#liJob,#liCheckJobs").addClass("active");
+        GenerateDetailGrid();
+    });
+
+
+
+ 
+    // Fix: Use the correct button selector
+    $('button[type="submit"]').on("click", function(e) {
+    // OR if your button has id="submit"
+    // $("#submit").on("click", function(e) {
+        e.preventDefault();
+        debugger;
+        var jobID = $("#JobID").val();
+        // Get form values
+        // Get form values using IDs (safer than name attributes)
+        var callDate = $("#CallDate").val();
+        var customerType = $("#customerType").val(); // Need to add ID to select
+        var constructionStage = $("#constructionStage").val(); // Need to add ID
+        var siteStatus = $("#siteStatus").val(); // Need to add ID
+        var category = $("#category").val(); // Need to add ID
+        var nextExpectedVisit = $("#nextExpectedVisit").val(); // Need to add ID
+        var callerName = $("#category").val(); // Need to add ID
+        var natureOfCall = $("#natureOfCall").val(); // Need to add ID
+        var callRating = $("#callRating").val(); // Need to add ID
+        var objections = $("#objections").val(); // Need to add ID
+        var callerRemarks = $("#callerRemarks").val(); // Need to add ID
+
+        // Validation
+        var isValid = true;
+        var errorMessage = "";
+
+        if (!callDate) {
+            errorMessage += "• Call Date is required\n";
+            isValid = false;
+        }
+      
+    
+
+        // Show loading
+        var submitBtn = $(this);
+        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Saving...').prop('disabled', true);
+
+        // Send AJAX request
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("SaveCallData", "RetailerOrders")",
+            data: {
+                JobID: jobID, 
+                CallDate: callDate, // Match model property names
+                CustomerType: customerType,
+                ConstructionStage: constructionStage,
+                SiteStatus: siteStatus,
+                Category: category,
+                NextExpectedVisit: nextExpectedVisit,
+                CallerName: callerName,
+                NatureOfCall: natureOfCall,
+                CallRating: callRating,
+                Objections: objections,
+                CallerRemarks: callerRemarks
+            },
+            success: function(response) {
+                // Use the same button reference
+                submitBtn.html('Submit Call Data').prop('disabled', false);
+
+                if (response.success) {
+                    alertify.success('Call data saved successfully!');
+
+                    // Reset the form
+                    resetCallDataForm();
+
+                    // Close the modal after a short delay
+                    setTimeout(function () {
+                        $("#ShopModal").modal('hide');
+                    }, 1500); // 1.5 second delay to show success message
+
+                
+
+                } else {
+                    alertify.error('Error: ' + (response.message || 'Failed to save call data'));
+                }
+            },
+            error: function(xhr, status, error) {
+                submitBtn.html('Submit Call Data').prop('disabled', false);
+                alertify.error('An error occurred while saving call data');
+                console.error("AJAX Error:", error);
+            }
+        });
+    });
+
+    function resetCallDataForm() {
+        // Reset all form fields
+        $("#CallDate").val('');
+        $("#customerType").val('');
+        $("#constructionStage").val('');
+        $("#siteStatus").val('');
+        $("#category").val('');
+        $("#nextExpectedVisit").val('');
+        $("#callerName").val('');
+        $("#natureOfCall").val('');
+        $("#callRating").val('');
+        $("#objections").val('');
+        $("#callerRemarks").val('');
+        $("#JobID").val(''); // Clear JobID too
+
+        // Optional: Reset to default selections
+        // $("#customerType").val(''); // Already done above
+        // $("#constructionStage").val('');
+        // etc.
+    }
+
+
+
+    function showFullImage(src) {
+        $('#fullImage').attr('src', src);
+        $('#imageModal').modal('show');
+    }
+
+            function LoadHeads() {
+
+            try {
+                var RegionalHeadID = $("#RangeID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetHeadsRelatedtorange", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#RegionalHeadID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RangeID").change(function () {
+
+
+            LoadHeads();
+
+            //$("#RetailerTypeDiv").hide();
+        });
+      function LoadSalesOfficer() {
+
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealerSelectOption", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+                        if ($('#SaleOfficerID').val() != null) {
+
+
+                        }
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+
+
+
+
+    $("#ApplyFilter").click(function () {
+        $('#datatab').DataTable().ajax.reload();
+    });
+
+
+
+
+
+
+
+</script>
+

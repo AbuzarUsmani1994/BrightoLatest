@@ -1,0 +1,285 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Upload";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link href="~/Content/Style/datepicker.css" rel="stylesheet" />*@
+<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN THEME CUSTOMIZER-->
+        <!-- END THEME CUSTOMIZER-->
+        <!-- BEGIN PAGE TITLE & BREADCRUMB-->
+        <h3 class="page-title">
+        @{ 
+            var msg = "";
+            if (TempData["UploadMessage"] != null)
+            {
+                msg = TempData["UploadMessage"].ToString();
+            }
+        }
+        <label style="color:red">@msg</label>
+        </h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Jobs</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Upload Jobs</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+
+@using (Html.BeginForm("Upload", "Job", FormMethod.Post, new { enctype = "multipart/form-data", Id = "myForm" } ))
+{
+// using (Ajax.BeginForm("UploadExcel", "Job", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @enctype = "multipart/form-data", @class = "form -horizontal", id = "myForm" }))
+//{
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+    <div class="row-fluid">
+        <div class="span5">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget blue">
+                <div class="widget-title">
+                    <h4>Upload Jobs</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="height: 365px;">
+
+                    <div style="float: left">
+
+                        <!-- Select Sale Officer -->
+                        <div class="control-group">
+                            <label class="control-label">Regional Head *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                            </div>
+                        </div>
+
+                        <!-- Select Sale Officer -->
+                        <div class="control-group">
+                            <label class="control-label">Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.ID)
+                            </div>
+                        </div>
+
+                        <!-- Select Visit Type -->
+                        <div class="control-group">
+                            <label class="control-label">Visit Plan *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.VisitPlanID, new SelectList(Model.VisitPlan, "ID", "Type"), new { @class = "", @readonly = "readonly" })
+                                @Html.ValidationMessageFor(model => model.VisitPlanID)
+                                @Html.HiddenFor(model => model.VisitPlanHiddenID)
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Browse File *</label>
+                            <div class="controls">
+                                <input type="file" name="files" id="files">
+                            </div>
+                        </div>
+                        
+                        <!-- Buttons -->
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 238px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Upload</span>
+                                </button>
+                                <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                                <br/>
+                                <br/>
+                                <button type="button" id="btnDelJobs" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Delete Jobs</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- END FORM-->
+                </div>
+            </div>
+            <!-- END SAMPLE FORM PORTLET-->
+
+        </div>
+
+    </div>
+}
+
+
+@*<script src="~/Scripts/js/moment.min.js"></script>
+    <script src="~/Scripts/js/bootstrap-datepicker.js"></script>*@
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+<script>
+
+    var a = [];
+    var b = [];
+
+    $(function () {
+        $('#myForm').submit(function () {
+            $('#ID').focusin();
+            //if ($('#JobTitle').val() == "" || $('#JobTitle').val() == null) {
+            //        alertify.error("Please Enter Job Title");
+            //        return false;
+            //}
+        });
+    });
+
+
+    $(document).ready(function () {
+
+        function LoadSalesOfficer() {
+
+            try {
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealer", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+                    }
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+        }
+
+        $("#RegionalHeadID").change(function () {
+            LoadSalesOfficer();
+        });
+
+        $("#btnRefresh").click(function () {
+            ClearForm();
+        });
+
+        $("#btnDelJobs").click(function () {
+            DeleteJobs();
+        }); 
+
+        //$("#btnRefresh").trigger('click');
+        LoadSalesOfficer();
+    });
+
+    function ClearForm() {
+
+        //$('#create').text('Upload');
+    }
+
+    function DeleteJobs() {
+        if (confirm("Are you sure want to delete?")) {
+            try {
+                var saleOfficerID = $("#SaleOfficerID").val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: saleOfficerID },
+                    url: "@Url.Action("DeleteAllJobsBySOID", "Job")",
+                    success: function (json) {
+                        if (json.message == "ok") {
+                            alert("All jobs deleted successfully.");
+                        }
+                        else {
+                            alert("Something goes wrong!");
+                        }
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+    }
+    
+        function OnSuccess(response) {
+            if (response == "1") {
+                alertify.success("Jobs uploaded successfully.");
+                $('#create').text('Upload');
+                //var dt = $('#datatab').DataTable();
+                //dt.ajax.reload();
+                ClearForm();
+            }
+            else if (response == "2") {
+                alertify.error("Please Select Any Retailer For Job");
+            }
+            else if (response == "3") {
+                alertify.error("Please Select Any Retailer For Job");
+            }
+            else if (response == "0") {
+                alertify.error("Unable To Save Job.");
+            }
+            else {
+                alertify.error(response);
+            }
+
+        }
+
+        function OnFailure(response) {
+            if (response.status == 422) {
+                var errors = JSON.parse(response.responseText);
+                alertify.error(errors.errors);
+            }
+            else {
+                alertify.error(response);
+            }
+        }
+
+        $(document).ajaxComplete(function () {
+
+
+
+            $("input[name='retailer[]']").bind().change(function () {
+
+                a = [];
+                b = [];
+
+                $("input[name='retailer[]']").each(function () {
+
+                    if ($(this).is(":checked")) {
+                        a.push($(this).attr('data-id'));
+                    }
+
+                });
+
+                $("input[name='retailer[]']").each(function () {
+
+                    if ($(this).is(":checked")) {
+                        b.push($(this).attr('data-dealerid'));
+                    }
+
+                });
+                $("#SelectedRetailers").val(a);
+                $("#SelectedDealers").val(b);
+
+
+            });
+
+        });
+
+</script>
+

@@ -1,0 +1,1014 @@
+﻿@model FOS.Shared.RetailerData
+
+@{
+    ViewBag.Title = "Retailer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #map-canvas {
+        width: 100%;
+        height: 250px;
+    }
+</style>
+
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Distributors</a>
+                <span class="divider">/</span>
+            </li>
+            <li>
+                <a href="#">Manage Distributors</a>
+            </li>
+        </ul>
+        <!-- END PAGE TITLE & BREADCRUMB-->
+    </div>
+</div>
+
+<!-- BEGIN EDITABLE TABLE widget-->
+<div class="row-fluid">
+    <div class="span12">
+        <!-- BEGIN EXAMPLE TABLE widget-->
+        <div class="widget green">
+            <div class="widget-title">
+                <h4>View Detail</h4>
+                <span class="tools" style="margin-right: 15px">
+                    @*<button id="ExportToExcel">Export To Excel</button>*@
+                    <a href="@Url.Action("ExportToExcel", "Dealer")" style="background-color: #85b73a;border: 1px solid #6a9627;padding: 5px;margin-right: 0px;">Export</a>
+                </span>
+            </div>
+            <div class="widget-body">
+                <div>
+                    <div class="clearfix">
+                        @*<div class="btn-group">
+                                <button id="editable-sample_new" class="btn green">
+                                    Add New <i class="icon-plus"></i>
+                                </button>
+                            </div>*@
+                        <div class="btn-group pull-right"></div>
+                    </div>
+                    <div class="space15"></div>
+                    <table class="table table-striped table-hover table-bordered" id="datatab">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ID)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.SaleOfficerID)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.DealerID)
+                                </th>
+                                <th style="width: 35px !important">Sr #</th>
+
+                                @*<th style="width: 170px !important">
+                                    Name
+                                </th>*@
+                                <th style="width: 220px !important">
+                                   Owner Name
+                                </th>
+                                <th style="width: 170px !important">Distributor Name
+                                    </th>
+                                @*<th style="width: 170px !important">
+                                    SaleOfficer
+                                </th>*@
+                                <th style="width: 170px !important">
+                                    Phone No
+                                </th>
+                                <th style="width: 170px !important">
+                                    Address
+                                </th>
+                                <th style="width: 170px !important">
+                                   Location
+                                </th>
+                                <th style="width: 170px !important">
+                                    Zone
+                                </th>
+
+                                <th style="width: 170px !important">
+                                    City
+                                </th>
+
+                                <th style="width: 60px !important; text-align: -webkit-center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END EXAMPLE TABLE widget-->
+    </div>
+</div>
+<!-- END EDITABLE TABLE widget-->
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="margin-left: 25px; margin-right: 25px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-weight: 900; color: #951b26;">Update Distributor Information</h4>
+            </div>
+            <div class="modal-body">
+
+                @using (Ajax.BeginForm("NewUpdateDistributor", "Dealer", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal form-label-left", @style = "margin-top: -16px;" }))
+                {
+
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+
+                    <div class="form-group">
+
+                        <div class="span12">
+
+                            <div class="span3" style="">
+
+                                @*<div class="control-group" style="margin-bottom: 10px">
+                                    <label class="control-label">Head Type</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        <select id="Type" name="Type" disabled>
+                                            <option value="1">Territorial Head</option>
+                                        </select>
+                                    </div>
+                                </div>*@
+
+                                @*<div class="control-group" style="margin-bottom: 10px">
+                                    <label class="control-label" style="padding-top: 2px">Select Head *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                        @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                                    </div>
+                                </div>*@
+
+                                @*<div class="control-group" style="margin-bottom: 10px">
+                                    <label class="control-label" style="padding-top: 2px">Select SO *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficers, "ID", "Name"), new { @class = "" })
+                                        @Html.HiddenFor(model => model.SaleOfficerID)
+                                        @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                    </div>
+                                </div>*@
+
+                                @*<div class="control-group" style="margin-bottom: 10px">
+                                        <label class="control-label" style="padding-top: 2px">Select Distributor *</label>
+                                        <div class="controls" style="margin-left: 0px">
+                                            @Html.DropDownListFor(model => model.DealerID, new SelectList(Model.Dealers, "ID", "Name"), new { @class = "" })
+                                            @Html.ValidationMessageFor(model => model.DealerID)
+                                        </div>
+                                    </div>*@
+
+                                <div class="control-group" style="margin-bottom: 10px">
+                                    <label class="control-label" style="padding-top: 2px">Select Zone *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.DropDownListFor(model => model.RegionID, new SelectList(Model.Regions, "RegionID", "Name"), new { @class = "" })
+                                        @Html.ValidationMessageFor(model => model.RegionID)
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 10px">
+                                    <label class="control-label" style="padding-top: 2px">Select City *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.DropDownListFor(model => model.CityID, new SelectList(Model.Cities, "ID", "Name"), new { @class = "Areas" })
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 0px; margin-top: 0px;">
+
+                                    <label class="control-label" style="">Location *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.EditorFor(model => model.Location, new { })
+                                        @Html.ValidationMessageFor(model => model.Location)
+                                        <br />
+                                        <span id="locationName" style="font-size: 12px; color: #4a8bc2;"></span>
+                                        <br />
+                                        <button type="button" id="btnResetLatLong" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset LatLong</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="span3" style="margin-top: 0px;">
+
+                                <div class="control-group" style="margin-bottom: 0px">
+                                    <label class="control-label" style="">Customer Name</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.EditorFor(model => model.Name)
+                                        @Html.ValidationMessageFor(model => model.Name)
+                                        @Html.HiddenFor(model => model.ID)
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+
+                                    <label class="control-label" style="">Shop Name *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.EditorFor(model => model.ShopName)
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 0px">
+                                    <label class="control-label" style="">Shop Code</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.EditorFor(model => model.RetailerCode)
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+                                    <label class="control-label" style="">Address</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.TextAreaFor(model => model.Address, htmlAttributes: new { @class = "control-label", @style = "width:200px;resize: none;height:55px;color: #333;" })
+                                        @Html.ValidationMessageFor(model => model.Address)
+                                    </div>
+                                </div>
+
+                                @*<div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+
+                                        <label class="control-label" style="">ContactPerson Name *</label>
+                                        <div class="controls" style="margin-left: 0px">
+                                            @Html.EditorFor(model => model.ContactPerson)
+                                        </div>
+                                    </div>*@
+
+                                @*<div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+
+                                        <label class="control-label" style="width: 130px">ContactPerson No</label>
+                                        <div class="controls" style="margin-left: 0px">
+                                            @Html.EditorFor(model => model.ContactPersonCell)
+                                            @Html.ValidationMessageFor(model => model.ContactPersonCell)
+                                        </div>
+                                    </div>*@
+
+                            </div>
+
+                            @*                            <div class="span6" id="map" style="margin-left: 25px;border: 1px solid grey;box-shadow: 0px 0px 10px grey;">
+                                    <div class="map-canvas" id="map-canvas"></div>
+                                </div>*@
+
+                            <div class="span3" style="margin-top: 0px;">
+
+                                <div class="control-group" style="margin-bottom: 0px">
+
+                                    <label class="control-label" style="">CNIC</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        <span style="font-size: 10px;color: #cc514f;float: right;margin-right: 52px;margin-top: -20px;">XXXXX-XXXXXXX-X</span>
+                                        @Html.EditorFor(model => model.CNIC)
+                                        @Html.ValidationMessageFor(model => model.CNIC)
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+
+                                    <label class="control-label" style="">Email</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        @Html.EditorFor(model => model.Email)
+                                    </div>
+                                </div>
+
+                                @*<div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+
+                                        <label class="control-label" style="">No Of Teachers</label>
+                                        <div class="controls" style="margin-left: 0px">
+                                            @Html.EditorFor(model => model.NoOfTeachers)
+                                        </div>
+                                    </div>*@
+
+                                @*<div class="control-group" style="margin-bottom: 0px; margin-top: 4px;">
+
+                                        <label class="control-label" style="">Student Strength</label>
+                                        <div class="controls" style="margin-left: 0px">
+                                            @Html.EditorFor(model => model.StudentStrength)
+                                            @Html.ValidationMessageFor(model => model.StudentStrength)
+                                        </div>
+                                    </div>*@
+
+
+
+
+
+                            </div>
+
+                            <div class="span3" style="margin-top: 0px;">
+
+                                <div class="control-group" style="margin-bottom: 10px">
+
+                                    <label class="control-label" style="margin-bottom: -6px; width: 130px">Phone 1 *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        <span style="font-size: 10px; color: #cc514f; float: right; margin-right: 52px; margin-top: -10px;"></span>
+                                        @Html.EditorFor(model => model.Phone1)
+                                        @Html.ValidationMessageFor(model => model.Phone1)
+                                    </div>
+                                </div>
+
+                                <div class="control-group" style="margin-bottom: 10px">
+
+                                    <label class="control-label" style="margin-bottom: -6px; width: 130px">Phone 2</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        <span style="font-size: 10px; color: #cc514f; float: right; margin-right: 52px; margin-top: -10px;"></span>
+                                        @Html.EditorFor(model => model.Phone2)
+                                        @Html.ValidationMessageFor(model => model.Phone2)
+                                    </div>
+                                </div>
+
+                                @*<div class="control-group" style="margin-bottom: 0px">
+                                    <label class="control-label" style="margin-top: 10px">Customer Type *</label>
+                                    <div class="controls" style="margin-left: 0px">
+                                        <br />
+                                        <br />
+                                        @Html.RadioButton("RetailerType", "Retailer", new { @style = "margin-top: 0px;" })   <span style="margin-right: 25px; margin-top: 2px">Retailer</span>
+
+                                        @Html.RadioButton("RetailerType", "Distributor", new { @style = "margin-top: 0px;" })   <span style="margin-top: 2px">Distributor</span>
+                                        @Html.HiddenFor(model => model.RetailerType)
+                                    </div>
+                                </div>*@
+
+                                <!-- Buttons -->
+                                <div class="control-group" style="margin-top: -25px">
+                                    <div class="form-actions" style="float: right; padding-left: 0px; padding-right: 45px; margin-top: 40px;">
+                                        <button type="submit" id="btnNew" class="btn btn-primary" style="width: 212px; height: 35px; font-weight: 600;">
+                                            <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Update</span>
+                                        </button>
+                                        @* <button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script src="https://maps.googleapis.com/maps/api/js"></script>*@
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7X3GhN_ShrwYqU1Wc0gJbX3CMOMPZIs4"></script>
+
+<script>
+
+    $(function () {
+        $('#form0').submit(function () {
+            if ($("#Phone1").val() != "" && $("#Phone2").val() != "") {
+                if ($("#Phone1").val() === $("#Phone2").val()) {
+                    alertify.error("Phone No 1 & Phone No 2 Are Same");
+                    return false;
+
+                }
+            }
+
+        });
+    });
+
+    function GenerateDetailGrid() {
+
+        var location;
+        var mapCanvas;
+        var map_options;
+        var marker;
+        var map;
+
+        var oTable = $('#datatab').DataTable({
+            "aLengthMenu": [[10, 25, 50, 75, 100], [10, 25, 50, 75, 100]],
+            "iDisplayLength": 10,
+            "paging": true,
+            "pagingType": "full_numbers",
+            "serverSide": true,
+            "bRetrieve": true,
+            "bDestroy": true,
+            "autoWidth": true,
+            "ajax": {
+                "type": "POST",
+                "url": '@Url.Action("DistributorDataHandler", "Dealer")',
+                "contentType": 'application/json; charset=utf-8',
+                'data': function (data) {
+                    data.DealerID = $('#DealerID').val();
+                    return data = JSON.stringify(data);
+
+                },
+
+            },
+            "fnDrawCallback": function (osetting) {
+
+                var UpdateCheck = "0";
+                var DeleteCheck = "0";
+
+                if (UpdateCheck == "@HttpContext.Current.Session["UpdateCheck"]") { $(".edit").css("display", "none"); }
+
+                else {
+
+                    $(".edit").on("click", function () {
+                        debugger;
+                        ClearForm();
+
+                        var edit = $(this);
+                        var DealerID = $(this).attr("data-id");
+
+                        $.ajax({
+                            type: "POST",
+                            url: "@Url.Action("GetEditDealer", "Dealer")",
+                            data: { DealerID: DealerID },
+                            success: function (Response) {
+
+                                if (Response != null) {
+
+                                    $("#RegionID").val(Response.RegionID);
+
+                                    $.ajax({
+                                        type: "POST",
+                                        data: { ID: Response.RegionID },
+                                        url: "@Url.Action("GetCityListByIDR", "Retailer")",
+                                        dataType: 'json',
+                                        success: function (json) {
+
+                                            var $el = $("#RegionID");
+                                            $el.empty(); // remove old options
+                                            $.each(json, function (value, key) {
+
+                                                $el.append($("<option></option>")
+                                                        .attr("value", key.ID).text(key.Name));
+                                            });
+
+                                            $("#RegionID").val(Response.DealerID);
+                                            $("#RegionID").trigger("chosen:updated");
+                                        }
+                                    });
+
+                                    var CityID = Response.CityID;
+
+                                    try {
+                                        $.ajax({
+                                            type: "POST",
+                                            data: { CityID: Response.RegionID },
+                                            url: "@Url.Action("LoadCitiesListRelatedToRegionalHead", "Retailer")",
+                                            dataType: 'json',
+                                            success: function (json) {
+
+                                                var $el = $("#CityID");
+                                                $el.empty(); // remove old options
+                                                $.each(json, function (value, key) {
+
+                                                    $el.append($("<option></option>")
+                                                            .attr("value", key.ID).text(key.Name));
+                                                });
+                                                $("#CityID").val(Response.CityID);
+                                                $('#CityID').trigger('change');
+
+                                                setTimeout(function () {
+                                                    $("#AreaID").val(Response.AreaID);
+                                                }, 2000);
+
+                                            }
+                                        });
+
+                                    } catch (e) { }
+
+                                    @*try {
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "@Url.Action("GetAreaForSaleOfficerEdit", "SaleOfficer")",
+                                            dataType: 'json',
+                                            data: { ID: Response.SaleOfficerID, CityID: Response.CityID },
+                                            success: function (json) {
+
+                                                var $el = $("#Areas");
+                                                $el.empty(); // Remove Old Options
+
+                                                $.each(json, function (value, key) {
+
+                                                    $el.append($("<option></option>")
+                                                   .val(key.ID).text(key.Name));
+                                                });
+
+                                                //$(".Areas").val('' + $('.edit').attr('data-areaid') + '');
+                                                //$(".Areas").trigger('chosen:updated');
+
+                                                $(".Areas").val(Response.AreaID);
+
+                                                $(".Areas").trigger('chosen:updated');
+
+                                                var array = $("#Location").val().split(",");
+
+                                                //location = new google.maps.LatLng(array[0], array[1]);
+                                                //mapCanvas = document.getElementById('map-canvas');
+                                                //map_options = {
+                                                //    center: location,
+                                                //    zoom: 15,
+                                                //    mapTypeId: google.maps.MapTypeId.ROADMAP
+                                                //}
+                                                //map = new google.maps.Map(mapCanvas, map_options);
+
+                                                //marker = new google.maps.Marker({
+                                                //    position: location,
+                                                //    animation: google.maps.Animation.DROP,
+                                                //});
+
+                                                //marker.setMap(map);
+
+                                                //google.maps.event.addDomListener(window, 'load');
+
+                                            }
+
+                                        });
+
+                                    } catch (e) {
+                                        alert(e);
+                                    }*@
+
+                                    $('#Location').attr('disabled', true);
+                                    $('#Location').css("background-color", "#eee");
+
+                                    $('#SaleOfficerName').attr('disabled', true);
+                                    $('#SaleOfficerName').css("background-color", "#eee");
+
+                                    $('#ID').val(Response.ID);
+                                    $("#Name").val(Response.Name);
+                                    $("#RetailerCode").val(Response.RetailerCode);
+                                    $("#SaleOfficerID").val(Response.SaleOfficerID);
+                                    $("#SaleOfficerID").trigger("chosen:updated");
+                                    $("#SaleOfficerName").val(Response.SaleOfficerName);
+
+                                    if (Response.RetailerType == "Retailer") {
+                                        $("input[name=RetailerType][value='Retailer']").prop("checked", true);
+                                    }
+                                    else if (Response.RetailerType == "Distributor") {
+                                        $("input[name=RetailerType][value='Distributor']").prop("checked", true);
+                                    }
+                                    else {
+                                        $("input[name=RetailerType][value='Retailer']").prop("checked", false);
+                                        $("input[name=RetailerType][value='Distributor']").prop("checked", false);
+                                    }
+
+                                    $("#Address").val(Response.Address);
+                                    $("#Phone1").val(Response.Phone1.replace("null", ""));
+                                    $("#Phone2").val(Response.Phone2.replace("null", ""));
+
+                                    $("#AreaNameID").val($("#Areas").val());
+
+                                    if (Response.Location == "null") {
+                                        $("#Location").val("");
+                                    }
+                                    else {
+                                        $("#Location").val(Response.Location);
+                                    }
+
+                                    if (Response.LocationName == "null") {
+                                        $("#locationName").val("");
+                                    }
+                                    else {
+                                        $("#locationName").val(Response.LocationName);
+                                    }
+
+                                    if (Response.CNIC == "null") {
+                                        $("#CNIC").val("");
+                                    }
+                                    else {
+                                        $("#CNIC").val(Response.CNIC);
+                                    }
+
+                                    if (Response.LandLineNo == "null") {
+                                        $("#LandLineNo").val("");
+                                    }
+                                    else {
+                                        $("#LandLineNo").val(Response.LandLineNo);
+                                    }
+
+                                    if (Response.Market == "null") {
+                                        $("#Market").val("");
+                                    }
+                                    else {
+                                        $("#Market").val(Response.Market);
+                                    }
+
+                                    if (Response.BankName == "null") {
+                                        $("#BankName").val("");
+                                    }
+                                    else {
+                                        $("#BankName").val(Response.BankName);
+                                    }
+
+                                    if (Response.BankName2 == "null") {
+                                        $("#BankName2").val("");
+                                    }
+                                    else {
+                                        $("#BankName2").val(Response.BankName2);
+                                    }
+
+                                    if (Response.CardNumber == "null") {
+                                        $("#CardNumber").val("");
+                                    }
+                                    else {
+                                        $("#CardNumber").val(Response.CardNumber);
+                                    }
+
+                                    if (Response.AccountNo == "null") {
+                                        $("#AccountNo").val("");
+                                    }
+                                    else {
+                                        $("#AccountNo").val(Response.AccountNo);
+                                    }
+
+                                    if (Response.AccountNo2 == "null") {
+                                        $("#AccountNo2").val("");
+                                    }
+                                    else {
+                                        $("#AccountNo2").val(Response.AccountNo2);
+                                    }
+                                    if (Response.ShopName == "null") {
+                                        $("#ShopName").val("");
+                                    }
+                                    else {
+                                        $("#ShopName").val(Response.ShopName);
+                                    }
+
+                                    if (Response.RetailerCode == "null") {
+                                        $("#RetailerCode").val("");
+                                    }
+                                    else {
+                                        $("#RetailerCode").val(Response.RetailerCode);
+                                    }
+
+                                }
+
+                                else { alertify.error('An Error Occured, Try Again...'); }
+                            }
+
+                        });
+
+                        $("#Areas").change(function () {
+                            $("#AreaNameID").val($(this).val());
+                        });
+
+                        $('html, body').animate({
+                            //scrollTop: $("#main-content").offset().top
+                        }, 500);
+
+                    });
+
+                }
+
+                if (UpdateCheck == "@HttpContext.Current.Session["DeleteCheck"]") { $(".delete").css("display", "none"); }
+                else {
+
+                    $(".delete").on("click", function () {
+                        debugger;
+                        var RetailerID = $(this).attr("data-id");
+
+                        // confirm dialog
+                        alertify.confirm("Are You Sure You Want To Delete This Record ?  ", function (e) {
+                            if (e) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "@Url.Action("DeleteDistributor", "Retailer")",
+                                    data: { retailerID: RetailerID },
+                                    success: function (data) {
+
+                                        if (data == "0") {
+                                            alertify.success('Record Deleted Successfully');
+                                            var table = $('#datatab').DataTable();
+                                            table.row(this).remove().draw(false);
+                                        }
+
+                                        else { alertify.error('An Error Occured, Try Again...'); }
+                                    }
+
+                                });
+
+                            } else { }
+                        });
+
+                    });
+
+                }
+            },
+
+            "fnRowCallback": function (nRow, aData, iDisplayIndex) {
+                $("td:first", nRow).html(iDisplayIndex + 1);
+                return nRow;
+            },
+            "oLanguage": { "sSearch": "Search Distributors : " },
+            "sDom": 'lftipr',
+            "processing": true,
+            "deferRender": true,
+            "bSelect": true,
+            "columns": [
+           { "data": "ID", "bVisible": false },
+           { "data": "SaleOfficerID", "bVisible": false },
+           { "data": "DealerID", "bVisible": false },
+           { "data": "ID" },
+           { "data": "Name" },
+           { "data": "ShopName" },
+
+           //{ "data": "SaleOfficerName" },
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+                   if (row.Phone1 != "" && row.Phone2 != "") {
+                       return row.Phone1;
+                   }
+                   else if (row.Phone1 != "" && row.Phone2 == "") {
+                       return row.Phone1;
+                   }
+                   else if (row.Phone1 == "" && row.Phone2 != "") {
+                       return row.Phone2;
+                   }
+                   else {
+                       return row.Phone1;
+                   }
+               }
+           },
+            { "data": "Address" },
+           { "data": "Location" },
+           { "data": "RegionName" },
+           { "data": "CItyName" },
+           {
+               "sClass": "center-align-td",
+               "mData": null,
+               "bSortable": false,
+               "mRender": function (data, type, row) {
+                   return '<button class="btn btn-success edit" data-id=' + '"' + row.ID + '"' + ' data-toggle="modal" data-target="#myModal">' + '<i class=icon-pencil></i>' + '</button>&nbsp;<button class="btn btn-info delete" data-id=' + row.ID + '>' + '<i class=icon-trash></i>' + '</button>';
+               }
+           }
+            ],
+            "order": [4, "asc"]
+
+        });
+
+    }
+
+    function LoadDealer() {
+
+        var regionID = $("#SaleOfficerID").val();
+
+        $.ajax({
+            type: "POST",
+            data: { id: regionID },
+            url: "@Url.Action("GetDealerListBySaleOfficerID", "Retailer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#DealerID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+
+            }
+        });
+        LoadCityAreas();
+
+    }
+
+    function LoadCityAreas() {
+
+        try {
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetAreaListByCityID", "SaleOfficer")",
+                dataType: 'json',
+                data: { ID: $("#CityID").val() },
+                success: function (json) {
+
+                    var $el = $("#Areas");
+                    $el.empty(); // Remove Old Options
+
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>")
+                       .val(key.ID).text(key.Name));
+                    });
+
+                }
+
+            });
+
+        } catch (e) {
+            alert(e);
+        }
+
+    }
+
+    $(document).ready(function () {
+
+        $("#btnResetLatLong").click(function () {
+            var retailerId = $("#ID").val();
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { RetailerId: retailerId },
+                    url: "@Url.Action("ResetLatLong", "Job")",
+                    success: function (json) {
+                        debugger;
+                        if (json.message == "True") {
+                            alert("Retailer's latlong reset successfully.");
+                        }
+                        else {
+                            alert("Retailer's latlong could not be reset.");
+                        }
+                    }
+                });
+            } catch (e) {
+                alert("Something goes wrong!");
+            }
+        });
+
+        $("#liRetailer,#liManageRetailer").addClass("active");
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+        $("#ExportToExcel").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ExportToExcel", "Retailer")",
+                dataType: 'json',
+                success: function (json) { }
+            });
+        });
+
+        $("#RegionID").change(function () {
+
+            LoadSalesOfficer($(this).val());
+            LoadDealers($(this).val());
+            LoadCities($(this).val());
+
+        });
+
+        $("#SaleOfficerID").change(function () {
+
+        });
+
+        $("#DealerID").change(function () {
+
+        });
+
+        $("#CityID").change(function () {
+            LoadAreas($(this).val());
+        });
+
+        $("#btnRefresh").click(function () {
+            ClearForm();
+        });
+        GenerateDetailGrid();
+
+        function LoadSalesOfficer(RegionalHeadID) {
+
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealer", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+                    }
+
+                });
+            } catch (e) {
+            }
+
+        }
+
+        function LoadDealers(RegionalHeadID) {
+
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID },
+                    url: "@Url.Action("GetAllDealersListRelatedToRegionalHead", "Dealer")",
+                    success: function (json) {
+
+                        var $el = $("#DealerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.Name));
+                        });
+                    }
+
+                });
+            } catch (e) {
+            }
+
+        }
+
+        function LoadCities(RegionID) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetCityListByRegionHeadID", "Dealer")",
+                data: { RegionID: RegionID },
+                success: function (json) {
+
+                    var $el = $("#CityID");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+                        $el.append($("<option></option>").val(key.ID).text(key.Name));
+                    });
+
+                    var $el = $("#AreaID");
+                    $el.empty(); // remove old options
+
+                    $("#CityID option:first").trigger("change");
+                    // GetAreaList($("#CityID option:first").val());
+                }
+            });
+        }
+
+        function LoadAreas(CityID) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetAreaListByCityID", "Dealer")",
+                data: { CityID: CityID == null ? 0 : CityID },
+                success: function (json) {
+
+                    var $el = $("#AreaID");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+                        $el.append($("<option></option>").val(key.ID).text(key.Name));
+                    });
+                }
+
+            });
+        }
+
+    });
+
+    $(document).ajaxComplete(function () {
+
+    });
+</script>
+<script type="text/javascript">
+
+    function ClearForm() {
+        $('#Name').val('');
+        $('#ShopName').val('');
+        $('#LocationMargin').val('');
+        $('#Phone1').val('');
+        $('#Phone2').val('');
+        $('#ID').val(0);
+    }
+
+    function OnSuccess(response) {
+        if (response == "1") {
+            alertify.success("Distributor Saved Successfully");
+            //$('#create').text('Create');
+            var dt = $('#datatab').DataTable();
+            dt.ajax.reload();
+            ClearForm();
+            $('.close').trigger('click');
+            //location.reload();
+        }
+        else if (response == "0") {
+            alertify.error("Unable To Save Distributor.");
+        }
+        else if (response == "2") {
+            alertify.error("Phone Number Already Exist.");
+        }
+        else if (response == "3") {
+            alertify.error("CNIC Already Exist.");
+        }
+        else if (response == "4") {
+            alertify.error("Account Number Already Exist.");
+        }
+        else if (response == "5") {
+            alertify.error("Card Number Already Exist.");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+    function OnFailure(response) {
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error(errors.errors);
+        }
+        else {
+            alertify.error(response);
+        }
+    }
+</script>

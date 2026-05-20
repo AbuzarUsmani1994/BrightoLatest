@@ -1,0 +1,717 @@
+﻿@model FOS.Shared.JobsData
+
+@{
+    ViewBag.Title = "Send SMS";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />*@
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Send SMS</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+
+
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="min-height: 100px;">
+                <div class="widget-title">
+                    <h4>Send SMS Code</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 100px;">
+                    <div class="span5">
+
+                        <div class="control-group" style="margin-bottom: 14px; display:none;">
+                            <label class="control-label">Job Title *</label>
+                            <div class="controls">
+                                @Html.EditorFor(model => model.JobTitle, new { @class = "", @style = "", name = "JobTitle" })
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="display:none;">
+                            <label class="control-label">Type</label>
+                            <div class="controls">
+                                @Html.HiddenFor(model => model.Type)
+                                <select id="Type" name="Type" disabled>
+                                    <option value="1">Territorial Head</option>
+                                </select>
+                            </div>
+                        </div>
+            @using (Ajax.BeginForm("SendSMS", "Job", new AjaxOptions { OnSuccess = "OnSuccess", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+            {
+                        <!-- Select Regional Head -->
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Select Head *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionalHeadID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionalHeadID)
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Sales Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.ID)
+                                @Html.HiddenFor(model => model.SelectedRetailers)
+
+                            </div>
+                        </div>
+                   
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Retailers*</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RetailerID, new SelectList(Model.Retailers, "ID", "Name"), new { @class = "" })
+                                @*@Html.ValidationMessageFor(model => model.RetailerID)
+                                @Html.HiddenFor(model => model.RetailerID)*@
+                            </div>
+                        </div>
+                        <button type="submit" id="btnNew" class="btn btn-primary">
+                            <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">SendSms</span>
+                        </button>
+                  
+
+
+}
+
+                        <!-- Buttons -->
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 130px; padding-right: 0px;">
+                              
+                                @*<button type="button" id="btnRefresh" class="btn btn-info"><i class="icon-ban-circle icon-white" style="padding-right: 8px"></i>Reset</button>
+                                <button type="button" id="btnView" class="btn btn-success">
+                                    <i class="icon-eye-open icon-white" style="padding-right: 8px"></i>View
+                                </button>*@
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+    </div>
+        </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    var a = [];
+    var b = [];
+    var JobList = "";
+    var RetailersArr = [];
+    $(function () {
+
+        $('#myForm').submit(function () {
+
+
+
+            $("#SelectedRetailers").val(JobList);
+
+
+            $("#Type").val("1");
+
+            if ($('input[type=radio][name=VisitType]:checked').val() == "Shop") {
+                //$("#SelectedRetailers").val(a);
+                $("#SelectedDealers").val(b);
+                $("#SelectedPainters").val("");
+            }
+            else {
+                $("#SelectedPainters").val(a);
+                //$("#SelectedRetailers").val("");
+                $("#SelectedDealers").val("");
+            }
+
+            $('#ID').focusin();
+
+
+            //if ($('#JobTitle').val() == "" || $('#JobTitle').val() == null) {
+
+            //    //alertify.error("Please Enter Job Title");
+            //    //return false;
+
+            //}
+
+        });
+    });
+
+
+    function LoadRegionalHead(RegionalHeadType) {
+
+
+        $.ajax({
+            type: "POST",
+            data: { RegionalHeadType: RegionalHeadType },
+            url: "@Url.Action("GetRegionalHeadAccordingToType", "SaleOfficer")",
+            dataType: 'json',
+            success: function (json) {
+
+                var $el = $("#RegionalHeadID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .attr("value", key.ID).text(key.Name));
+                });
+                //$("#RegionalHeadID").trigger("change");
+            }
+
+        });
+    }
+
+
+    $(document).ready(function () {
+
+        $("#Type").val("1");
+        $("#PaintersCity").hide();
+
+        var WriteCheck = "0";
+
+        if (WriteCheck == "@HttpContext.Current.Session["WriteCheck"]") {
+            // $("#btnNew").css("display", "none");
+            $("#btnNew").attr("disabled", true);
+        }
+        else {
+        }
+
+
+        $("#Type").change(function () {
+
+            if ($(this).val() == 1) {
+                LoadRegionalHead($(this).val());
+                $("#THDiv").show();
+            }
+            else {
+                LoadRegionalHead($(this).val());
+                $("#THDiv").hide();
+                $("#PaintersCity").hide();
+            }
+
+        });
+
+        $('input[type=radio][name=RetailerType]').change(function () {
+            LoadWeeklyRetailers($(this).val());
+        });
+
+        $('#CityID').change(function () {
+            var $el = $("#external-events");
+            $el.empty(); // remove old options
+            LoadWeeklyRetailers($('input[type=radio][name=RetailerType]').val());
+
+        });
+        $('input[type=radio][name=VisitType]').change(function () {
+            if ($(this).val() == "Shop") {
+                var $el = $("#external-events");
+                $el.empty(); // remove old options
+
+                $("#PaintersCity").hide();
+                $("#RetailerTypeDiv").show();
+            }
+            else {
+                var $el = $("#external-events");
+                $el.empty(); // remove old options
+                $("#PaintersCity").show();
+                LoadPainters($("#SaleOfficerID").val());
+                $("#RetailerTypeDiv").hide();
+            }
+        });
+
+        function LoadPainters(SOID) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: SOID },
+                    url: "@Url.Action("LoadDailyPainters", "Job")",
+                    success: function (json) {
+                        var $el = $("#external-events");
+                        $el.empty(); // remove old options
+                        $("#external-events").append(json.Response);
+                    },
+                    beforeSend: function () {
+                        $("#progress").show();
+                    },
+                    complete: function () {
+                        $("#progress").hide();
+                    },
+                    error: function () {
+                        alertify.error("Server Is not Responding.");
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+
+            }
+        }
+
+        //$("#btnNew").click(function () {
+
+        //    var msg = alertify.success('');
+        //    msg.delay(8).setContent('Code Is Send');
+        //});
+
+        $("#liJob,#liManageJobs").addClass("active");
+
+        function setRadio(id) {
+            var radio = $('#' + id);
+            radio[0].checked = true;
+            radio.button("refresh");
+        }
+
+        @*function LoadWeeklyRetailers(RetailerType) {
+            try {
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                var RegionalHeadID = $("#RegionalHeadID").val();
+                var CityID = $("#CityID").val();
+                $.ajax({
+                    type: "POST",
+                    //data: { SaleOfficerID: SaleOfficerID, RetailerType: RetailerType },
+                    data: { RegionalHeadID: RegionalHeadID, SaleOfficerID: SaleOfficerID, CityID: CityID },
+                    url: "@Url.Action("LoadWeeklyRetailersForSMS", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#external-events");
+                        $el.empty(); // remove old options
+                        $("#external-events").append(json.Response);
+                        //$.each(json, function (value, key) {
+
+                        //    $el.append($("<div class='span3' style='margin:0px;margin-left: 5px;'><input data-id='" + key.ID + "'  class='' name='retailer[]' type='checkbox' style='margin: -1px 0 0;'><span class='lbl' style='font-size:11px'> " + key.Name + "</span><p style='font-size:9px'> " + key.Address + "</p></div>"))
+                        //});
+                        //$('#datatab').DataTable().ajax.reload();
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+
+            }
+        }*@
+
+        @*function LoadWeeklyRetailersforSmS() {
+            try {
+                debugger;
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: SaleOfficerID },
+                    url: "@Url.Action("LoadRetailersForSMS", "Job")",
+                   
+                    success: function (json) {
+                        debugger;
+                        var $el = $("#RetailerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.Name));
+                        });
+
+                       
+
+                    }
+
+            });
+        } catch (e) {
+            alert(e);
+
+        }
+    }*@
+
+
+        function LoadSalesOfficer() {
+
+            try {
+                debugger;
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealerSelectOption", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                        });
+
+                        if ($('#SaleOfficerID').val() != null) {
+                            $("#external-events").empty();
+                            LoadSOCities($('#SaleOfficerID').val());
+                        }
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        @*function LoadRetailersForSMS() {
+
+            try {
+                debugger;
+                var SoID = $("#SaleOfficerID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: SoID, selectOption: true },
+                    url: "@Url.Action("GetAllSaleOfficerListRelatedToDealerSelectOptionForSMS", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#SaleOfficerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.RetailerID).text(key.RetailerName));
+                        });
+
+                        
+
+
+
+                    }
+
+            });
+        } catch (e) {
+            alert(e);
+            //  $('#datatab').dataTable().fnDestroy();
+        }
+
+        }*@
+
+
+        function LoadRetailersforSMS() {
+
+            try {
+                debugger;
+                var SaleOfficerId = $("#SaleOfficerID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerId: SaleOfficerId },
+                    url: "@Url.Action("LoadRetailerRelatedtoForSMS", "Job")",
+                    success: function (json) {
+                        debugger;
+                        var $el = $("#RetailerID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.ShopName));
+                        });
+
+                    }
+
+            });
+        } catch (e) {
+            alert(e);
+            //  $('#datatab').dataTable().fnDestroy();
+        }
+
+    }
+
+
+
+
+
+
+
+        $("#RegionalHeadID").change(function () {
+            LoadSalesOfficer();
+
+          
+        });
+
+        $("#SaleOfficerID").change(function () {
+
+
+            LoadRetailersforSMS();
+            //LoadWeeklyRetailersforSmS();
+            
+        });
+
+        function LoadRetailerAccordingToSalesOfficer() {
+
+            try {
+                var SaleOfficerID = $("#SaleOfficerID").val();
+                var RegionalHeadID = $("#RegionalHeadID").val();
+
+                $.ajax({
+                    type: "POST",
+                    data: { SaleOfficerID: SaleOfficerID },
+                    url: "@Url.Action("LoadWeeklyRetailers", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#external-events");
+                        $el.empty(); // remove old options
+                        //$("#retailers").append(json.Response);
+                        //$('#datatab').DataTable().ajax.reload();
+                    }
+
+                });
+
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        function LoadSOCities(SOID) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: SOID },
+                    url: "@Url.Action("GetSOCities", "Job")",
+                    success: function (json) {
+                        var $el = $("#CityID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.Name));
+                        });
+
+                        if ($('#CityID').val() != null) {
+                            $("#external-events").empty();
+                        }
+                    }
+                });
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+
+       
+       
+        $("#btnReplicate").click(function () {
+
+            if ($('#DueDateString').val() == '') {
+                alert('Please select start date');
+                $('#DueDateString').focus();
+                return;
+            }
+            if ($('#DueDateString2').val() == '') {
+                alert('Please select end date');
+                $('#DueDateString2').focus();
+                return;
+            }
+            if ($('#RepMonth').val() == 0) {
+                alert('Please select month');
+                $('#RepMonth').focus();
+                return;
+            }
+            if ($("#SaleOfficerID").val() == 0) {
+                alert('Please select sales officer');
+                $('#SaleOfficerID').focus();
+                return;
+            }
+            var yes = confirm("Are you sure to replicate the jobs of " + $("#SaleOfficerID option:selected").text() + " for "+$("#RepMonth").val()+" month(s)?");
+            if (yes) {
+                var soId = $("#SaleOfficerID").val();
+                var monthCount = $('#RepMonth').val();
+                var dueDate = $('#DueDateString').val();
+                var dueDate2 = $('#DueDateString2').val();
+                $.ajax({
+                    type: "POST",
+                    data: { SOID: soId, monthCount: monthCount, beatPlanOrMonthly: 'monthly', startDate: dueDate, endDate: dueDate2 },
+                    url: "@Url.Action("ReplicateJobs", "Job")",
+                    success: function (json) {
+                        if (json.Response == 'Done') {
+                            alert("Jobs replicated successfully");
+                        }
+                        else if (json.Response == 'Failed') {
+                            alert("Jobs couldn't be replicated");
+                        }
+                        else if (json.Response == 'Nothing found') {
+                            alert("No job found to replicate");
+                        }
+                        else {
+                            alert("Something goes wrong!");
+                        }
+                    },
+                    error: function (response) {
+                        alert("Something goes wrong!");
+                    }
+            });
+            }
+            else {
+                //NO
+            }
+        });
+        //$("#RegionalHeadID").trigger("change");
+        //$("#RegionalHeadID").trigger("chosen:update");
+    });
+
+
+    function RefreshTable(tableId, urlData) {
+        $.getJSON(urlData, null, function (json) {
+            table = $(tableId).dataTable();
+            oSettings = table.fnSettings();
+
+            table.fnClearTable(this);
+
+            for (var i = 0; i < json.aaData.length; i++) {
+                table.oApi._fnAddData(oSettings, json.aaData[i]);
+            }
+
+            oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+            table.fnDraw();
+        });
+    }
+
+
+    function ClearForm() {
+
+        a = [];
+        b = [];
+        JobList = "";
+
+        $('#ID').val(0);
+        $('#JobTitle').val('');
+        $('#JobNo').val('');
+        $('#create').text('Create');
+        //$('#retailers').empty();
+
+
+
+        $("#days").css("display", "none");
+
+        //$("input[type=radio][name=RetailerType]").attr('disabled', false);
+
+        $("#CityID").val("0");
+
+        $("#SelectedRetailers").val("");
+        $("#SelectedPainters").val("");
+        $("#SelectedDealers").val("");
+        $("input[name=VisitType][value='Shop']").prop("checked", true);
+        $("input[name=RetailerType][value='Both']").prop("checked", true);
+
+        var $el = $("#external-events");
+        $el.empty(); // remove old options
+
+        $('#calendar').fullCalendar('removeEvents');
+
+    }
+
+
+    function dateFormatter(date) {
+        var d = date;
+
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+
+        var output = (('' + day).length < 2 ? '0' : '') + day + '-' + (('' + month).length < 2 ? '0' : '') + month + '-' + d.getFullYear();
+        return output;
+    }
+
+   
+    function OnSuccess(response) {
+        debugger;
+        if (response == "1") {
+            alertify.success("Code Send Successfully");
+          
+        }
+        else if (response == "2") {
+            alertify.error("Please Select Any Retailer For Job");
+        }
+        else if (response == "3") {
+            alertify.error("Please Select Any Retailer For Sending Code");
+        }
+
+        else if (response == "0") {
+            alertify.error("No Phone Number is Present");
+        }
+        else {
+            alertify.error(response);
+        }
+
+    }
+
+
+    function OnFailure(response) {
+     
+        if (response.status == 422) {
+            var errors = JSON.parse(response.responseText);
+            alertify.error("Something Went Wrong !!!");
+        }
+        else {
+            alertify.error("Code is Not Send Due to Server Error");
+        }
+    }
+
+
+    $(document).ajaxComplete(function () {
+
+        $("input[name='retailer[]']").bind().change(function () {
+
+            a = [];
+            b = [];
+            JobList = "";
+
+            $("input[name='retailer[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    a.push($(this).attr('data-id'));
+                }
+
+            });
+
+            $("input[name='retailer[]']").each(function () {
+
+                if ($(this).is(":checked")) {
+                    b.push($(this).attr('data-dealerid'));
+                }
+
+            });
+
+        });
+
+
+})
+
+  
+
+
+
+
+</script>

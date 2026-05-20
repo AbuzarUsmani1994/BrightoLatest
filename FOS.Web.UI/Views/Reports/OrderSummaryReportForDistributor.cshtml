@@ -1,0 +1,317 @@
+﻿@model FOS.Shared.OrderSummaryReportData
+
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href='~/Content/Style/fullcalendar.min.css' rel='stylesheet' />
+<link href='~/Content/Style/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='~/Scripts/lib/moment.min.js'></script>
+<script src='~/Scripts/lib/jquery-ui.min.js'></script>
+<script src='~/Scripts/lib/fullcalendar.min.js'></script>
+<link href="~/Content/Style/jquery-ui.min.css" rel="stylesheet" />
+<!-- BEGIN PAGE HEADER-->
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="#">Daily Sale Report For Distributor Orders</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+@using (Ajax.BeginForm("OrderSummaryReportForDistributor", "Reports", new AjaxOptions { HttpMethod = "POST" }, new { @class = "form-horizontal", id = "myForm" }))
+{
+
+
+    //@Html.AntiForgeryToken()
+    //@Html.ValidationSummary(true)
+
+    <div class="row-fluid">
+        <div class="span12">
+            <!-- BEGIN SAMPLE FORMPORTLET-->
+            <div class="widget green" style="min-height: 100px;">
+                <div class="widget-title">
+                    <h4>Daily Sale Report</h4>
+                    <span class="tools">
+                        @*<a href="javascript:;" class="icon-chevron-down"></a>*@
+                        @*<a href="javascript:;" class="icon-remove"></a>*@
+                    </span>
+                </div>
+                <div class="widget-body" style="min-height: 100px;">
+                    <div class="span5">
+
+
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Date From  *</label>
+                            <div class="controls">
+                                <input class="text-box single-line" id="StartingDate1" name="StartingDate1" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                            </div>
+                        </div>
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Date To *</label>
+                            <div class="controls">
+                                <input class="text-box single-line" id="StartingDate2" name="StartingDate2" style="height: 22px; width: 202px; margin-bottom: 0px;">
+                            </div>
+                        </div>
+
+                       
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">RegionalHead *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.RegionID, new SelectList(Model.RegionalHead, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.RegionID)
+                                @Html.HiddenFor(model => model.RegionID)
+                            </div>
+                        </div>
+
+
+                        <div class="control-group" style="margin-bottom: 14px;">
+                            <label class="control-label">Sale Officer *</label>
+                            <div class="controls">
+                                @Html.DropDownListFor(model => model.SaleOfficerID, new SelectList(Model.SaleOfficer, "ID", "Name"), new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.SaleOfficerID)
+                                @Html.HiddenFor(model => model.SaleOfficerID)
+                            </div>
+                        </div>
+
+
+
+                        <div class="control-group" style="border-top: 1px solid #e5e5e5;">
+                            <div class="form-actions" style="padding-left: 130px; padding-right: 0px;">
+                                <button type="submit" id="btnNew" class="btn btn-primary">
+                                    <i class="icon-ok icon-white" style="padding-right: 8px"></i><span id="create">Export Report</span>
+                                </button>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="span5">
+
+                        <div id="THDiv">
+
+                            <!-- Visit Type -->
+
+
+
+                        </div>
+
+
+                        <!-- Buttons -->
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
+<script>
+    $('#btnNew').click(function () {
+        //var message = "";
+        //for (i = 0; i < sPainters.length ; i++) {
+        //    message += sPainters[i] + ",";
+        //}
+        //var $Shoptypeid = $("#Shoptypeid").val();
+        debugger;
+        var $TID = $("#SaleOfficerID").val();
+        var $sdate = $("#StartingDate1").val();
+        var $edate = $("#StartingDate2").val();
+        var $range = $("#RangeID").val();
+        var type;
+
+
+
+        if ($sdate == "") {
+            alertify.error("Please Enter Starting Date");
+        }
+        else if ($edate == "") {
+            alertify.error("Please Enter Ending Date");
+        }
+        else {
+            var $sdate = $("#StartingDate1").val();
+            var $edate = $("#StartingDate2").val();
+            var $fosid = $("#RangeID").val();
+            var $Disid = $("#DistributorID").val();
+            @*if ($("#cbCheck1").is(':checked') == true) {
+                window.open("@Url.Action("CityMonthWiseIntakeReport", "Retailer")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#StartingDate2").val() + "&TID=" + $("#TID").val() + "&Shoptypeid=" + $("#Shoptypeid").val() + "&message=" + message + "", "_top");
+            }*@
+            //else {
+
+
+
+            window.open("@Url.Action("OrderSummaryForDistributor", "Reports")" + "?StartingDate=" + $("#StartingDate1").val() + "&EndingDate=" + $("#StartingDate2").val()   + "&TID=" + $("#SaleOfficerID").val());
+            //}
+        }
+    });
+
+    $("#SaleOfficerID").change(function () {
+        debugger;
+
+
+    });
+    $("#RegionID").change(function () {
+        debugger;
+        LoadSaleOfficers();
+       // LoadDistributor();
+       // LoadCities();
+
+    });
+
+           function LoadHeads() {
+
+            try {
+                var RegionalHeadID = $("#RangeID").val();
+
+
+                $.ajax({
+                    type: "POST",
+                    data: { RegionalHeadID: RegionalHeadID, selectOption: true },
+                    url: "@Url.Action("GetHeadsRelatedtorange", "Job")",
+                    success: function (json) {
+
+                        var $el = $("#RegionID");
+                        $el.empty(); // remove old options
+                        $.each(json, function (value, key) {
+
+                            $el.append($("<option></option>")
+                                    .val(key.ID).text(key.Name));
+                        });
+
+                        LoadSaleOfficers();
+
+
+
+                    }
+
+                });
+            } catch (e) {
+                alert(e);
+                //  $('#datatab').dataTable().fnDestroy();
+            }
+
+        }
+
+        $("#RangeID").change(function () {
+
+
+            LoadHeads();
+
+            //$("#RetailerTypeDiv").hide();
+        });
+
+ function LoadSaleOfficers() {
+        try {
+            var regID = $("#RegionID").val();
+            debugger;
+            $.ajax({
+                type: "POST",
+                data: { RegionalHeadID: regID, selectOption: true },
+                url: "@Url.Action("GetAllSaleOfficerListRelatedToHeadrSelectOption", "Job")",
+                dataType: 'json',
+                success: function (json) {
+                    debugger;
+                    var $el = $("#SaleOfficerID");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>")
+                            .val(key.SaleOfficerID).text(key.SaleOfficerName));
+                    });
+
+
+                }
+            });
+        } catch (e) {
+            alert(e);
+
+        }
+    }
+
+    function LoadCities() {
+        try {
+            var regID = $("#RegionID").val();
+            debugger;
+            $.ajax({
+                type: "POST",
+                data: { RegID: regID },
+                url: "@Url.Action("GetCitiesRetailedtoRegForDistributor", "Reports")",
+                dataType: 'json',
+            success: function (json) {
+                debugger;
+                var $el = $("#CityID");
+                $el.empty(); // remove old options
+                $.each(json, function (value, key) {
+
+                    $el.append($("<option></option>")
+                            .val(key.ID).text(key.Name));
+                });
+
+
+            }
+        });
+    } catch (e) {
+        alert(e);
+
+    }
+    }
+
+    function LoadDistributor() {
+        try {
+            var RegionID = $("#RegionID").val();
+            var CityID = $("#CityID").val();
+            debugger;
+            $.ajax({
+                type: "POST",
+                data: { RegID: RegionID, Cityid: CityID },
+                url: "@Url.Action("GetDistributorRetailedtoSOForDistributor", "Reports")",
+                dataType: 'json',
+                success: function (json) {
+                    debugger;
+                    var $el = $("#DistributorID");
+                    $el.empty(); // remove old options
+                    $.each(json, function (value, key) {
+
+                        $el.append($("<option></option>")
+                                .val(key.ID).text(key.ShopName));
+                    });
+
+
+                }
+        });
+    } catch (e) {
+        alert(e);
+
+    }
+
+    }
+    $(document).ready(function () {
+
+        $('#StartingDate1').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+
+        $('#StartingDate2').datepicker(
+        {
+            dateFormat: 'dd-M-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1950:2100'
+        });
+    });
+</script>
