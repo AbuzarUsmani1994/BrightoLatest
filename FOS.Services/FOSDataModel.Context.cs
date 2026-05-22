@@ -7158,23 +7158,6 @@ public partial class FOSDataModel : DbContext
     }
 
 
-    public virtual ObjectResult<GetDailyAttendanceSummary_Result> GetDailyAttendanceSummary(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo)
-    {
-
-        var dateFromParameter = dateFrom.HasValue ?
-            new ObjectParameter("DateFrom", dateFrom) :
-            new ObjectParameter("DateFrom", typeof(System.DateTime));
-
-
-        var dateToParameter = dateTo.HasValue ?
-            new ObjectParameter("DateTo", dateTo) :
-            new ObjectParameter("DateTo", typeof(System.DateTime));
-
-
-        return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDailyAttendanceSummary_Result>("GetDailyAttendanceSummary", dateFromParameter, dateToParameter);
-    }
-
-
     public virtual ObjectResult<Sp_GetRetailersRelatedtoRegion_Result> Sp_GetRetailersRelatedtoRegion(Nullable<int> regionID)
     {
 

@@ -343,3 +343,7 @@ Web.config
 *.config.user
 appsettings.*.json
 ConnectionStrings.config
+
+# ---- VCS / tool internals ----
+.hg/
+.claude/

@@ -7893,37 +7893,52 @@ namespace FOS.Web.UI.Controllers
                 DateTime end = Convert.ToDateTime(string.IsNullOrEmpty(EndingDate) ? DateTime.Now.ToString() : EndingDate);
                 DateTime final = end.AddDays(1);
 
-                // Call the SP with SOID parameter (0 = all, specific number = specific painter)
-                List<GetDailyAttendanceSummary_Result> result = db.GetDailyAttendanceSummary(start, final).ToList();
-
                 StringWriter sw = new StringWriter();
-
-                // Write header for Attendance Report
-                sw.WriteLine("\"Sr No\",\"Date\",\"Regional Head\",\"Painter Name\",\"Site Name\",\"Attendance Type\",\"Time\",\"Location\"");
+                sw.WriteLine("\"Sr No\",\"Date\",\"Time\",\"Day\",\"Region\",\"Employee Name\",\"Site Name\",\"Day Start\",\"Day End\"");
 
                 Response.ClearContent();
                 Response.AddHeader("content-disposition", "attachment;filename=AttendanceReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
                 Response.ContentType = "application/octet-stream";
 
-                if (result != null && result.Any())
+                using (var conn = new SqlConnection(db.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand("GetDailyAttendanceSummary", conn))
                 {
-                    foreach (var record in result)
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandTimeout = 300;
+                    cmd.Parameters.Add(new SqlParameter("@DateFrom", SqlDbType.Date) { Value = start.Date });
+                    cmd.Parameters.Add(new SqlParameter("@DateTo", SqlDbType.Date) { Value = final.Date });
+
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        sw.WriteLine(string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\"",
-                            record.Sr_No,
-                            record.Date?.ToString("dd-MM-yyyy") ?? "",  // Format as DD-MM-YYYY
-                           
-                            record.PainterName,
-                            record.SiteName,
-                            record.AttendanceType,
-                            record.Time,
-                            record.Location
-                        ));
+                        bool any = false;
+                        while (reader.Read())
+                        {
+                            any = true;
+
+                            object dateVal = reader["Date"];
+                            string dateStr = (dateVal == DBNull.Value)
+                                ? ""
+                                : Convert.ToDateTime(dateVal).ToString("dd-MM-yyyy");
+
+                            sw.WriteLine(string.Format(
+                                "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"",
+                                reader["Sr No"],
+                                dateStr,
+                                reader["Time"],
+                                reader["Day"],
+                                reader["Region"],
+                                reader["Employee Name"],
+                                reader["Site Name"],
+                                reader["Day Start"],
+                                reader["Day End"]
+                            ));
+                        }
+                        if (!any)
+                        {
+                            sw.WriteLine("\"No records found for the selected date range\"");
+                        }
                     }
-                }
-                else
-                {
-                    sw.WriteLine("\"No records found for the selected date range\"");
                 }
 
                 Response.Write(sw.ToString());

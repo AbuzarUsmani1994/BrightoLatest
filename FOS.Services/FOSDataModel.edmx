@@ -3644,10 +3644,6 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
         <Function Name="GetClaimApprovals" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ClaimID" Type="int" Mode="In" />
         </Function>
-        <Function Name="GetDailyAttendanceSummary" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="DateFrom" Type="date" Mode="In" />
-          <Parameter Name="DateTo" Type="date" Mode="In" />
-        </Function>
         <Function Name="GetHousingVisitsByNatureOfWork" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="DateFrom" Type="date" Mode="In" />
           <Parameter Name="dateTo" Type="date" Mode="In" />
@@ -7688,10 +7684,6 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
             <Parameter Name="StartDate" Mode="In" Type="DateTime" />
             <Parameter Name="EndDate" Mode="In" Type="DateTime" />
             <Parameter Name="RegionID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="GetDailyAttendanceSummary" ReturnType="Collection(FOS_WallCoatModel.GetDailyAttendanceSummary_Result)">
-            <Parameter Name="DateFrom" Mode="In" Type="DateTime" />
-            <Parameter Name="DateTo" Mode="In" Type="DateTime" />
           </FunctionImport>
           <EntitySet Name="Tbl_ComplaintUpdate" EntityType="FOS_WallCoatModel.Tbl_ComplaintUpdate" />
           <EntitySet Name="Tbl_ConditionOfSubstratee" EntityType="FOS_WallCoatModel.Tbl_ConditionOfSubstratee" />
@@ -14070,15 +14062,6 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
           <Property Type="String" Name="Label" Nullable="false" MaxLength="50" />
           <Property Type="Int32" Name="Count" Nullable="true" />
         </ComplexType>
-        <ComplexType Name="GetDailyAttendanceSummary_Result">
-          <Property Type="Int64" Name="Sr_No" Nullable="true" />
-          <Property Type="DateTime" Name="Date" Nullable="true" />
-          <Property Type="String" Name="PainterName" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="SiteName" Nullable="true" MaxLength="70" />
-          <Property Type="String" Name="AttendanceType" Nullable="false" MaxLength="9" />
-          <Property Type="String" Name="Time" Nullable="true" MaxLength="4000" />
-          <Property Type="String" Name="Location" Nullable="true" MaxLength="41" />
-        </ComplexType>
         <EntityType Name="Tbl_ComplaintUpdate">
           <Key>
             <PropertyRef Name="ID" />
@@ -20139,19 +20122,6 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
                 <ScalarProperty Name="GraphType" ColumnName="GraphType" />
                 <ScalarProperty Name="Label" ColumnName="Label" />
                 <ScalarProperty Name="Count" ColumnName="Count" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetDailyAttendanceSummary" FunctionName="FOS_WallCoatModel.Store.GetDailyAttendanceSummary">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="FOS_WallCoatModel.GetDailyAttendanceSummary_Result">
-                <ScalarProperty Name="Sr_No" ColumnName="Sr No" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="PainterName" ColumnName="PainterName" />
-                <ScalarProperty Name="SiteName" ColumnName="SiteName" />
-                <ScalarProperty Name="AttendanceType" ColumnName="AttendanceType" />
-                <ScalarProperty Name="Time" ColumnName="Time" />
-                <ScalarProperty Name="Location" ColumnName="Location" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

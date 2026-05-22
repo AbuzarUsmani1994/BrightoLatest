@@ -2770,54 +2770,52 @@ namespace FOS.Setup
                     }
                     else if (SOID == 3)
                     {
-                        var query = from r in dbContext.Retailers
-                                    join s in dbContext.SaleOfficers on r.SaleOfficerID equals s.ID
-                                    where r.IsActive == true &&
-                                          s.RegionalHeadID == ZoneID &&
-                                          r.BusinessStatusID == 2
-                                    select new { r, s };
+                        doneJobData = (from r in dbContext.Retailers
+                                       join s in dbContext.SaleOfficers on r.SaleOfficerID equals s.ID
+                                       let allVisitIds = dbContext.Tbl_HousingVisits
+                                           .Where(p => p.CustomerID == r.ID)
+                                           .Select(p => p.ID)
+                                           .ToList()
+                                       let latestCall = dbContext.Tbl_SaveCall
+                                           .Where(sc => allVisitIds.Contains((int)sc.VisitID))
+                                           .OrderByDescending(sc => sc.CreatedOn)
+                                           .FirstOrDefault()
+                                       let latestVisit = dbContext.Tbl_HousingVisits
+                                           .Where(p => p.CustomerID == r.ID)
+                                           .OrderByDescending(p => p.ID)
+                                           .FirstOrDefault()
+                                       where (r.IsActive == true &&
+                                              r.LastUpdate >= FromDate &&
+                                              r.LastUpdate <= ToDate &&
+                                              s.RegionalHeadID == ZoneID &&
+                                              r.BusinessStatusID == 2
 
-                         doneJobData = (from q in query
-                                           from hv in dbContext.Tbl_HousingVisits
-                                               .Where(v => v.CustomerID == q.r.ID &&
-                                                           v.CreatedAt >= FromDate &&
-                                                           v.CreatedAt <= ToDate)
-                                               .OrderByDescending(v => v.CreatedAt)
-                                               .Take(1)
-                                               .DefaultIfEmpty()
-                                           where hv != null
-                                           select new JobsDetailData
-                                           {
-                                               ID = q.r.ID,
-                                               JobID = hv.ID,
-                                               SaleOfficerID = (int)q.r.SaleOfficerID,
-                                               SaleOfficerName = q.s.Name,
-                                               OwnerName = q.r.Name,
-                                               OwnerMob = q.r.Phone1,
-                                               RetailerName = q.r.ShopName,
-                                               ShopName = q.r.ShopName,
-                                               CustomerStatus = "Lost",
-                                               RegionID = q.r.RegionID,
-                                               RegionName = dbContext.Regions
-                                                           .Where(p => p.ID == q.r.RegionID)
-                                                           .Select(p => p.Name)
-                                                           .FirstOrDefault(),
-                                               RetailerAddress = q.r.Address,
-                                               ClaimDate = q.r.LastUpdate,
-                                               AssignDate = hv.NextVisitDate,
-                                               CallDate = dbContext.Tbl_SaveCall
-                                                           .Where(sc => sc.VisitID == hv.ID)
-                                                           .Select(sc => sc.CreatedOn)
-                                                           .FirstOrDefault(),
-                                               CallerName = dbContext.Tbl_SaveCall
-                                                           .Where(sc => sc.VisitID == hv.ID)
-                                                           .Select(sc => sc.CallerName)
-                                                           .FirstOrDefault(),
-                                               CallStatus = dbContext.Tbl_SaveCall
-                                                           .Where(sc => sc.VisitID == hv.ID)
-                                                           .Select(sc => sc.NatureOfCall)
-                                                           .FirstOrDefault()
-                                           }).ToList();
+                                              )
+                                       select new JobsDetailData
+                                       {
+                                           ID = r.ID,
+                                           JobID = latestVisit != null ? latestVisit.ID : 0,
+                                           SaleOfficerID = (int)r.SaleOfficerID,
+                                           SaleOfficerName = s.Name,
+                                           OwnerName = r.Name,
+                                           OwnerMob = r.Phone1,
+                                           RetailerName = r.ShopName,
+                                           ShopName = r.ShopName,
+                                           CustomerStatus = r.Status == true ? "Active" : "InActive",
+                                           RegionID = r.RegionID,
+                                           RegionName = dbContext.Regions
+                                                       .Where(p => p.ID == r.RegionID)
+                                                       .Select(p => p.Name)
+                                                       .FirstOrDefault(),
+                                           RetailerAddress = r.Address,
+                                           ClaimDate = r.LastUpdate,
+                                           AssignDate = latestVisit != null ? latestVisit.NextVisitDate : null,
+                                           CallDate = latestCall != null ? latestCall.CreatedOn : null,
+                                           CallerName = latestCall != null ? latestCall.CallerName : null,
+                                           CallStatus = latestCall != null ? latestCall.NatureOfCall : null
+                                       })
+                                       .Where(x => x.JobID != 0)
+                                       .ToList();
                     }
                 }
             }
