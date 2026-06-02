@@ -1468,6 +1468,7 @@
     <Compile Include="usp_GetDSRForChemical_Result.cs">
       <DependentUpon>FOSDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="usp_GetBusinessAffiliatesDSR_Result.cs" />
     <Compile Include="usp_IncentiveCategorywisegraph_Result.cs">
       <DependentUpon>FOSDataModel.tt</DependentUpon>
     </Compile>

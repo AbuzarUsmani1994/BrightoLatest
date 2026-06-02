@@ -1,27 +1,18 @@
-﻿using FOS.DataLayer;
+using FOS.DataLayer;
 using FOS.Web.UI.Common;
 using Shared.Diagnostics.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.tool.xml;
-using iTextSharp.text.html.simpleparser;
 using System.Web.Http;
-using System.Web.UI;
-using Microsoft.Reporting.WebForms;
 using System.Web;
-using System.Net.Http.Headers;
 
 namespace FOS.Web.UI.Controllers.API
 {
@@ -32,192 +23,218 @@ namespace FOS.Web.UI.Controllers.API
         [HttpPost]
         public Result<SuccessResponse> Post(BusinessSummery rm)
         {
-            // Retailer retailerObj = new Retailer();
             try
             {
-                Microsoft.Reporting.WebForms.LocalReport ReportViewer1 = new Microsoft.Reporting.WebForms.LocalReport();
+                DateTime fromDate = DateTime.Parse(rm.DateFrom);
+                DateTime toDate = DateTime.Parse(rm.DateTo).AddDays(1);
 
-                DateTime Todate = DateTime.Parse(rm.DateTo);
-                DateTime newDate = Todate.AddDays(1);
-                DateTime FromDate = DateTime.Parse(rm.DateFrom);
+                List<usp_GetBusinessAffiliatesDSR_Result> result = FetchData(fromDate, toDate, rm.SOID);
 
-                string DateTO = Todate.ToString("dd-MM-yyyy");
-                string FromTO = FromDate.ToString("dd-MM-yyyy");
-
-
-                 try
+                if (result == null || result.Count == 0)
+                {
+                    return new Result<SuccessResponse>
                     {
-                   
-
-                        List<usp_GetDSRForChemical_Result> result = db.usp_GetDSRForChemical( FromDate, newDate,rm.SOID).ToList();
-
-
-                        if (result.Count > 0)
-                        {
-
-
-                            string SoName = "";
-                            var SO = db.SaleOfficers.Where(u => u.ID == rm.SOID).FirstOrDefault();
-
-                            SoName = SO.Name;
-
-
-
-
-                            ReportParameter[] prm = new ReportParameter[10];
-                            prm[0] = new ReportParameter("DistributorName", "Test");
-                            prm[1] = new ReportParameter("Date", (System.DateTime.Now.ToString()));
-                            prm[2] = new ReportParameter("SOName", SoName);
-
-                            prm[3] = new ReportParameter("DateTo", DateTO);
-                            prm[4] = new ReportParameter("DateFrom", FromTO);
-
-                            prm[5] = new ReportParameter("CityName", "Test");
-                            prm[6] = new ReportParameter("TotalVisitsToday", "1");
-
-                            prm[7] = new ReportParameter("ProductiveShops", "1");
-                            prm[8] = new ReportParameter("TodayWorkingTime", "1");
-                            prm[9] = new ReportParameter("FollowUps", "1");
-
-                            ReportViewer1.ReportPath = HttpContext.Current.Server.MapPath("~\\Views\\Reports\\ChemicalDSRReport.rdlc");
-                            ReportViewer1.EnableExternalImages = true;
-                            ReportDataSource dt1 = new ReportDataSource("DataSet1", result);
-
-                            ReportViewer1.SetParameters(prm);
-                            ReportViewer1.DataSources.Clear();
-                            ReportViewer1.DataSources.Add(dt1);
-
-
-                            ReportViewer1.Refresh();
-                            Warning[] warnings;
-                            string[] streamids;
-                            string mimeType;
-                            string encoding;
-                            string extension;
-                            byte[] bytes = ReportViewer1.Render("PDF", null, out mimeType,
-                                    out encoding, out extension, out streamids, out warnings);
-                            Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
-                            // HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-                            using (MemoryStream memoryStream = new MemoryStream(bytes))
-                            {
-
-                                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                                memoryStream.Close();
-
-
-
-                                SuccessResponse d = new SuccessResponse();
-                                string fname = "BrightoChemicalDSR" + DateTime.Now.ToString("ddMMyyyyHHss");
-                                System.IO.File.WriteAllBytes(HttpContext.Current.Server.MapPath("~") + "/PDF/" + fname + ".pdf", bytes);
-                                HttpResponseMessage response2 = new HttpResponseMessage(HttpStatusCode.OK);
-                                d.data = "http://116.58.33.11:81/" + "\\PDF\\" + fname + ".pdf";
-                                return new Result<SuccessResponse>
-                                {
-                                    Data = d,
-                                    Message = "Downloaded",
-                                    ResultType = ResultType.Success,
-                                    Exception = null,
-                                    ValidationErrors = null
-                                };
-
-
-
-                            }
-
-                        }
-                        else
-                        {
-                            return new Result<SuccessResponse>
-                            {
-                                Data = null,
-                                Message = "No data Present today for this Distributor",
-                                ResultType = ResultType.Success,
-                                Exception = null,
-
-                            };
-
-                        }
-                  
-                        
-                    
-
+                        Data = null,
+                        Message = "No data found for the selected date range",
+                        ResultType = ResultType.Success,
+                        Exception = null,
+                    };
                 }
-                    catch (Exception ex)
-                    {
-                        return new Result<SuccessResponse>
-                        {
-                            Data = null,
-                            Message = ex.InnerException.Message,
-                            ResultType = ResultType.Success,
-                            Exception = null,
 
-                        };
-                    }
+                string soName = "All";
+                var so = db.SaleOfficers.Where(u => u.ID == rm.SOID).FirstOrDefault();
+                if (so != null) soName = so.Name;
 
-              
+                string fileName = "BusinessAffiliatesDSR_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".pdf";
+                string outDir = HttpContext.Current.Server.MapPath("~/PDF");
+                if (!Directory.Exists(outDir)) Directory.CreateDirectory(outDir);
+                string outPath = Path.Combine(outDir, fileName);
 
+                BuildPdf(outPath, result, soName, fromDate, toDate.AddDays(-1));
 
-
-
-
+                SuccessResponse d = new SuccessResponse
+                {
+                    data = "http://116.58.33.11:81/PDF/" + fileName
+                };
 
                 return new Result<SuccessResponse>
                 {
-                    Data = null,
-                    Message = "There is an issue with your internet. Kindly Try again",
+                    Data = d,
+                    Message = "Downloaded",
                     ResultType = ResultType.Success,
                     Exception = null,
-
+                    ValidationErrors = null
                 };
-
-
-
-
-
             }
-
             catch (Exception ex)
             {
-
-
+                Log.Instance.Error(ex, "BusinessAffiliatesDSRReport failed");
                 return new Result<SuccessResponse>
                 {
                     Data = null,
-                    Message = "Something Went Wrong",
+                    Message = ex.Message,
                     ResultType = ResultType.Failure,
                     Exception = null,
-
                 };
-
             }
-
         }
 
+        private List<usp_GetBusinessAffiliatesDSR_Result> FetchData(DateTime fromDate, DateTime toDate, int soId)
+        {
+            var list = new List<usp_GetBusinessAffiliatesDSR_Result>();
 
+            using (var conn = new SqlConnection(db.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("usp_GetBusinessAffiliatesDSR", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 300;
+                cmd.Parameters.Add(new SqlParameter("@DateFrom", SqlDbType.DateTime) { Value = fromDate });
+                cmd.Parameters.Add(new SqlParameter("@DateTo", SqlDbType.DateTime) { Value = toDate });
+                cmd.Parameters.Add(new SqlParameter("@SOID", SqlDbType.Int) { Value = soId });
+
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new usp_GetBusinessAffiliatesDSR_Result
+                        {
+                            VisitID = reader["VisitID"] == DBNull.Value ? 0 : Convert.ToInt32(reader["VisitID"]),
+                            VisitDate = reader["VisitDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["VisitDate"]),
+                            SOID = reader["SOID"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["SOID"]),
+                            SaleOfficerName = reader["SaleOfficerName"] as string,
+                            BusinessAffiliateID = reader["BusinessAffiliateID"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["BusinessAffiliateID"]),
+                            BusinessName = reader["BusinessName"] as string,
+                            ContactPerson = reader["ContactPerson"] as string,
+                            ContactNumber = reader["ContactNumber"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["ContactNumber"]),
+                            BusinessAddress = reader["BusinessAddress"] as string,
+                            RegionID = reader["RegionID"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["RegionID"]),
+                            RegionName = reader["RegionName"] as string,
+                            CityID = reader["CityID"] == DBNull.Value ? (int?)null : Convert.ToInt32(reader["CityID"]),
+                            CityName = reader["CityName"] as string,
+                            PurposeOfVisit = reader["PurposeOfVisit"] as string,
+                            TargetAgreement = reader["TargetAgreement"] as string,
+                            Remarks = reader["Remarks"] as string,
+                            CreatedDate = reader["CreatedDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["CreatedDate"]),
+                        });
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        private void BuildPdf(string outPath, List<usp_GetBusinessAffiliatesDSR_Result> rows, string soName, DateTime from, DateTime to)
+        {
+            using (var fs = new FileStream(outPath, FileMode.Create))
+            {
+                Document doc = new Document(PageSize.A4.Rotate(), 20f, 20f, 25f, 25f);
+                PdfWriter.GetInstance(doc, fs);
+                doc.Open();
+
+                var labelFont = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
+                var soFont = FontFactory.GetFont(FontFactory.HELVETICA, 11, BaseColor.BLACK);
+                var brandFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 14, BaseColor.BLACK);
+                var dateFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
+                var headFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9, BaseColor.WHITE);
+                var cellFont = FontFactory.GetFont(FontFactory.HELVETICA, 8, BaseColor.BLACK);
+
+                var header = new PdfPTable(3);
+                header.WidthPercentage = 100;
+                header.SetWidths(new float[] { 35f, 15f, 50f });
+                header.SpacingAfter = 12f;
+
+                var leftCell = new PdfPCell();
+                leftCell.Border = Rectangle.NO_BORDER;
+                leftCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                leftCell.AddElement(new Paragraph("Print Date: " + DateTime.Now.ToString("d/M/yyyy"), labelFont));
+                leftCell.AddElement(new Paragraph(" ", labelFont));
+                leftCell.AddElement(new Paragraph(soName, soFont));
+                header.AddCell(leftCell);
+
+                var logoCell = new PdfPCell();
+                logoCell.Border = Rectangle.NO_BORDER;
+                logoCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                logoCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                try
+                {
+                    string logoPath = HttpContext.Current.Server.MapPath("~/Images/BrightologoNew.png");
+                    if (System.IO.File.Exists(logoPath))
+                    {
+                        var logo = iTextSharp.text.Image.GetInstance(logoPath);
+                        logo.ScaleToFit(110f, 55f);
+                        logoCell.AddElement(logo);
+                    }
+                }
+                catch { }
+                header.AddCell(logoCell);
+
+                var rightCell = new PdfPCell();
+                rightCell.Border = Rectangle.NO_BORDER;
+                rightCell.HorizontalAlignment = Element.ALIGN_LEFT;
+                rightCell.VerticalAlignment = Element.ALIGN_MIDDLE;
+                rightCell.PaddingLeft = 8f;
+                var brandP = new Paragraph("Brighto Paints", brandFont);
+                brandP.Alignment = Element.ALIGN_LEFT;
+                rightCell.AddElement(brandP);
+                rightCell.AddElement(new Paragraph(" ", labelFont));
+                var rangeP = new Paragraph(
+                    string.Format("DateFrom: {0:dd-MMM-yyyy}    DateTo: {1:dd-MMM-yyyy}", from, to),
+                    dateFont);
+                rangeP.Alignment = Element.ALIGN_LEFT;
+                rightCell.AddElement(rangeP);
+                header.AddCell(rightCell);
+
+                doc.Add(header);
+
+                string[] headers = { "Date", "Sale Officer", "Business", "Contact Person", "Contact #", "Region", "City", "Purpose", "Target/Agreement", "Remarks" };
+                float[] widths = { 7f, 9f, 12f, 10f, 7f, 8f, 8f, 10f, 10f, 14f };
+
+                var table = new PdfPTable(headers.Length);
+                table.WidthPercentage = 100;
+                table.SetWidths(widths);
+                table.HeaderRows = 1;
+
+                foreach (var h in headers)
+                {
+                    var c = new PdfPCell(new Phrase(h, headFont));
+                    c.BackgroundColor = new BaseColor(63, 127, 95);
+                    c.HorizontalAlignment = Element.ALIGN_CENTER;
+                    c.Padding = 5f;
+                    table.AddCell(c);
+                }
+
+                foreach (var r in rows)
+                {
+                    table.AddCell(Cell(r.VisitDate.HasValue ? r.VisitDate.Value.ToString("dd-MM-yyyy") : "", cellFont));
+                    table.AddCell(Cell(r.SaleOfficerName, cellFont));
+                    table.AddCell(Cell(r.BusinessName, cellFont));
+                    table.AddCell(Cell(r.ContactPerson, cellFont));
+                    table.AddCell(Cell(r.ContactNumber.HasValue ? r.ContactNumber.Value.ToString() : "", cellFont));
+                    table.AddCell(Cell(r.RegionName, cellFont));
+                    table.AddCell(Cell(r.CityName, cellFont));
+                    table.AddCell(Cell(r.PurposeOfVisit, cellFont));
+                    table.AddCell(Cell(r.TargetAgreement, cellFont));
+                    table.AddCell(Cell(r.Remarks, cellFont));
+                }
+
+                doc.Add(table);
+                doc.Close();
+            }
+        }
+
+        private static PdfPCell Cell(string text, iTextSharp.text.Font font)
+        {
+            var c = new PdfPCell(new Phrase(text ?? "", font));
+            c.Padding = 4f;
+            return c;
+        }
     }
 
-
-
+    public class BusinessSummery
+    {
+        public int SOID { get; set; }
+        public string DateFrom { get; set; }
+        public string DateTo { get; set; }
+    }
 }
-
-
-
-public class SuccessResponse4
-{
-    public string data { get; set; }
-}
-public class BusinessSummery
-{
-    public int SOID { get; set; }
-   
-    public string DateFrom { get; set; }
-    public string DateTo { get; set; }
-   
-
-  
-
-
-}
-
-
