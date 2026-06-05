@@ -1532,6 +1532,7 @@
           <Property Name="Lattitude" Type="decimal" Precision="18" Scale="8" />
           <Property Name="Longitude" Type="decimal" Precision="18" Scale="8" />
           <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="PushTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Tbl_FocusArea">
           <Key>
@@ -14003,6 +14004,7 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
           <Property Name="Lattitude" Type="Decimal" Precision="18" Scale="8" />
           <Property Name="Longitude" Type="Decimal" Precision="18" Scale="8" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="PushTime" Type="DateTime" Precision="3" />
         </EntityType>
         <ComplexType Name="Sp_OrderForPDFTradeVisitBackEnd_Result">
           <Property Type="Int32" Name="VisitID" Nullable="false" />
@@ -20043,6 +20045,7 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
           <EntitySetMapping Name="Tbl_FannanSODirection">
             <EntityTypeMapping TypeName="FOS_WallCoatModel.Tbl_FannanSODirection">
               <MappingFragment StoreEntitySet="Tbl_FannanSODirection">
+                <ScalarProperty Name="PushTime" ColumnName="PushTime" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="Longitude" ColumnName="Longitude" />
                 <ScalarProperty Name="Lattitude" ColumnName="Lattitude" />

@@ -7894,7 +7894,7 @@ namespace FOS.Web.UI.Controllers
                 DateTime final = end.AddDays(1);
 
                 StringWriter sw = new StringWriter();
-                sw.WriteLine("\"Sr No\",\"Date\",\"Time\",\"Day\",\"Region\",\"Employee Name\",\"Site Name\",\"Day Start\",\"Day End\"");
+                sw.WriteLine("\"Sr No\",\"Date\",\"Time\",\"Day\",\"Region\",\"Employee Name\",\"Site Name\",\"Attendance Type\"");
 
                 Response.ClearContent();
                 Response.AddHeader("content-disposition", "attachment;filename=AttendanceReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
@@ -7922,7 +7922,7 @@ namespace FOS.Web.UI.Controllers
                                 : Convert.ToDateTime(dateVal).ToString("dd-MM-yyyy");
 
                             sw.WriteLine(string.Format(
-                                "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"",
+                                "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\"",
                                 reader["Sr No"],
                                 dateStr,
                                 reader["Time"],
@@ -7930,8 +7930,7 @@ namespace FOS.Web.UI.Controllers
                                 reader["Region"],
                                 reader["Employee Name"],
                                 reader["Site Name"],
-                                reader["Day Start"],
-                                reader["Day End"]
+                                reader["Attendance Type"]
                             ));
                         }
                         if (!any)

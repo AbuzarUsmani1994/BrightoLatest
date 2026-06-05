@@ -28,6 +28,8 @@ public partial class Tbl_FannanSODirection
 
     public Nullable<System.DateTime> CreatedOn { get; set; }
 
+    public Nullable<System.DateTime> PushTime { get; set; }
+
 }
 
 }
