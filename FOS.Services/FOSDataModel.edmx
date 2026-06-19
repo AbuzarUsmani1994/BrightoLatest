@@ -1645,6 +1645,9 @@
           <Property Name="TotalTarget" Type="int" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="FinancialYearID" Type="int" />
+          <Property Name="SOID" Type="int" />
+          <Property Name="RegionalHeadID" Type="int" />
         </EntityType>
         <EntityType Name="Tbl_MasterCoverage">
           <Key>
@@ -13497,6 +13500,9 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
           <Property Name="TotalTarget" Type="Int32" />
           <Property Name="IsActive" Type="Boolean" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="FinancialYearID" Type="Int32" />
+          <Property Name="SOID" Type="Int32" />
+          <Property Name="RegionalHeadID" Type="Int32" />
         </EntityType>
         <ComplexType Name="usp_GetClaimVsKPIReportSOWise_Result">
           <Property Type="String" Name="HeadName" Nullable="true" MaxLength="50" />
@@ -19446,6 +19452,9 @@ warning 6002: The table/view 'Brightoo.dbo.vActiveJobs' does not have a primary 
                 <ScalarProperty Name="ReadyMixTarget" ColumnName="ReadyMixTarget" />
                 <ScalarProperty Name="RegionID" ColumnName="RegionID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="FinancialYearID" ColumnName="FinancialYearID" />
+                <ScalarProperty Name="SOID" ColumnName="SOID" />
+                <ScalarProperty Name="RegionalHeadID" ColumnName="RegionalHeadID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

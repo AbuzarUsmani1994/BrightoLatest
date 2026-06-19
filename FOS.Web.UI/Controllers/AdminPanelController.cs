@@ -105,6 +105,10 @@ namespace FOS.Web.UI.Controllers
             {
                 pageUrl = string.IsNullOrEmpty(returnUrl) ? string.Format("{0}/Home/QualityHome", Settings.AppPath) : returnUrl;
             }
+            else if (userId == 1123 && Type == "BrightoManagers")
+            {
+                pageUrl = string.IsNullOrEmpty(returnUrl) ? string.Format("{0}/ManagersDashboard/Index", Settings.AppPath) : returnUrl;
+            }
             else if(userId != 1 && Type == "Managers")
             {
                 

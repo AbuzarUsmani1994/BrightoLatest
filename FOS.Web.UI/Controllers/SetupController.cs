@@ -11,6 +11,8 @@ using Microsoft.Reporting.WebForms;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -503,23 +505,40 @@ namespace FOS.Web.UI.Controllers
         //View Work...
         public ActionResult KPI()
         {
-            // Load Region Data For City Records ...
             var objCity = new CityData();
-            int RHID = FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser();
-            int THID = FOS.Web.UI.Controllers.AdminPanelController.GetTHIDRelatedToUser();
-            if (THID > 0)
+            int userID = Convert.ToInt32(Session["UserID"]);
+
+            // Financial Years
+            objCity.FinancialYears = new List<FinancialYearListItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE IsActive = 1 ORDER BY ID DESC", conn))
             {
-
-                objCity.Regions = FOS.Setup.ManageRegion.GetRegionList(THID);
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        objCity.FinancialYears.Add(new FinancialYearListItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Year = reader["Year"].ToString()
+                        });
+                    }
+                }
             }
-            else
-            {
-                objCity.Regions = FOS.Setup.ManageRegion.GetRegionList(RHID);
-            }
 
-
+            // Regional Heads (territory-scoped to current user)
+            objCity.RegionalHeads = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
+            objCity.SaleOfficers = new List<SaleOfficer>();
 
             return View(objCity);
+        }
+
+        public JsonResult GetSOByRegionalHeadID(int RegionalHeadID)
+        {
+            var result = FOS.Setup.ManageSaleOffice.GetAllSaleOfficerListRelatedtoregionalHeadID(RegionalHeadID, false)
+                .Select(x => new { ID = x.ID, Name = x.Name }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -575,13 +594,13 @@ namespace FOS.Web.UI.Controllers
         }
 
         //Get All Region Method...
-        public JsonResult KPIDataHandler(DTParameters param, Int32 RegionID)
+        public JsonResult KPIDataHandler(DTParameters param, Int32 SOID, Int32 FinancialYearID, Int32 RegionalHeadID)
         {
             try
             {
                 var dtsource = new List<CityData>();
 
-                dtsource = ManageCity.GetKPIForGrid(RegionID);
+                dtsource = ManageCity.GetKPIForGrid(SOID, FinancialYearID, RegionalHeadID);
 
                 List<String> columnSearch = new List<string>();
 
@@ -2108,6 +2127,151 @@ namespace FOS.Web.UI.Controllers
 
         #endregion DelieveryBoys
 
+        #region FinancialYear
+
+        [CustomAuthorize]
+        public ActionResult FinancialYear()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddUpdateFinancialYear(FinancialYearData model)
+        {
+            try
+            {
+                if (model == null || string.IsNullOrWhiteSpace(model.Year))
+                {
+                    return Content("0");
+                }
+
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                {
+                    conn.Open();
+
+                    using (var checkCmd = new SqlCommand(
+                        "SELECT COUNT(1) FROM dbo.Tbl_FinancialYear WHERE [Year] = @Year AND ID <> @ID", conn))
+                    {
+                        checkCmd.Parameters.Add(new SqlParameter("@Year", SqlDbType.NVarChar, 50) { Value = model.Year.Trim() });
+                        checkCmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = model.ID });
+                        int exists = Convert.ToInt32(checkCmd.ExecuteScalar());
+                        if (exists > 0)
+                        {
+                            return Content("2");
+                        }
+                    }
+
+                    if (model.ID == 0)
+                    {
+                        using (var cmd = new SqlCommand(
+                            "INSERT INTO dbo.Tbl_FinancialYear ([Year], CreatedOn, IsActive) VALUES (@Year, GETDATE(), 1)", conn))
+                        {
+                            cmd.Parameters.Add(new SqlParameter("@Year", SqlDbType.NVarChar, 50) { Value = model.Year.Trim() });
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    else
+                    {
+                        using (var cmd = new SqlCommand(
+                            "UPDATE dbo.Tbl_FinancialYear SET [Year] = @Year WHERE ID = @ID", conn))
+                        {
+                            cmd.Parameters.Add(new SqlParameter("@Year", SqlDbType.NVarChar, 50) { Value = model.Year.Trim() });
+                            cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = model.ID });
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                return Content("1");
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "AddUpdateFinancialYear Failed");
+                return Content("Exception : " + exp.Message);
+            }
+        }
+
+        public JsonResult FinancialYearDataHandler(DTParameters param)
+        {
+            try
+            {
+                var dtsource = new List<FinancialYearData>();
+
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand(
+                    "SELECT ID, [Year], CreatedOn, IsActive FROM dbo.Tbl_FinancialYear WHERE IsActive = 1 ORDER BY ID DESC", conn))
+                {
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            dtsource.Add(new FinancialYearData
+                            {
+                                ID = Convert.ToInt32(reader["ID"]),
+                                Year = reader["Year"].ToString(),
+                                CreatedOn = reader["CreatedOn"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["CreatedOn"]),
+                                IsActive = reader["IsActive"] != DBNull.Value && Convert.ToBoolean(reader["IsActive"])
+                            });
+                        }
+                    }
+                }
+
+                string search = param.Search != null ? (param.Search.Value ?? string.Empty) : string.Empty;
+                IEnumerable<FinancialYearData> filtered = dtsource;
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    filtered = filtered.Where(x => (x.Year ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+
+                int count = filtered.Count();
+                List<FinancialYearData> data = filtered.Skip(param.Start).Take(param.Length).ToList();
+
+                DTResult<FinancialYearData> result = new DTResult<FinancialYearData>
+                {
+                    draw = param.Draw,
+                    data = data,
+                    recordsFiltered = count,
+                    recordsTotal = count
+                };
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        public int DeleteFinancialYear(int ID)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand("UPDATE dbo.Tbl_FinancialYear SET IsActive = 0 WHERE ID = @ID", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = ID });
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Error(ex, "DeleteFinancialYear Failed");
+                return 1;
+            }
+        }
+
+        public class FinancialYearData
+        {
+            public int ID { get; set; }
+            public string Year { get; set; }
+            public DateTime? CreatedOn { get; set; }
+            public bool IsActive { get; set; }
+        }
+
+        #endregion FinancialYear
 
 
     }

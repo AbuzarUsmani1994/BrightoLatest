@@ -1062,21 +1062,24 @@ namespace FOS.Setup
                         
                             try
                             {
-                                // Check if there's an existing active record for this RegionID
+                                // Check if there's an existing active record for this SO + FinancialYear
                                 var existingRecord = dbContext.Tbl_KPITargetsRegionWise
-                                                            .FirstOrDefault(x => x.RegionID == obj.RegionID && x.IsActive==true);
+                                                            .FirstOrDefault(x => x.SOID == obj.SOID
+                                                                              && x.FinancialYearID == obj.FinancialYearID
+                                                                              && x.IsActive == true);
 
                                 if (existingRecord != null)
                                 {
                                     // Deactivate the existing record
                                     existingRecord.IsActive = false;
-                                   // existingRecord.ModifiedOn = DateTime.Now; // Track modification date if needed
                                 }
 
                                 // Create and add the new record
                                 var KpiObj = new Tbl_KPITargetsRegionWise
                                 {
-                                    RegionID = obj.RegionID,
+                                    SOID = obj.SOID,
+                                    RegionalHeadID = obj.RegionalHeadID,
+                                    FinancialYearID = obj.FinancialYearID,
                                     ACTDTarget = obj.ACTDTarget,
                                     CoatingTarget = obj.CoatingTarget,
                                     IsActive = true,
@@ -1197,7 +1200,7 @@ namespace FOS.Setup
             return cityData;
         }
 
-        public static List<CityData> GetKPIForGrid(int intRegionID)
+        public static List<CityData> GetKPIForGrid(int intSOID, int intFinancialYearID, int intRegionalHeadID)
         {
             List<CityData> cityData = new List<CityData>();
 
@@ -1205,25 +1208,50 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    cityData = dbContext.Tbl_KPITargetsRegionWise.Where(u => u.RegionID == intRegionID && u.IsActive == true)
-                            .ToList().Select(
-                                u => new CityData
-                                {
-                                    ID = u.ID,
-                                    RegionID = 1,
-                                    Name = "Name",
-                                    RegionName = dbContext.Regions.Where(x=>x.ID== intRegionID).Select(x=>x.Name).FirstOrDefault(),
-                                    TotalTarget = u.TotalTarget,
-                                    ACTDTarget = u.ACTDTarget,
-                                    CoatingTarget = u.CoatingTarget,
-                                    ReadyMixTarget = u.ReadyMixTarget,
-                                     LastUpdate = u.CreatedOn
-                                }).ToList();
+                    var q = dbContext.Tbl_KPITargetsRegionWise.Where(u => u.IsActive == true);
+
+                    if (intSOID > 0)
+                        q = q.Where(u => u.SOID == intSOID);
+                    if (intFinancialYearID > 0)
+                        q = q.Where(u => u.FinancialYearID == intFinancialYearID);
+                    if (intRegionalHeadID > 0)
+                        q = q.Where(u => u.RegionalHeadID == intRegionalHeadID);
+
+                    var rows = q.ToList();
+
+                    var soIds = rows.Where(r => r.SOID.HasValue).Select(r => r.SOID.Value).Distinct().ToList();
+                    var rhIds = rows.Where(r => r.RegionalHeadID.HasValue).Select(r => r.RegionalHeadID.Value).Distinct().ToList();
+                    var fyIds = rows.Where(r => r.FinancialYearID.HasValue).Select(r => r.FinancialYearID.Value).Distinct().ToList();
+
+                    var soDict = dbContext.SaleOfficers.Where(x => soIds.Contains(x.ID))
+                                    .ToDictionary(x => x.ID, x => x.Name);
+                    var rhDict = dbContext.RegionalHeads.Where(x => rhIds.Contains(x.ID))
+                                    .ToDictionary(x => x.ID, x => x.Name);
+                    var fyDict = dbContext.Database
+                                    .SqlQuery<FinancialYearListItem>("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE ID IN (" + (fyIds.Count == 0 ? "0" : string.Join(",", fyIds)) + ")")
+                                    .ToDictionary(x => x.ID, x => x.Year);
+
+                    cityData = rows.Select(u => new CityData
+                    {
+                        ID = u.ID,
+                        Name = "Name",
+                        SOID = u.SOID,
+                        SOName = u.SOID.HasValue && soDict.ContainsKey(u.SOID.Value) ? soDict[u.SOID.Value] : "",
+                        RegionalHeadID = u.RegionalHeadID,
+                        RegionalHeadName = u.RegionalHeadID.HasValue && rhDict.ContainsKey(u.RegionalHeadID.Value) ? rhDict[u.RegionalHeadID.Value] : "",
+                        FinancialYearID = u.FinancialYearID,
+                        FinancialYearName = u.FinancialYearID.HasValue && fyDict.ContainsKey(u.FinancialYearID.Value) ? fyDict[u.FinancialYearID.Value] : "",
+                        TotalTarget = u.TotalTarget,
+                        ACTDTarget = u.ACTDTarget,
+                        CoatingTarget = u.CoatingTarget,
+                        ReadyMixTarget = u.ReadyMixTarget,
+                        LastUpdate = u.CreatedOn
+                    }).ToList();
                 }
             }
             catch (Exception exp)
             {
-                Log.Instance.Error(exp, "Load City Grid Failed");
+                Log.Instance.Error(exp, "Load KPI Grid Failed");
                 throw;
             }
 

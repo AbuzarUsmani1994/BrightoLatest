@@ -650,7 +650,7 @@ namespace FOS.Web.UI.Controllers.API
             complaintStatuses.Add(new City { ID = 2, Name = "Complaint In Progress" });
             complaintStatuses.Add(new City { ID = 3, Name = "Complaint Resolved" });
             complaintStatuses.Add(new City { ID = 4, Name = "Decesion Pending" });
-
+            complaintStatuses.Add(new City { ID = 5, Name = "Commercial Decesion" });
             return complaintStatuses.OrderBy(x => x.ID).ToList();
         }
 

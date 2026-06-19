@@ -50,10 +50,27 @@ namespace FOS.Shared
         public System.DateTime? LastUpdate { get; set; }
         public string FormattedDate { get; set; }
         public List<Region> Regions { get; set; }
+
+        public int? FinancialYearID { get; set; }
+        public string FinancialYearName { get; set; }
+        public int? SOID { get; set; }
+        public string SOName { get; set; }
+        public int? RegionalHeadID { get; set; }
+        public string RegionalHeadName { get; set; }
+        public List<FinancialYearListItem> FinancialYears { get; set; }
+        public List<RegionalHeadData> RegionalHeads { get; set; }
+        public List<SaleOfficer> SaleOfficers { get; set; }
+
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public int CreatedBy { get; set; }
 
+    }
+
+    public class FinancialYearListItem
+    {
+        public int ID { get; set; }
+        public string Year { get; set; }
     }
 
     public class CityGraphData

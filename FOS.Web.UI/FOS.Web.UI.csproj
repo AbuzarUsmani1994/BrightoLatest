@@ -693,6 +693,7 @@
     <Compile Include="Controllers\DealerAPIController.cs" />
     <Compile Include="Controllers\DealerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ManagersDashboardController.cs" />
     <Compile Include="Controllers\RegionalHeadController.cs" />
     <Compile Include="Controllers\ResponseType.cs" />
     <Compile Include="Controllers\RetailerController.cs" />
@@ -2135,9 +2136,11 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Home.cshtml" />
+    <Content Include="Views\ManagersDashboard\Index.cshtml" />
     <Content Include="Views\AdminPanel\Login.cshtml" />
     <Content Include="Views\AdminPanel\Users.cshtml" />
     <Content Include="Views\Setup\Region.cshtml" />
+    <Content Include="Views\Setup\FinancialYear.cshtml" />
     <Content Include="Views\Setup\City.cshtml" />
     <Content Include="Views\Setup\Area.cshtml" />
     <Content Include="Views\AdminPanel\Role.cshtml" />

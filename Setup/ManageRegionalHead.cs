@@ -85,7 +85,7 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    if (UserID == 1 || UserID== 1120|| UserID==1121 || UserID == 1122)
+                    if (UserID == 1 || UserID== 1120|| UserID==1121 || UserID == 1122 || UserID==1123)
                     {
                         regionalHeadData = dbContext.RegionalHeads.Where(u => u.IsDeleted == false)
                                 .ToList().Select(

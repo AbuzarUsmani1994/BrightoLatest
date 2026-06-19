@@ -34,6 +34,12 @@ public partial class Tbl_KPITargetsRegionWise
 
     public Nullable<System.DateTime> CreatedOn { get; set; }
 
+    public Nullable<int> FinancialYearID { get; set; }
+
+    public Nullable<int> SOID { get; set; }
+
+    public Nullable<int> RegionalHeadID { get; set; }
+
 }
 
 }

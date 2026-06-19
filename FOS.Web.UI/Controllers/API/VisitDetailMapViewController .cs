@@ -39,6 +39,39 @@ namespace FOS.Web.UI.Controllers.API
                 {
                     object[] param = { SOID };
 
+                    var attendanceRows = db.SOAttendances
+                        .Where(x => x.SOID == SOID && x.CreatedAt >= dtFromToday && x.CreatedAt < dtToToday)
+                        .OrderBy(x => x.CreatedAt)
+                        .ToList();
+
+                    var startRow = attendanceRows
+                        .FirstOrDefault(x => x.MarketStartLat != null && x.MarketStartLong != null);
+                    if (startRow != null)
+                    {
+                        list.Add(new VisitDetailMapDto
+                        {
+                            CustomerName = "Market Start/" + startRow.CreatedAt,
+                            Lattitude = startRow.MarketStartLat,
+                            Longitude = startRow.MarketStartLong,
+                            VisitPurpose = "Market Start",
+                            VisitDate = startRow.CreatedAt
+                        });
+                    }
+
+                    var closeRow = attendanceRows
+                        .LastOrDefault(x => x.MarketCloseLat != null && x.MarketCloseLong != null);
+                    if (closeRow != null)
+                    {
+                        list.Add(new VisitDetailMapDto
+                        {
+                            CustomerName = "Market Close/" + closeRow.CreatedAt,
+                            Lattitude = closeRow.MarketCloseLat,
+                            Longitude = closeRow.MarketCloseLong,
+                            VisitPurpose = "Market Close",
+                            VisitDate = closeRow.CreatedAt
+                        });
+                    }
+
 
                     if (SegmentType == 1)
                     {
