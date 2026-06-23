@@ -2116,7 +2116,7 @@ namespace FOS.Web.UI.Controllers
         }
 
 
-        public void SaleOfficerDetailRpt( int TID)
+        public void SaleOfficerDetailRpt(int TID)
         {
             var userID = Convert.ToInt32(Session["UserID"]);
             var remoteIpAddress = "";
@@ -2128,41 +2128,83 @@ namespace FOS.Web.UI.Controllers
             }
             try
             {
-
-           
-                ManageRetailer objRetailers = new ManageRetailer();
-                List<Sp_SaleofficerData_Result> result = db.Sp_SaleofficerData(TID, 6).ToList();
-                // Example data
                 StringWriter sw = new StringWriter();
-
-                sw.WriteLine("\"SRNo\",\" Name\",\" UserName\",\" Password\",\"Joining Date\",\"RegionalHead Name\",\"Phone1\",\"Phone2\",\"Active\",\"LeaveON\"");
+                sw.WriteLine("\"Sr No\",\"Name\",\"UserName\",\"Password\",\"Joining Date\",\"Regional Head\",\"Phone1\",\"Phone2\",\"Active\",\"Leave On\",\"SO Code\",\"Region\",\"Primary City\",\"Secondary City\",\"Segment\",\"Designation\"");
 
                 Response.ClearContent();
-                Response.AddHeader("content-disposition", "attachment;filename=SoDetail" + DateTime.Now + ".csv");
+                Response.AddHeader("content-disposition", "attachment;filename=SODetail_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
                 Response.ContentType = "application/octet-stream";
 
-
-                int srNo = 1;
-                foreach (var retailer in result)
+                using (var conn = new SqlConnection(db.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand(
+                    @"SELECT
+                        so.Name,
+                        so.UserName,
+                        so.Password,
+                        so.JoiningDate,
+                        rh.Name          AS RegionalHeadName,
+                        so.Phone1,
+                        so.Phone2,
+                        CASE WHEN so.IsActive = 1 THEN 'Yes' ELSE 'No' END AS Active,
+                        so.LeaveOn,
+                        so.ECode,
+                        reg.Name         AS RegionName,
+                        pc.Name          AS PrimaryCity,
+                        sc.Name          AS SecondaryCity,
+                        seg.Name         AS Segment,
+                        des.Name         AS Designation
+                      FROM dbo.SaleOfficers so
+                      LEFT JOIN dbo.RegionalHeads rh  ON rh.ID  = so.RegionalHeadID
+                      LEFT JOIN dbo.Regions reg        ON reg.ID = so.RegionID
+                      LEFT JOIN dbo.Cities pc          ON pc.ID  = so.PrimaryCityID
+                      LEFT JOIN dbo.Cities sc          ON sc.ID  = so.SecondaryCityID
+                      LEFT JOIN dbo.Tbl_Segmenttype seg ON seg.ID = so.SegmentID
+                      LEFT JOIN dbo.SODesignations des ON des.ID = so.DesignationID
+                      WHERE so.IsDeleted = 0
+                        AND (@TID = 0 OR so.RegionalHeadID = @TID)
+                      ORDER BY rh.Name, so.Name", conn))
                 {
-                    sw.WriteLine(string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\"",
-                        srNo,
-                    retailer.name,
-                     retailer.UserName,
-                      retailer.Pass,
-                      retailer.DateofJoin,
-                    retailer.RegionalHeadName,
-                    retailer.Phone1,
-                    retailer.Phone2,
-               
-                  
-                    retailer.Active,
-                    retailer.LeaveON,
-                    srNo++
-                    ));
+                    cmd.Parameters.Add(new SqlParameter("@TID", SqlDbType.Int) { Value = TID });
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        int srNo = 1;
+                        bool any = false;
+                        while (reader.Read())
+                        {
+                            any = true;
+                            string joiningDate = reader["JoiningDate"] == DBNull.Value ? "" :
+                                Convert.ToDateTime(reader["JoiningDate"]).ToString("dd-MM-yyyy");
+                            string leaveOn = reader["LeaveOn"] == DBNull.Value ? "" :
+                                Convert.ToDateTime(reader["LeaveOn"]).ToString("dd-MM-yyyy");
+
+                            sw.WriteLine(string.Format(
+                                "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\",\"{12}\",\"{13}\",\"{14}\",\"{15}\"",
+                                srNo++,
+                                reader["Name"],
+                                reader["UserName"],
+                                reader["Password"],
+                                joiningDate,
+                                reader["RegionalHeadName"],
+                                reader["Phone1"],
+                                reader["Phone2"],
+                                reader["Active"],
+                                leaveOn,
+                                reader["ECode"],
+                                reader["RegionName"],
+                                reader["PrimaryCity"],
+                                reader["SecondaryCity"],
+                                reader["Segment"],
+                                reader["Designation"]
+                            ));
+                        }
+                        if (!any)
+                            sw.WriteLine("\"No records found\"");
+                    }
                 }
+
                 Response.Write(sw.ToString());
-                Response.End();
+
                 ManagersLoginHst hst = new ManagersLoginHst();
                 hst.UserID = userID;
                 hst.IPAddress = remoteIpAddress;
@@ -2171,13 +2213,13 @@ namespace FOS.Web.UI.Controllers
                 hst.CreatedOn = DateTime.UtcNow.AddHours(5);
                 db.ManagersLoginHsts.Add(hst);
                 db.SaveChanges();
+
+                Response.End();
             }
             catch (Exception exp)
             {
                 Log.Instance.Error(exp, "Report Not Working");
-                // return null;
             }
-
         }
 
         public ActionResult ShopsPerformance()
@@ -7894,7 +7936,7 @@ namespace FOS.Web.UI.Controllers
                 DateTime final = end.AddDays(1);
 
                 StringWriter sw = new StringWriter();
-                sw.WriteLine("\"Sr No\",\"Date\",\"Time\",\"Day\",\"Region\",\"Employee Name\",\"Site Name\",\"Attendance Type\"");
+                sw.WriteLine("\"Sr No\",\"Date\",\"Time\",\"Day\",\"Region\",\"Employee Name\",\"Site Name\",\"Attendance Type\",\"Latitude\",\"Longitude\"");
 
                 Response.ClearContent();
                 Response.AddHeader("content-disposition", "attachment;filename=AttendanceReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
@@ -7922,7 +7964,7 @@ namespace FOS.Web.UI.Controllers
                                 : Convert.ToDateTime(dateVal).ToString("dd-MM-yyyy");
 
                             sw.WriteLine(string.Format(
-                                "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\"",
+                                "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\"",
                                 reader["Sr No"],
                                 dateStr,
                                 reader["Time"],
@@ -7930,7 +7972,9 @@ namespace FOS.Web.UI.Controllers
                                 reader["Region"],
                                 reader["Employee Name"],
                                 reader["Site Name"],
-                                reader["Attendance Type"]
+                                reader["Attendance Type"],
+                                reader["Latitude"] == DBNull.Value ? "" : reader["Latitude"],
+                                reader["Longitude"] == DBNull.Value ? "" : reader["Longitude"]
                             ));
                         }
                         if (!any)

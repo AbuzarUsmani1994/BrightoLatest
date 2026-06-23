@@ -60,6 +60,7 @@ namespace FOS.Shared
         public List<FinancialYearListItem> FinancialYears { get; set; }
         public List<RegionalHeadData> RegionalHeads { get; set; }
         public List<SaleOfficer> SaleOfficers { get; set; }
+        public List<KpiRowData> KpiRows { get; set; }
 
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
@@ -71,6 +72,15 @@ namespace FOS.Shared
     {
         public int ID { get; set; }
         public string Year { get; set; }
+    }
+
+    public class KpiRowData
+    {
+        public int SOID { get; set; }
+        public int? Platinum { get; set; }
+        public int? Premium { get; set; }
+        public int? Gold { get; set; }
+        public int? Total { get; set; }
     }
 
     public class CityGraphData

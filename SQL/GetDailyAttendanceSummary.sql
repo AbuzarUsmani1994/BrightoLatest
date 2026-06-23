@@ -16,6 +16,8 @@ BEGIN
             ISNULL(c.SiteName, 'No Site Selected')  AS [SiteName],
             sod.SOID,
             sod.CreatedOn                           AS [VisitTime],
+            sod.Lattitude                           AS [Latitude],
+            sod.Longitude                           AS [Longitude],
             ROW_NUMBER() OVER (
                 PARTITION BY CAST(sod.CreatedOn AS DATE), sod.SOID
                 ORDER BY sod.CreatedOn ASC
@@ -45,7 +47,9 @@ BEGIN
             WHEN RowAsc = 1          THEN 'Day Start'
             WHEN RowAsc = TotalCount THEN 'Day End'
             ELSE 'Auto'
-        END                           AS [Attendance Type]
+        END                           AS [Attendance Type],
+        CAST([Latitude]  AS NVARCHAR(50)) AS [Latitude],
+        CAST([Longitude] AS NVARCHAR(50)) AS [Longitude]
     FROM AttendanceData
     ORDER BY [Date], [EmployeeName], [VisitTime];
 END

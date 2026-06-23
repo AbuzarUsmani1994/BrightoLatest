@@ -1,0 +1,195 @@
+@model FOS.Web.UI.Controllers.SetupController.AreaCoverageData
+@{
+    ViewBag.Title = "Area Coverage Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row-fluid">
+    <div class="span12">
+        <h3 class="page-title"></h3>
+        <ul class="breadcrumb">
+            <li><a href="#">Setup</a><span class="divider">/</span></li>
+            <li><a href="#">Area Coverage Report</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget green">
+            <div class="widget-title"><h4>Filters</h4></div>
+            <div class="widget-body">
+                <div class="control-group">
+                    <label class="control-label">Regional Head</label>
+                    <div class="controls">
+                        <select id="RegionalHeadID">
+                            <option value="">-- All --</option>
+                            @foreach (var rh in Model.RegionalHeads ?? new List<FOS.Web.UI.Controllers.SetupController.DropDownItem>())
+                            {
+                                <option value="@rh.ID">@rh.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">SO Name</label>
+                    <div class="controls">
+                        <select id="SOID">
+                            <option value="">-- All --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Region</label>
+                    <div class="controls">
+                        <select id="RegionID">
+                            <option value="">-- All --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group" style="border-top:1px solid #e5e5e5;">
+                    <div class="form-actions" style="padding-left:238px">
+                        <button type="button" id="btnLoad" class="btn btn-primary">
+                            <i class="icon-search icon-white" style="padding-right:8px"></i>Load
+                        </button>
+                        <button type="button" id="btnExport" class="btn btn-info">
+                            <i class="icon-download icon-white" style="padding-right:8px"></i>Export CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget green">
+            <div class="widget-title"><h4>Area Coverage</h4></div>
+            <div class="widget-body">
+                <div style="overflow-x:auto">
+                    <table class="table table-hover table-bordered" id="reportTbl" style="width:100%; font-size:12px">
+                        <thead style="background:#f5f5f5">
+                            <tr>
+                                <th>Zone</th>
+                                <th>Territory</th>
+                                <th style="width:40px">Sr.</th>
+                                <th>E. Code</th>
+                                <th>Employee Name</th>
+                                <th>Area Allocation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportBody">
+                            <tr><td colspan="6" style="text-align:center;color:#888">Apply filters and click Load</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var reportRows = [];
+
+    function LoadSOs() {
+        var rhID = $('#RegionalHeadID').val();
+        var $so = $('#SOID');
+        $so.empty().append('<option value="">-- All --</option>');
+        if (!rhID) return;
+        $.getJSON('@Url.Action("GetSOByRegionalHeadID", "Setup")', { RegionalHeadID: rhID }, function (data) {
+            $.each(data || [], function (i, s) { $so.append('<option value="' + s.ID + '">' + s.Name + '</option>'); });
+        });
+    }
+
+    function LoadRegions() {
+        $.getJSON('@Url.Action("GetAllRegionsList", "Setup")', function (data) {
+            var $r = $('#RegionID');
+            $.each(data || [], function (i, r) { $r.append('<option value="' + r.ID + '">' + r.Name + '</option>'); });
+        });
+    }
+
+    function LoadReport() {
+        var rh = $('#RegionalHeadID').val() || 0;
+        var so = $('#SOID').val() || 0;
+        var r = $('#RegionID').val() || 0;
+
+        $.getJSON('@Url.Action("AreaCoverageReportData", "Setup")',
+            { RegionalHeadID: rh, SOID: so, RegionID: r },
+            function (rows) {
+                reportRows = rows || [];
+                var $body = $('#reportBody').empty();
+                if (reportRows.length == 0) {
+                    $body.html('<tr><td colspan="6" style="text-align:center;color:#888">No records</td></tr>');
+                    return;
+                }
+
+                // group by Region (Zone col) -> Territory (RH) -> SO with rowspans
+                var zoneCounts = {}, terrCounts = {};
+                $.each(reportRows, function (i, row) {
+                    var zk = row.RegionName || '';
+                    var tk = zk + '||' + (row.TerritoryName || '');
+                    zoneCounts[zk] = (zoneCounts[zk] || 0) + 1;
+                    terrCounts[tk] = (terrCounts[tk] || 0) + 1;
+                });
+
+                var seenZone = {}, seenTerr = {};
+                $.each(reportRows, function (i, row) {
+                    var zk = row.RegionName || '';
+                    var tk = zk + '||' + (row.TerritoryName || '');
+                    var html = '<tr>';
+                    if (!seenZone[zk]) {
+                        html += '<td rowspan="' + zoneCounts[zk] + '" style="vertical-align:middle;font-weight:bold">' + escapeHtml(row.RegionName) + '</td>';
+                        seenZone[zk] = true;
+                    }
+                    if (!seenTerr[tk]) {
+                        html += '<td rowspan="' + terrCounts[tk] + '" style="vertical-align:middle">' + escapeHtml(row.TerritoryName) + '</td>';
+                        seenTerr[tk] = true;
+                    }
+                    html += '<td>' + row.Sr + '</td>';
+                    html += '<td>' + escapeHtml(row.ECode) + '</td>';
+                    html += '<td>' + escapeHtml(row.EmployeeName) + '</td>';
+                    html += '<td>' + escapeHtml(row.AreaAllocation) + '</td>';
+                    html += '</tr>';
+                    $body.append(html);
+                });
+            });
+    }
+
+    function escapeHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+        });
+    }
+
+    function ExportCSV() {
+        if (!reportRows || reportRows.length == 0) { alertify.error("Nothing to export"); return; }
+        var headers = ['Zone', 'Territory', 'Sr', 'E. Code', 'Employee Name', 'Area Allocation'];
+        var lines = [headers.join(',')];
+        $.each(reportRows, function (i, r) {
+            var row = [r.RegionName, r.TerritoryName, r.Sr, r.ECode, r.EmployeeName, r.AreaAllocation]
+                .map(function (v) {
+                    var s = v == null ? '' : String(v);
+                    if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+                        s = '"' + s.replace(/"/g, '""') + '"';
+                    }
+                    return s;
+                });
+            lines.push(row.join(','));
+        });
+        var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'AreaCoverageReport.csv';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+
+    $(document).ready(function () {
+        $("#liSetup,#liAreaCoverageReport").addClass("active");
+        LoadRegions();
+        $('#RegionalHeadID').change(LoadSOs);
+        $('#btnLoad').click(LoadReport);
+        $('#btnExport').click(ExportCSV);
+    });
+</script>

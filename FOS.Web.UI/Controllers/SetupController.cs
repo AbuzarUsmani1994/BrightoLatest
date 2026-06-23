@@ -527,8 +527,23 @@ namespace FOS.Web.UI.Controllers
                 }
             }
 
-            // Regional Heads (territory-scoped to current user)
-            objCity.RegionalHeads = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
+            // Regional Heads (territory-scoped to current user) — active only
+            var rhList = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
+            using (var rhConn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            {
+                rhConn.Open();
+                var activeIds = new HashSet<int>();
+                using (var rhCmd = new SqlCommand("SELECT ID FROM dbo.RegionalHeads WHERE IsActive = 1 AND IsDeleted = 0", rhConn))
+                using (var reader = rhCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        activeIds.Add(Convert.ToInt32(reader["ID"]));
+                    }
+                }
+                rhList = rhList.Where(r => r.ID == 0 ? false : activeIds.Contains(r.ID)).ToList();
+            }
+            objCity.RegionalHeads = rhList;
             objCity.SaleOfficers = new List<SaleOfficer>();
 
             return View(objCity);
@@ -539,6 +554,27 @@ namespace FOS.Web.UI.Controllers
             var result = FOS.Setup.ManageSaleOffice.GetAllSaleOfficerListRelatedtoregionalHeadID(RegionalHeadID, false)
                 .Select(x => new { ID = x.ID, Name = x.Name }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult SaveKPISBulk(CityData newCity)
+        {
+            try
+            {
+                if (newCity == null || newCity.FinancialYearID == null || newCity.FinancialYearID == 0)
+                    return Content("0");
+                if (newCity.RegionalHeadID == null || newCity.RegionalHeadID == 0)
+                    return Content("0");
+                if (newCity.KpiRows == null || newCity.KpiRows.Count == 0)
+                    return Content("0");
+
+                int Response = ManageCity.AddKPIS(newCity);
+                return Content(Response == 1 ? "1" : (Response == 2 ? "2" : "0"));
+            }
+            catch (Exception exp)
+            {
+                return Content("Exception : " + exp.Message);
+            }
         }
 
         [HttpPost]
@@ -661,21 +697,74 @@ namespace FOS.Web.UI.Controllers
         // View ...
         public ActionResult AttendanceAndPunctuality()
         {
-            var userID = Convert.ToInt32(Session["UserID"]);
-            int RHID = FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser();
-            // List<RegionData> RegionObj = ManageRegion.GetRegionDataList(userID);
-            List<RegionalHeadData> regionalHeadData = new List<RegionalHeadData>();
-            regionalHeadData = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
-            var objRegion = regionalHeadData.FirstOrDefault();
-            List<SaleOfficer> SaleOfficerObj = FOS.Setup.ManageSaleOffice.GetAllSaleOfficerListRelatedtoregionalHeadID(objRegion.ID, true);
-
-
-
-            var objArea = new AreaData();
-            objArea.RegionalHead = regionalHeadData;
-            objArea.Salesofficerdata = SaleOfficerObj;
-
+            var objArea = BuildAreaSetupModel();
             return View(objArea);
+        }
+
+        private AreaData BuildAreaSetupModel()
+        {
+            var userID = Convert.ToInt32(Session["UserID"]);
+            var regionalHeadData = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
+
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            {
+                conn.Open();
+                var activeIds = new HashSet<int>();
+                using (var cmd = new SqlCommand("SELECT ID FROM dbo.RegionalHeads WHERE IsActive = 1 AND IsDeleted = 0", conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        activeIds.Add(Convert.ToInt32(reader["ID"]));
+                    }
+                }
+                regionalHeadData = regionalHeadData.Where(r => r.ID != 0 && activeIds.Contains(r.ID)).ToList();
+            }
+
+            var financialYears = new List<FinancialYearListItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE IsActive = 1 ORDER BY ID DESC", conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        financialYears.Add(new FinancialYearListItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Year = reader["Year"].ToString()
+                        });
+                    }
+                }
+            }
+
+            return new AreaData
+            {
+                RegionalHead = regionalHeadData,
+                FinancialYears = financialYears,
+                Salesofficerdata = new List<SaleOfficer>()
+            };
+        }
+
+        [HttpPost]
+        public ActionResult SaveAttendanceBulk(AreaData newData)
+        {
+            try
+            {
+                if (newData == null) return Content("0");
+                if (newData.FinancialYearID == null || newData.FinancialYearID == 0) return Content("0");
+                if (string.IsNullOrEmpty(newData.Quarter)) return Content("0");
+                if (newData.RegionID == 0) return Content("0");
+                if (newData.AttendanceRows == null || newData.AttendanceRows.Count == 0) return Content("0");
+
+                int Response = ManageArea.AddUpdateAttendance(newData);
+                return Content(Response == 1 ? "1" : (Response == 2 ? "2" : "0"));
+            }
+            catch (Exception exp)
+            {
+                return Content("Exception : " + exp.Message);
+            }
         }
 
         [HttpPost]
@@ -734,13 +823,13 @@ namespace FOS.Web.UI.Controllers
         }
 
         //Get All Region Method...
-        public JsonResult AttendanceAndPunctualityDataHandler(DTParameters param, Int32 CityID)
+        public JsonResult AttendanceAndPunctualityDataHandler(DTParameters param, Int32 RegionalHeadID, Int32 FinancialYearID, string Quarter)
         {
             try
             {
                 var dtsource = new List<AreaData>();
 
-                dtsource = ManageArea.GetAttendanceForGrid(CityID);
+                dtsource = ManageArea.GetAttendanceForGrid(RegionalHeadID, FinancialYearID, Quarter);
 
                 List<String> columnSearch = new List<string>();
 
@@ -795,21 +884,28 @@ namespace FOS.Web.UI.Controllers
         // View ...
         public ActionResult Training()
         {
-            var userID = Convert.ToInt32(Session["UserID"]);
-            int RHID = FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser();
-            // List<RegionData> RegionObj = ManageRegion.GetRegionDataList(userID);
-            List<RegionalHeadData> regionalHeadData = new List<RegionalHeadData>();
-            regionalHeadData = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
-            var objRegion = regionalHeadData.FirstOrDefault();
-            List<SaleOfficer> SaleOfficerObj = FOS.Setup.ManageSaleOffice.GetAllSaleOfficerListRelatedtoregionalHeadID(objRegion.ID, true);
-
-
-
-            var objArea = new AreaData();
-            objArea.RegionalHead = regionalHeadData;
-            objArea.Salesofficerdata = SaleOfficerObj;
-
+            var objArea = BuildAreaSetupModel();
             return View(objArea);
+        }
+
+        [HttpPost]
+        public ActionResult SaveTrainingBulk(AreaData newData)
+        {
+            try
+            {
+                if (newData == null) return Content("0");
+                if (newData.FinancialYearID == null || newData.FinancialYearID == 0) return Content("0");
+                if (string.IsNullOrEmpty(newData.Quarter)) return Content("0");
+                if (newData.RegionID == 0) return Content("0");
+                if (newData.TrainingRows == null || newData.TrainingRows.Count == 0) return Content("0");
+
+                int Response = ManageArea.AddUpdateTraining(newData);
+                return Content(Response == 1 ? "1" : (Response == 2 ? "2" : "0"));
+            }
+            catch (Exception exp)
+            {
+                return Content("Exception : " + exp.Message);
+            }
         }
 
         [HttpPost]
@@ -868,13 +964,13 @@ namespace FOS.Web.UI.Controllers
         }
 
         //Get All Region Method...
-        public JsonResult AddTrainingDataHandler(DTParameters param, Int32 CityID)
+        public JsonResult AddTrainingDataHandler(DTParameters param, Int32 RegionalHeadID, Int32 FinancialYearID, string Quarter)
         {
             try
             {
                 var dtsource = new List<AreaData>();
 
-                dtsource = ManageArea.GetTrainingForGrid(CityID);
+                dtsource = ManageArea.GetTrainingForGrid(RegionalHeadID, FinancialYearID, Quarter);
 
                 List<String> columnSearch = new List<string>();
 
@@ -2272,6 +2368,353 @@ namespace FOS.Web.UI.Controllers
         }
 
         #endregion FinancialYear
+
+        #region AreaCoverage
+
+        [CustomAuthorize]
+        public ActionResult AreaCoverage()
+        {
+            var model = new AreaCoverageData();
+            model.RegionalHeads = LoadActiveRegionalHeads();
+            model.Regions = LoadAllRegions();
+            return View(model);
+        }
+
+        [CustomAuthorize]
+        public ActionResult AreaCoverageReport()
+        {
+            var model = new AreaCoverageData();
+            model.RegionalHeads = LoadActiveRegionalHeads();
+            return View(model);
+        }
+
+        public JsonResult GetAllRegionsList()
+        {
+            return Json(LoadAllRegions(), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAreasByRegionID(int RegionID)
+        {
+            var list = new List<DropDownItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand(
+                @"SELECT a.ID, a.Name
+                  FROM dbo.Areas a
+                  WHERE a.RegionID = @RegionID AND a.IsDeleted = 0 AND a.IsActive = 1
+                  ORDER BY a.Name", conn))
+            {
+                cmd.Parameters.Add(new SqlParameter("@RegionID", SqlDbType.Int) { Value = RegionID });
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new DropDownItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Name = reader["Name"] as string
+                        });
+                    }
+                }
+            }
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult SaveAreaCoverage(AreaCoverageData model)
+        {
+            try
+            {
+                if (model == null) return Content("0");
+                if (model.RegionalHeadID == null || model.RegionalHeadID == 0) return Content("0");
+                if (model.SOID == null || model.SOID == 0) return Content("0");
+                if (model.RegionID == null || model.RegionID == 0) return Content("0");
+                if (model.AreaIDs == null || model.AreaIDs.Count == 0) return Content("0");
+
+                int createdBy = 0;
+                if (Session["UserID"] != null)
+                    int.TryParse(Session["UserID"].ToString(), out createdBy);
+
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                {
+                    conn.Open();
+
+                    var areaIds = model.AreaIDs.Distinct().ToList();
+
+                    using (var tran = conn.BeginTransaction())
+                    {
+                        using (var deact = new SqlCommand(
+                            "UPDATE dbo.Tbl_AreaCoverage SET IsActive = 0 WHERE SOID = @SOID AND RegionID = @RegionID AND IsActive = 1",
+                            conn, tran))
+                        {
+                            deact.Parameters.Add(new SqlParameter("@SOID", SqlDbType.Int) { Value = model.SOID.Value });
+                            deact.Parameters.Add(new SqlParameter("@RegionID", SqlDbType.Int) { Value = model.RegionID.Value });
+                            deact.ExecuteNonQuery();
+                        }
+
+                        foreach (var areaId in areaIds)
+                        {
+                            using (var ins = new SqlCommand(
+                                @"INSERT INTO dbo.Tbl_AreaCoverage (RegionalHeadID, SOID, RegionID, AreaID, CreatedOn, CreatedBy, IsActive)
+                                  VALUES (@RHID, @SOID, @RegionID, @AreaID, GETDATE(), @CreatedBy, 1)", conn, tran))
+                            {
+                                ins.Parameters.Add(new SqlParameter("@RHID", SqlDbType.Int) { Value = model.RegionalHeadID.Value });
+                                ins.Parameters.Add(new SqlParameter("@SOID", SqlDbType.Int) { Value = model.SOID.Value });
+                                ins.Parameters.Add(new SqlParameter("@RegionID", SqlDbType.Int) { Value = model.RegionID.Value });
+                                ins.Parameters.Add(new SqlParameter("@AreaID", SqlDbType.Int) { Value = areaId });
+                                ins.Parameters.Add(new SqlParameter("@CreatedBy", SqlDbType.Int) { Value = createdBy });
+                                ins.ExecuteNonQuery();
+                            }
+                        }
+
+                        tran.Commit();
+                    }
+                }
+                return Content("1");
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "SaveAreaCoverage Failed");
+                return Content("Exception : " + exp.Message);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteAreaCoverage(int ID)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand("UPDATE dbo.Tbl_AreaCoverage SET IsActive = 0 WHERE ID = @ID", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = ID });
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                return Content("1");
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Error(ex, "DeleteAreaCoverage Failed");
+                return Content("0");
+            }
+        }
+
+        public JsonResult AreaCoverageDataHandler(DTParameters param, Int32 RegionalHeadID, Int32 SOID, Int32 RegionID)
+        {
+            try
+            {
+                var dtsource = new List<AreaCoverageGridRow>();
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand(
+                    @"SELECT ac.ID, ac.RegionalHeadID, rh.Name AS RegionalHeadName,
+                             ac.SOID, so.Name AS SOName,
+                             ac.RegionID, r.Name AS RegionName,
+                             ac.AreaID, a.Name AS AreaName,
+                             ac.CreatedOn
+                      FROM dbo.Tbl_AreaCoverage ac
+                      LEFT JOIN dbo.RegionalHeads rh ON rh.ID = ac.RegionalHeadID
+                      LEFT JOIN dbo.SaleOfficers so ON so.ID = ac.SOID
+                      LEFT JOIN dbo.Regions r ON r.ID = ac.RegionID
+                      LEFT JOIN dbo.Areas a ON a.ID = ac.AreaID
+                      WHERE ac.IsActive = 1
+                        AND (@RHID = 0 OR ac.RegionalHeadID = @RHID)
+                        AND (@SOID = 0 OR ac.SOID = @SOID)
+                        AND (@RegionID = 0 OR ac.RegionID = @RegionID)
+                      ORDER BY ac.ID DESC", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@RHID", SqlDbType.Int) { Value = RegionalHeadID });
+                    cmd.Parameters.Add(new SqlParameter("@SOID", SqlDbType.Int) { Value = SOID });
+                    cmd.Parameters.Add(new SqlParameter("@RegionID", SqlDbType.Int) { Value = RegionID });
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            dtsource.Add(new AreaCoverageGridRow
+                            {
+                                ID = Convert.ToInt32(reader["ID"]),
+                                RegionalHeadName = reader["RegionalHeadName"] as string,
+                                SOName = reader["SOName"] as string,
+                                RegionName = reader["RegionName"] as string,
+                                AreaName = reader["AreaName"] as string,
+                                CreatedOn = reader["CreatedOn"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["CreatedOn"])
+                            });
+                        }
+                    }
+                }
+
+                string search = param.Search != null ? (param.Search.Value ?? string.Empty) : string.Empty;
+                IEnumerable<AreaCoverageGridRow> filtered = dtsource;
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    filtered = filtered.Where(x =>
+                        (x.RegionalHeadName ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0
+                     || (x.SOName ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0
+                     || (x.RegionName ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0
+                     || (x.AreaName ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+
+                int count = filtered.Count();
+                var data = filtered.Skip(param.Start).Take(param.Length).ToList();
+                return Json(new DTResult<AreaCoverageGridRow>
+                {
+                    draw = param.Draw,
+                    data = data,
+                    recordsFiltered = count,
+                    recordsTotal = count
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        public JsonResult AreaCoverageReportData(Int32 RegionalHeadID, Int32 SOID, Int32 RegionID)
+        {
+            // grouped by Region (Zone column) -> RH (Territory) -> SO with aggregated city list
+            try
+            {
+                var rows = new List<AreaCoverageReportRow>();
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand(
+                    @"SELECT r.Name AS RegionName,
+                             rh.Name AS TerritoryName,
+                             so.ID AS SOID,
+                             so.ECode AS ECode,
+                             so.Name AS EmployeeName,
+                             STUFF((
+                                SELECT ', ' + a2.Name
+                                FROM dbo.Tbl_AreaCoverage ac2
+                                INNER JOIN dbo.Areas a2 ON a2.ID = ac2.AreaID
+                                WHERE ac2.SOID = ac.SOID AND ac2.RegionID = ac.RegionID
+                                  AND ac2.IsActive = 1
+                                ORDER BY a2.Name
+                                FOR XML PATH(''), TYPE
+                             ).value('.', 'NVARCHAR(MAX)'), 1, 2, '') AS AreaAllocation
+                      FROM dbo.Tbl_AreaCoverage ac
+                      LEFT JOIN dbo.Regions r ON r.ID = ac.RegionID
+                      LEFT JOIN dbo.SaleOfficers so ON so.ID = ac.SOID
+                      LEFT JOIN dbo.RegionalHeads rh ON rh.ID = ac.RegionalHeadID
+                      WHERE ac.IsActive = 1
+                        AND (@RHID = 0 OR ac.RegionalHeadID = @RHID)
+                        AND (@SOID = 0 OR ac.SOID = @SOID)
+                        AND (@RegionID = 0 OR ac.RegionID = @RegionID)
+                      GROUP BY r.Name, rh.Name, so.ID, so.ECode, so.Name, ac.SOID, ac.RegionID
+                      ORDER BY r.Name, rh.Name, so.Name", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@RHID", SqlDbType.Int) { Value = RegionalHeadID });
+                    cmd.Parameters.Add(new SqlParameter("@SOID", SqlDbType.Int) { Value = SOID });
+                    cmd.Parameters.Add(new SqlParameter("@RegionID", SqlDbType.Int) { Value = RegionID });
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        int sr = 0;
+                        while (reader.Read())
+                        {
+                            rows.Add(new AreaCoverageReportRow
+                            {
+                                Sr = ++sr,
+                                RegionName = reader["RegionName"] as string,
+                                TerritoryName = reader["TerritoryName"] as string,
+                                ECode = reader["ECode"] as string,
+                                EmployeeName = reader["EmployeeName"] as string,
+                                AreaAllocation = reader["AreaAllocation"] as string
+                            });
+                        }
+                    }
+                }
+                return Json(rows, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        private List<DropDownItem> LoadActiveRegionalHeads()
+        {
+            var list = new List<DropDownItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("SELECT ID, Name FROM dbo.RegionalHeads WHERE IsActive = 1 AND IsDeleted = 0 ORDER BY Name", conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new DropDownItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Name = reader["Name"].ToString()
+                        });
+                    }
+                }
+            }
+            return list;
+        }
+
+        private List<DropDownItem> LoadAllRegions()
+        {
+            var list = new List<DropDownItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("SELECT ID, Name FROM dbo.Regions WHERE IsActive = 1 AND IsDeleted = 0 ORDER BY Name", conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new DropDownItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Name = reader["Name"].ToString()
+                        });
+                    }
+                }
+            }
+            return list;
+        }
+
+        public class DropDownItem
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+        }
+
+        public class AreaCoverageData
+        {
+            public int ID { get; set; }
+            public int? RegionalHeadID { get; set; }
+            public int? SOID { get; set; }
+            public int? RegionID { get; set; }
+            public List<int> AreaIDs { get; set; }
+            public List<DropDownItem> RegionalHeads { get; set; }
+            public List<DropDownItem> Regions { get; set; }
+        }
+
+        public class AreaCoverageGridRow
+        {
+            public int ID { get; set; }
+            public string RegionalHeadName { get; set; }
+            public string SOName { get; set; }
+            public string RegionName { get; set; }
+            public string AreaName { get; set; }
+            public DateTime? CreatedOn { get; set; }
+        }
+
+        public class AreaCoverageReportRow
+        {
+            public int Sr { get; set; }
+            public string RegionName { get; set; }
+            public string TerritoryName { get; set; }
+            public string ECode { get; set; }
+            public string EmployeeName { get; set; }
+            public string AreaAllocation { get; set; }
+        }
+
+        #endregion AreaCoverage
 
 
     }

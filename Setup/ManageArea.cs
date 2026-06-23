@@ -931,32 +931,46 @@ namespace FOS.Setup
 
             try
             {
+                if (obj.AttendanceRows == null || obj.AttendanceRows.Count == 0)
+                    return 0;
+
                 using (TransactionScope scope = new TransactionScope())
                 {
                     using (FOSDataModel dbContext = new FOSDataModel())
                     {
-                        Tbl_SOAttendanceandPunctuality AreaObj = new Tbl_SOAttendanceandPunctuality();
+                        var soIds = obj.AttendanceRows.Select(r => r.SOID).Distinct().ToList();
 
-                        if (obj.ID == 0)
+                        var existingRows = dbContext.Tbl_SOAttendanceandPunctuality
+                            .Where(x => x.FinancialYearID == obj.FinancialYearID
+                                     && x.Quarter == obj.Quarter
+                                     && x.IsActive == true
+                                     && x.SOID.HasValue
+                                     && soIds.Contains(x.SOID.Value))
+                            .ToList();
+                        foreach (var row in existingRows)
                         {
-                            AreaObj.ID = dbContext.Tbl_SOAttendanceandPunctuality.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
-                            AreaObj.AttendanceandPunctuality = Convert.ToDecimal(obj.Name);
-                            AreaObj.HeadID = obj.RegionID;
-                            AreaObj.SOID = obj.CityID;
-                           
-                            AreaObj.IsActive = true;
-                            AreaObj.CreatedOn = DateTime.Now;
-                           
+                            row.IsActive = false;
+                        }
 
-                            dbContext.Tbl_SOAttendanceandPunctuality.Add(AreaObj);
-                        }
-                        else
+                        var nextId = dbContext.Tbl_SOAttendanceandPunctuality
+                            .OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
+                        var nowDt = DateTime.Now;
+
+                        foreach (var r in obj.AttendanceRows)
                         {
-                            AreaObj = dbContext.Tbl_SOAttendanceandPunctuality.Where(u => u.ID == obj.ID).FirstOrDefault();
-                            AreaObj.AttendanceandPunctuality = Convert.ToDecimal(obj.Name);
-                            AreaObj.HeadID = obj.RegionID;
-                            AreaObj.SOID = obj.CityID;
+                            dbContext.Tbl_SOAttendanceandPunctuality.Add(new Tbl_SOAttendanceandPunctuality
+                            {
+                                ID = nextId++,
+                                HeadID = obj.RegionID,
+                                SOID = r.SOID,
+                                AttendanceandPunctuality = r.Value,
+                                FinancialYearID = obj.FinancialYearID,
+                                Quarter = obj.Quarter,
+                                IsActive = true,
+                                CreatedOn = nowDt
+                            });
                         }
+
                         dbContext.SaveChanges();
                         Res = 1;
                         scope.Complete();
@@ -965,14 +979,8 @@ namespace FOS.Setup
             }
             catch (Exception exp)
             {
-                Log.Instance.Error(exp, "Add Area Failed");
+                Log.Instance.Error(exp, "Add Attendance Failed");
                 Res = 0;
-                if (exp.InnerException.InnerException.Message.Contains("Short Code Area"))
-                {
-                    // Res = 2 Is For Unique Constraint Error...
-                    Res = 2;
-                    return Res;
-                }
                 return Res;
             }
             return Res;
@@ -984,32 +992,46 @@ namespace FOS.Setup
 
             try
             {
+                if (obj.TrainingRows == null || obj.TrainingRows.Count == 0)
+                    return 0;
+
                 using (TransactionScope scope = new TransactionScope())
                 {
                     using (FOSDataModel dbContext = new FOSDataModel())
                     {
-                        Tbl_SOTraining AreaObj = new Tbl_SOTraining();
+                        var soIds = obj.TrainingRows.Select(r => r.SOID).Distinct().ToList();
 
-                        if (obj.ID == 0)
+                        var existingRows = dbContext.Tbl_SOTraining
+                            .Where(x => x.FinancialYearID == obj.FinancialYearID
+                                     && x.Quarter == obj.Quarter
+                                     && x.IsActive == true
+                                     && x.SOID.HasValue
+                                     && soIds.Contains(x.SOID.Value))
+                            .ToList();
+                        foreach (var row in existingRows)
                         {
-                            AreaObj.ID = dbContext.Tbl_SOTraining.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
-                            AreaObj.Training = Convert.ToDecimal(obj.Name);
-                            AreaObj.HeadID = obj.RegionID;
-                            AreaObj.SOID = obj.CityID;
-
-                            AreaObj.IsActive = true;
-                            AreaObj.CreatedOn = DateTime.Now;
-
-
-                            dbContext.Tbl_SOTraining.Add(AreaObj);
+                            row.IsActive = false;
                         }
-                        else
+
+                        var nextId = dbContext.Tbl_SOTraining
+                            .OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
+                        var nowDt = DateTime.Now;
+
+                        foreach (var r in obj.TrainingRows)
                         {
-                            AreaObj = dbContext.Tbl_SOTraining.Where(u => u.ID == obj.ID).FirstOrDefault();
-                            AreaObj.Training = Convert.ToDecimal(obj.Name);
-                            AreaObj.HeadID = obj.RegionID;
-                            AreaObj.SOID = obj.CityID;
+                            dbContext.Tbl_SOTraining.Add(new Tbl_SOTraining
+                            {
+                                ID = nextId++,
+                                HeadID = obj.RegionID,
+                                SOID = r.SOID,
+                                Training = r.Value,
+                                FinancialYearID = obj.FinancialYearID,
+                                Quarter = obj.Quarter,
+                                IsActive = true,
+                                CreatedOn = nowDt
+                            });
                         }
+
                         dbContext.SaveChanges();
                         Res = 1;
                         scope.Complete();
@@ -1018,14 +1040,8 @@ namespace FOS.Setup
             }
             catch (Exception exp)
             {
-                Log.Instance.Error(exp, "Add Area Failed");
+                Log.Instance.Error(exp, "Add Training Failed");
                 Res = 0;
-                if (exp.InnerException.InnerException.Message.Contains("Short Code Area"))
-                {
-                    // Res = 2 Is For Unique Constraint Error...
-                    Res = 2;
-                    return Res;
-                }
                 return Res;
             }
             return Res;
@@ -1087,7 +1103,7 @@ namespace FOS.Setup
             return areaData;
         }
 
-        public static List<AreaData> GetAttendanceForGrid(int intCityID)
+        public static List<AreaData> GetAttendanceForGrid(int intRegionalHeadID, int intFinancialYearID, string quarter)
         {
             List<AreaData> areaData = new List<AreaData>();
 
@@ -1095,29 +1111,42 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    areaData = dbContext.Tbl_SOAttendanceandPunctuality.Where(u => u.SOID == intCityID && u.IsActive == true)
-                            .ToList().Select(
-                                u => new AreaData
-                                {
-                                    ID = u.ID,
-                                    
-                                    Name = u.AttendanceandPunctuality.ToString(),
-                                    RegionName = dbContext.RegionalHeads.Where(x=>x.ID==u.HeadID).Select(x=>x.Name).FirstOrDefault(),
-                                    CityName = dbContext.SaleOfficers.Where(x => x.ID == u.SOID).Select(x => x.Name).FirstOrDefault(),
+                    var q = dbContext.Tbl_SOAttendanceandPunctuality.Where(u => u.IsActive == true);
+                    if (intRegionalHeadID > 0)
+                        q = q.Where(u => u.HeadID == intRegionalHeadID);
+                    if (intFinancialYearID > 0)
+                        q = q.Where(u => u.FinancialYearID == intFinancialYearID);
+                    if (!string.IsNullOrEmpty(quarter))
+                        q = q.Where(u => u.Quarter == quarter);
 
-                                }).ToList();
+                    var rows = q.ToList();
+                    var fyIds = rows.Where(r => r.FinancialYearID.HasValue).Select(r => r.FinancialYearID.Value).Distinct().ToList();
+                    var fyDict = dbContext.Database
+                        .SqlQuery<FinancialYearListItem>("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE ID IN (" + (fyIds.Count == 0 ? "0" : string.Join(",", fyIds)) + ")")
+                        .ToDictionary(x => x.ID, x => x.Year);
+
+                    areaData = rows.Select(u => new AreaData
+                    {
+                        ID = u.ID,
+                        Name = u.AttendanceandPunctuality.ToString(),
+                        RegionName = dbContext.RegionalHeads.Where(x => x.ID == u.HeadID).Select(x => x.Name).FirstOrDefault(),
+                        CityName = dbContext.SaleOfficers.Where(x => x.ID == u.SOID).Select(x => x.Name).FirstOrDefault(),
+                        FinancialYearID = u.FinancialYearID,
+                        FinancialYearName = u.FinancialYearID.HasValue && fyDict.ContainsKey(u.FinancialYearID.Value) ? fyDict[u.FinancialYearID.Value] : "",
+                        Quarter = u.Quarter
+                    }).ToList();
                 }
             }
             catch (Exception exp)
             {
-                Log.Instance.Error(exp, "Load Area Grid Failed");
+                Log.Instance.Error(exp, "Load Attendance Grid Failed");
                 throw;
             }
 
             return areaData;
         }
 
-        public static List<AreaData> GetTrainingForGrid(int intCityID)
+        public static List<AreaData> GetTrainingForGrid(int intRegionalHeadID, int intFinancialYearID, string quarter)
         {
             List<AreaData> areaData = new List<AreaData>();
 
@@ -1125,22 +1154,35 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    areaData = dbContext.Tbl_SOTraining.Where(u => u.SOID == intCityID && u.IsActive == true)
-                            .ToList().Select(
-                                u => new AreaData
-                                {
-                                    ID = u.ID,
+                    var q = dbContext.Tbl_SOTraining.Where(u => u.IsActive == true);
+                    if (intRegionalHeadID > 0)
+                        q = q.Where(u => u.HeadID == intRegionalHeadID);
+                    if (intFinancialYearID > 0)
+                        q = q.Where(u => u.FinancialYearID == intFinancialYearID);
+                    if (!string.IsNullOrEmpty(quarter))
+                        q = q.Where(u => u.Quarter == quarter);
 
-                                    Name = u.Training.ToString(),
-                                    RegionName = dbContext.RegionalHeads.Where(x => x.ID == u.HeadID).Select(x => x.Name).FirstOrDefault(),
-                                    CityName = dbContext.SaleOfficers.Where(x => x.ID == u.SOID).Select(x => x.Name).FirstOrDefault(),
+                    var rows = q.ToList();
+                    var fyIds = rows.Where(r => r.FinancialYearID.HasValue).Select(r => r.FinancialYearID.Value).Distinct().ToList();
+                    var fyDict = dbContext.Database
+                        .SqlQuery<FinancialYearListItem>("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE ID IN (" + (fyIds.Count == 0 ? "0" : string.Join(",", fyIds)) + ")")
+                        .ToDictionary(x => x.ID, x => x.Year);
 
-                                }).ToList();
+                    areaData = rows.Select(u => new AreaData
+                    {
+                        ID = u.ID,
+                        Name = u.Training.ToString(),
+                        RegionName = dbContext.RegionalHeads.Where(x => x.ID == u.HeadID).Select(x => x.Name).FirstOrDefault(),
+                        CityName = dbContext.SaleOfficers.Where(x => x.ID == u.SOID).Select(x => x.Name).FirstOrDefault(),
+                        FinancialYearID = u.FinancialYearID,
+                        FinancialYearName = u.FinancialYearID.HasValue && fyDict.ContainsKey(u.FinancialYearID.Value) ? fyDict[u.FinancialYearID.Value] : "",
+                        Quarter = u.Quarter
+                    }).ToList();
                 }
             }
             catch (Exception exp)
             {
-                Log.Instance.Error(exp, "Load Area Grid Failed");
+                Log.Instance.Error(exp, "Load Training Grid Failed");
                 throw;
             }
 

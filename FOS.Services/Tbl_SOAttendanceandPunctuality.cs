@@ -30,6 +30,10 @@ public partial class Tbl_SOAttendanceandPunctuality
 
     public Nullable<System.DateTime> CreatedOn { get; set; }
 
+    public Nullable<int> FinancialYearID { get; set; }
+
+    public string Quarter { get; set; }
+
 }
 
 }

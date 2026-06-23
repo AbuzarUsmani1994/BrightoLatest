@@ -1055,52 +1055,55 @@ namespace FOS.Setup
 
             try
             {
+                if (obj.KpiRows == null || obj.KpiRows.Count == 0)
+                    return 0;
+
                 using (TransactionScope scope = new TransactionScope())
                 {
                     using (FOSDataModel dbContext = new FOSDataModel())
                     {
-                        
-                            try
+                        try
+                        {
+                            var soIds = obj.KpiRows.Select(r => r.SOID).Distinct().ToList();
+
+                            var existingRows = dbContext.Tbl_KPITargetsRegionWise
+                                .Where(x => x.FinancialYearID == obj.FinancialYearID
+                                         && x.IsActive == true
+                                         && x.SOID.HasValue
+                                         && soIds.Contains(x.SOID.Value))
+                                .ToList();
+                            foreach (var row in existingRows)
                             {
-                                // Check if there's an existing active record for this SO + FinancialYear
-                                var existingRecord = dbContext.Tbl_KPITargetsRegionWise
-                                                            .FirstOrDefault(x => x.SOID == obj.SOID
-                                                                              && x.FinancialYearID == obj.FinancialYearID
-                                                                              && x.IsActive == true);
+                                row.IsActive = false;
+                            }
 
-                                if (existingRecord != null)
+                            var nowPkt = DateTime.UtcNow.AddHours(5);
+                            foreach (var r in obj.KpiRows)
+                            {
+                                dbContext.Tbl_KPITargetsRegionWise.Add(new Tbl_KPITargetsRegionWise
                                 {
-                                    // Deactivate the existing record
-                                    existingRecord.IsActive = false;
-                                }
-
-                                // Create and add the new record
-                                var KpiObj = new Tbl_KPITargetsRegionWise
-                                {
-                                    SOID = obj.SOID,
+                                    SOID = r.SOID,
                                     RegionalHeadID = obj.RegionalHeadID,
                                     FinancialYearID = obj.FinancialYearID,
-                                    ACTDTarget = obj.ACTDTarget,
-                                    CoatingTarget = obj.CoatingTarget,
+                                    // UI label -> DB column mapping:
+                                    // Platinum -> CoatingTarget, Premium -> ACTDTarget, Gold -> ReadyMixTarget
+                                    CoatingTarget = r.Platinum,
+                                    ACTDTarget = r.Premium,
+                                    ReadyMixTarget = r.Gold,
+                                    TotalTarget = r.Total,
                                     IsActive = true,
-                                    CreatedOn = DateTime.UtcNow.AddHours(5),
-                                    TotalTarget = obj.TotalTarget,
-                                    ReadyMixTarget = obj.ReadyMixTarget
-                                };
-
-                                dbContext.Tbl_KPITargetsRegionWise.Add(KpiObj);
-                                dbContext.SaveChanges();
-
-                                Res = 1;
-                                scope.Complete();
+                                    CreatedOn = nowPkt
+                                });
                             }
-                            catch (Exception ex)
-                            {
-                                // Handle exception (log it, etc.)
-                                Res = 0;
-                                // scope will be disposed without Complete() being called (auto-rollback)
-                            }
-                        
+
+                            dbContext.SaveChanges();
+                            Res = 1;
+                            scope.Complete();
+                        }
+                        catch (Exception)
+                        {
+                            Res = 0;
+                        }
                     }
                 }
             }

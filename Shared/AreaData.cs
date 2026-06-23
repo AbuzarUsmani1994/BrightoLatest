@@ -67,6 +67,19 @@ namespace FOS.Shared
         public List<SaleOfficerData> Salesofficer1 { get; set; }
         public List<SaleOfficerData> Salesofficer2 { get; set; }
         public List<SaleOfficer> Salesofficerdata { get; set; }
+
+        public int? FinancialYearID { get; set; }
+        public string FinancialYearName { get; set; }
+        public string Quarter { get; set; }
+        public List<FinancialYearListItem> FinancialYears { get; set; }
+        public List<TrainingRowData> TrainingRows { get; set; }
+        public List<TrainingRowData> AttendanceRows { get; set; }
+    }
+
+    public class TrainingRowData
+    {
+        public int SOID { get; set; }
+        public decimal? Value { get; set; }
     }
 
     public class AreaGraphData
