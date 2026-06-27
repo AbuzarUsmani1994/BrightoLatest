@@ -582,7 +582,6 @@
     <Compile Include="Controllers\API\SaveBrightoServicesCustomerController.cs" />
     <Compile Include="Controllers\API\SaveComplaintController.cs" />
     <Compile Include="Controllers\API\SaveCompetitorActivityController.cs" />
-    <Compile Include="Controllers\API\GetCompetitorNamesController.cs" />
     <Compile Include="Controllers\API\GetCompetitorActivityTypesController.cs" />
     <Compile Include="Controllers\API\SubmitSiteAllocationController.cs" />
     <Compile Include="Controllers\API\SubmitCoverageController.cs" />

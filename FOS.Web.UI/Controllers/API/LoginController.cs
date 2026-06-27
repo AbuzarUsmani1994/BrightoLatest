@@ -270,6 +270,7 @@ namespace FOS.Web.UI.Controllers.API
                             ChemProductList = new CommonController().ChemProductList(),
                             ShadeCards = new CommonController().ShadeCardsList(),
                             BrightoCompititors = new CommonController().BrightoCompititorsList(),
+                            CompetitorActivityTypes = new CommonController().CompetitorActivityTypesList(),
                             SOVisitTypes = new CommonController().SOVisittypes(),
                             Retailers = db.Retailers.Where(x => x.IsActive == true).Count(),
                             Distributors = db.Dealers.Where(x => x.IsActive == true).Count(),
@@ -422,6 +423,7 @@ namespace FOS.Web.UI.Controllers.API
         public List<City> SiteInfo { get; set; }
         public DateTime NextVisitDate { get; set; }
         public List<CompititorList> BrightoCompititors { get; set; }
+        public List<City> CompetitorActivityTypes { get; set; }
         public List<City> ScopeofWork{ get; set; }
         public List<City> NatureOfWork { get; set; }
         public List<City> ChemProductList { get; set; }

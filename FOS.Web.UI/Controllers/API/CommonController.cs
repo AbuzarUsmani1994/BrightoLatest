@@ -1202,6 +1202,28 @@ namespace FOS.Web.UI.Controllers.API
 
             return MAinCat.OrderBy(x => x.SortOrder).ToList();
         }
+
+        public List<City> CompetitorActivityTypesList()
+        {
+            var list = new List<City>();
+            try
+            {
+                using (var conn = new System.Data.SqlClient.SqlConnection(db.Database.Connection.ConnectionString))
+                using (var cmd = new System.Data.SqlClient.SqlCommand(
+                    "SELECT ID, Name FROM dbo.Tbl_CompetitorActivityTypes WHERE IsActive = 1 ORDER BY Name", conn))
+                {
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                            list.Add(new City { ID = Convert.ToInt32(reader["ID"]), Name = reader["Name"] as string });
+                    }
+                }
+            }
+            catch (Exception ex) { Shared.Diagnostics.Logging.Log.Instance.Error(ex, "CompetitorActivityTypesList Failed"); }
+            return list;
+        }
+
         public List<City> ConstructionStageList()
         {
             List<City> MAinCat = new List<City>();
