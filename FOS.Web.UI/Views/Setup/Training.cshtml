@@ -42,7 +42,7 @@
                     <label class="control-label">Quarter *</label>
                     <div class="controls">
                         @Html.DropDownListFor(model => model.Quarter,
-                            new SelectList(new[] { "Q1", "Q2", "Q3", "Q4" }),
+                            new SelectList(new List<SelectListItem>()),
                             "-- Select Quarter --",
                             new { @id = "Quarter" })
                     </div>
@@ -103,7 +103,13 @@
             </div>
             <div class="widget-body">
                 <div>
-                    <div class="clearfix"><div class="btn-group pull-right"></div></div>
+                    <div class="clearfix">
+                        <div class="btn-group pull-right">
+                            <button type="button" id="btnExportTraining" class="btn btn-success">
+                                <i class="icon-download-alt icon-white" style="padding-right:6px"></i>Export
+                            </button>
+                        </div>
+                    </div>
                     <div class="space15"></div>
                     <table class="table table-striped table-hover table-bordered" id="datatab" style="width: 100%;">
                         <thead>
@@ -115,6 +121,7 @@
                                 <th>Head Name</th>
                                 <th>SO Name</th>
                                 <th>Value</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -253,7 +260,14 @@
                 { "data": "Quarter" },
                 { "data": "RegionName" },
                 { "data": "CityName" },
-                { "data": "Name" }
+                { "data": "Name" },
+                {
+                    "data": "ID", "bSortable": false,
+                    "render": function (data) {
+                        return '<button class="btn btn-xs btn-warning" onclick="editTraining(' + data + ')"><i class="icon-pencil"></i> Edit</button> ' +
+                               '<button class="btn btn-xs btn-danger" onclick="deleteTraining(' + data + ')"><i class="icon-trash"></i> Delete</button>';
+                    }
+                }
             ],
             "language": {
                 "sSearch": "Search: ",
@@ -269,7 +283,20 @@
     $(document).ready(function () {
         $("#liSetup,#liTraining").addClass("active");
 
-        $("#FinancialYearID, #Quarter").change(function () {
+        $("#FinancialYearID").change(function () {
+            var fyid = $(this).val();
+            $('#Quarter').empty().append('<option value="">-- Select Quarter --</option>');
+            if (fyid && fyid !== '') {
+                $.get('@Url.Action("GetQuartersByFinancialYear", "Setup")', { financialYearID: fyid }, function (data) {
+                    $.each(data, function (i, q) {
+                        $('#Quarter').append('<option value="' + q.Name + '">' + q.Name + '</option>');
+                    });
+                });
+            }
+            GenerateDetailGrid();
+        });
+
+        $("#Quarter").change(function () {
             GenerateDetailGrid();
         });
 
@@ -291,11 +318,33 @@
         });
 
         GenerateDetailGrid();
+
+        $("#btnExportTraining").click(function () {
+            var fy = $('#FinancialYearID').val() || 0;
+            var q  = $('#Quarter').val() || '';
+            var rh = $('#RegionID').val() || 0;
+            window.location.href = '@Url.Action("ExportTrainingReport", "Setup")?RegionalHeadID=' + rh + '&FinancialYearID=' + fy + '&Quarter=' + encodeURIComponent(q);
+        });
+
+        $('#btnSaveTrainEdit').click(function () {
+            var id    = $('#editTrainId').val();
+            var value = $('#editTrainValue').val();
+            if (value === '' || isNaN(value)) { alertify.error('Please enter a valid value'); return; }
+            $.post('@Url.Action("UpdateTrainingRecord", "Setup")', { id: id, value: value }, function (res) {
+                if (res.success) {
+                    alertify.success('Record updated successfully');
+                    $('#editTrainModal').modal('hide');
+                    $('#datatab').DataTable().ajax.reload();
+                } else {
+                    alertify.error(res.message || 'Update failed');
+                }
+            });
+        });
     });
 
     function ClearForm() {
         $('#FinancialYearID').val('');
-        $('#Quarter').val('');
+        $('#Quarter').empty().append('<option value="">-- Select Quarter --</option>');
         $('#RegionID').val('');
         $('#trainingRowsBody').html('<tr><td colspan="2" style="text-align:center;color:#888">Select a Regional Head to load SOs</td></tr>');
         RecalcTotals();
@@ -324,4 +373,42 @@
             alertify.error(response);
         }
     }
+
+    function deleteTraining(id) {
+        if (!confirm('Are you sure you want to delete this record?')) return;
+        $.post('@Url.Action("DeleteTrainingRecord", "Setup")', { id: id }, function (res) {
+            if (res.success) {
+                alertify.success('Record deleted successfully');
+                $('#datatab').DataTable().ajax.reload();
+            } else {
+                alertify.error(res.message || 'Delete failed');
+            }
+        });
+    }
+
+    function editTraining(id) {
+        $.get('@Url.Action("GetTrainingRecord", "Setup")', { id: id }, function (res) {
+            if (!res.success) { alertify.error('Failed to load record'); return; }
+            $('#editTrainId').val(res.id);
+            $('#editTrainValue').val(res.value);
+            $('#editTrainModal').modal('show');
+        });
+    }
+
 </script>
+
+<div class="modal hide fade" id="editTrainModal" tabindex="-1" style="width:340px;left:50%;margin-left:-170px;top:20%;height:auto;border-radius:8px;overflow:hidden;">
+    <div class="modal-header" style="background:#27ae60;padding:11px 15px;">
+        <button type="button" class="close" data-dismiss="modal" style="color:#fff;opacity:1;font-size:18px;line-height:1;">&times;</button>
+        <h4 style="color:#fff;margin:0;font-size:14px;font-weight:600;"><i class="icon-pencil" style="margin-right:6px;"></i>Edit Training</h4>
+    </div>
+    <div class="modal-body" style="padding:18px 20px;">
+        <input type="hidden" id="editTrainId" />
+        <label style="font-size:11px;color:#888;font-weight:700;letter-spacing:1px;margin-bottom:5px;display:block;">TRAINING VALUE</label>
+        <input type="number" id="editTrainValue" step="any" min="0" style="width:100%;padding:9px 12px;font-size:15px;border:2px solid #27ae60;border-radius:5px;box-sizing:border-box;outline:none;" />
+    </div>
+    <div class="modal-footer" style="padding:10px 15px;background:#f5f5f5;border-top:1px solid #e0e0e0;text-align:right;">
+        <button class="btn btn-small" data-dismiss="modal" style="margin-right:6px;">Cancel</button>
+        <button class="btn btn-small btn-primary" id="btnSaveTrainEdit" style="background:#27ae60;border-color:#219a52;font-weight:600;padding:5px 18px;">Save</button>
+    </div>
+</div>

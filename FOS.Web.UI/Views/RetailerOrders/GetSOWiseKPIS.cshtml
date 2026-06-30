@@ -72,18 +72,24 @@
         <div class="span4 form-column">
 
             <div class="control-group">
-                <label class="control-label">Starting Date *</label>
+                <label class="control-label">Financial Year *</label>
                 <div class="controls">
-                    <input class="text-box single-line" id="StartingDate1" name="StartingDate1"
-                           style="height: 22px; width: 202px;">
+                    <select id="FinancialYearID" name="FinancialYearID" style="height:28px;width:202px;">
+                        <option value="">-- Select Financial Year --</option>
+                        @foreach (var fy in (Model.FinancialYears ?? new List<FOS.Shared.FinancialYearListItem>()))
+                        {
+                            <option value="@fy.ID">@fy.Year</option>
+                        }
+                    </select>
                 </div>
             </div>
 
             <div class="control-group">
-                <label class="control-label">Ending Date *</label>
+                <label class="control-label">Quarter *</label>
                 <div class="controls">
-                    <input class="text-box single-line" id="StartingDate2" name="StartingDate2"
-                           style="height: 22px; width: 202px;">
+                    <select id="Quarter" name="Quarter" style="height:28px;width:202px;">
+                        <option value="">-- Select Quarter --</option>
+                    </select>
                 </div>
             </div>
 
@@ -680,8 +686,8 @@
                 'data': function (data) {
                     debugger;
 
-                    data.StartingDate1 = $('#StartingDate1').val();
-                    data.StartingDate2 = $('#StartingDate2').val();
+                    data.FinancialYearID = $('#FinancialYearID').val() || 0;
+                    data.Quarter = $('#Quarter').val() || '';
                     data.ZoneID = $('#RegionalHeadID').val();
                     data.SOID = $('#SaleOfficerID').val();
                    return data = JSON.stringify(data);
@@ -1057,22 +1063,19 @@
 
     $(document).ready(function () {
 
-        $('#StartingDate1').datepicker(
-              {
-                  dateFormat: 'dd-M-yy',
-                  changeMonth: true,
-                  changeYear: true,
-                  yearRange: '1950:2100'
-              });
-
-        $('#StartingDate2').datepicker(
-        {
-            dateFormat: 'dd-M-yy',
-            changeMonth: true,
-            changeYear: true,
-            yearRange: '1950:2100'
-        });
         $("#liJob,#liCheckJobs").addClass("active");
+
+        $("#FinancialYearID").change(function () {
+            var fyid = $(this).val();
+            $('#Quarter').empty().append('<option value="">-- Select Quarter --</option>');
+            if (fyid && fyid !== '') {
+                $.get('@Url.Action("GetQuartersByFinancialYear", "Setup")', { financialYearID: fyid }, function (data) {
+                    $.each(data, function (i, q) {
+                        $('#Quarter').append('<option value="' + q.Name + '">' + q.Name + '</option>');
+                    });
+                });
+            }
+        });
       
     });
 
@@ -1167,8 +1170,8 @@
     // Collect all form data
     var kpiData = {
         // Basic form data
-        StartingDate1: $('#StartingDate1').val(),
-        StartingDate2: $('#StartingDate2').val(),
+        FinancialYearID: parseInt($('#FinancialYearID').val()) || 0,
+        Quarter: $('#Quarter').val(),
         RegionalHeadID: $('#RegionalHeadID').val(),
         SaleOfficerID: $('#SaleOfficerID').val(),
         SegmentID: $('#SegmentID').val(),
@@ -1222,16 +1225,16 @@ function validateForm() {
     // Clear previous error highlights
     $('.control-group').removeClass('error');
 
-    // Validate dates
-    if (!$('#StartingDate1').val()) {
-        errors.push('Starting Date is required');
-        $('#StartingDate1').closest('.control-group').addClass('error');
+    // Validate Financial Year and Quarter
+    if (!$('#FinancialYearID').val()) {
+        errors.push('Financial Year is required');
+        $('#FinancialYearID').closest('.control-group').addClass('error');
         isValid = false;
     }
 
-    if (!$('#StartingDate2').val()) {
-        errors.push('Ending Date is required');
-        $('#StartingDate2').closest('.control-group').addClass('error');
+    if (!$('#Quarter').val()) {
+        errors.push('Quarter is required');
+        $('#Quarter').closest('.control-group').addClass('error');
         isValid = false;
     }
 
@@ -1299,7 +1302,8 @@ $(document).on('input', '.target-value, .target-percentage', function() {
 // Reset form
 function resetForm() {
     // Clear form inputs
-    $('#StartingDate1, #StartingDate2').val('');
+    $('#FinancialYearID').val('');
+    $('#Quarter').empty().append('<option value="">-- Select Quarter --</option>');
     $('.target-value, .target-percentage').val('');
     calculateTotals();
 

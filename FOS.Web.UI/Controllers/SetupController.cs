@@ -688,6 +688,29 @@ namespace FOS.Web.UI.Controllers
         //    return Json(Response, JsonRequestBehavior.AllowGet);
         //}
 
+        public ActionResult ExportKPIReport(int SOID, int FinancialYearID, int RegionalHeadID)
+        {
+            var data = ManageCity.GetKPIForGrid(SOID, FinancialYearID, RegionalHeadID);
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("\"Sr No\",\"Created Date\",\"Financial Year\",\"Head Name\",\"SO Name\",\"Platinum\",\"Premium\",\"Gold\",\"Total\"");
+            int sr = 1;
+            foreach (var row in data)
+            {
+                sb.AppendLine(string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\"",
+                    sr++,
+                    row.LastUpdate.HasValue ? row.LastUpdate.Value.ToString("dd-MMM-yyyy") : "",
+                    row.FinancialYearName,
+                    row.RegionalHeadName,
+                    row.SOName,
+                    row.CoatingTarget,
+                    row.ACTDTarget,
+                    row.ReadyMixTarget,
+                    row.TotalTarget));
+            }
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "application/vnd.ms-excel", "KPIReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
+        }
+
         #endregion KPIS
 
 
@@ -861,6 +884,129 @@ namespace FOS.Web.UI.Controllers
             return Json(result);
         }
 
+        [HttpPost]
+        public JsonResult DeleteAttendanceRecord(int id)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_SOAttendanceandPunctuality.Find(id);
+                if (rec == null) return Json(new { success = false, message = "Record not found" });
+                rec.IsActive = false;
+                dbContext.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
+        public JsonResult GetAttendanceRecord(int id)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_SOAttendanceandPunctuality.Find(id);
+                if (rec == null) return Json(new { success = false });
+                return Json(new { success = true, id = rec.ID, value = rec.AttendanceandPunctuality }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet); }
+        }
+
+        [HttpPost]
+        public JsonResult UpdateAttendanceRecord(int id, decimal value)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_SOAttendanceandPunctuality.Find(id);
+                if (rec == null) return Json(new { success = false, message = "Record not found" });
+                rec.AttendanceandPunctuality = value;
+                dbContext.Entry(rec).State = System.Data.Entity.EntityState.Modified;
+                dbContext.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteTrainingRecord(int id)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_SOTraining.Find(id);
+                if (rec == null) return Json(new { success = false, message = "Record not found" });
+                rec.IsActive = false;
+                dbContext.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
+        public JsonResult GetTrainingRecord(int id)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_SOTraining.Find(id);
+                if (rec == null) return Json(new { success = false });
+                return Json(new { success = true, id = rec.ID, value = rec.Training }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet); }
+        }
+
+        [HttpPost]
+        public JsonResult UpdateTrainingRecord(int id, decimal value)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_SOTraining.Find(id);
+                if (rec == null) return Json(new { success = false, message = "Record not found" });
+                rec.Training = value;
+                dbContext.Entry(rec).State = System.Data.Entity.EntityState.Modified;
+                dbContext.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteKPIRecord(int id)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_KPITargetsRegionWise.Find(id);
+                if (rec == null) return Json(new { success = false, message = "Record not found" });
+                rec.IsActive = false;
+                dbContext.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
+        public JsonResult GetKPIRecord(int id)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_KPITargetsRegionWise.Find(id);
+                if (rec == null) return Json(new { success = false });
+                return Json(new { success = true, id = rec.ID, platinum = rec.CoatingTarget, premium = rec.ACTDTarget, gold = rec.ReadyMixTarget, total = rec.TotalTarget }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet); }
+        }
+
+        [HttpPost]
+        public JsonResult UpdateKPIRecord(int id, int platinum, int premium, int gold, int total)
+        {
+            try
+            {
+                var rec = dbContext.Tbl_KPITargetsRegionWise.Find(id);
+                if (rec == null) return Json(new { success = false, message = "Record not found" });
+                rec.CoatingTarget  = platinum;
+                rec.ACTDTarget     = premium;
+                rec.ReadyMixTarget = gold;
+                rec.TotalTarget    = total;
+                dbContext.Entry(rec).State = System.Data.Entity.EntityState.Modified;
+                dbContext.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
 
         //public JsonResult GetSOListByRegionID(int RegionID)
         //{
@@ -874,6 +1020,48 @@ namespace FOS.Web.UI.Controllers
         //{
         //    return FOS.Setup.ManageArea.DeleteArea(areaID);
         //}
+
+        public ActionResult ExportAttendanceReport(int RegionalHeadID, int FinancialYearID, string Quarter)
+        {
+            var data = ManageArea.GetAttendanceForGrid(RegionalHeadID, FinancialYearID, Quarter);
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("\"Sr No\",\"Created Date\",\"Financial Year\",\"Quarter\",\"Head Name\",\"SO Name\",\"Attendance Value\"");
+            int sr = 1;
+            foreach (var row in data)
+            {
+                sb.AppendLine(string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\"",
+                    sr++,
+                    row.CreatedOn.HasValue ? row.CreatedOn.Value.ToString("dd-MMM-yyyy") : "",
+                    row.FinancialYearName,
+                    row.Quarter,
+                    row.RegionName,
+                    row.CityName,
+                    row.Name));
+            }
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "application/vnd.ms-excel", "AttendanceReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
+        }
+
+        public ActionResult ExportTrainingReport(int RegionalHeadID, int FinancialYearID, string Quarter)
+        {
+            var data = ManageArea.GetTrainingForGrid(RegionalHeadID, FinancialYearID, Quarter);
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("\"Sr No\",\"Created Date\",\"Financial Year\",\"Quarter\",\"Head Name\",\"SO Name\",\"Training Value\"");
+            int sr = 1;
+            foreach (var row in data)
+            {
+                sb.AppendLine(string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\"",
+                    sr++,
+                    row.CreatedOn.HasValue ? row.CreatedOn.Value.ToString("dd-MMM-yyyy") : "",
+                    row.FinancialYearName,
+                    row.Quarter,
+                    row.RegionName,
+                    row.CityName,
+                    row.Name));
+            }
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "application/vnd.ms-excel", "TrainingReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".csv");
+        }
 
         #endregion AttendanceAndPunc
 
@@ -2369,6 +2557,224 @@ namespace FOS.Web.UI.Controllers
 
         #endregion FinancialYear
 
+        #region Quarter
+
+        [CustomAuthorize]
+        public ActionResult QuarterSetup()
+        {
+            var model = new QuarterData();
+            var fyList = new List<FinancialYearListItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE IsActive = 1 ORDER BY ID DESC", conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        fyList.Add(new FinancialYearListItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Year = reader["Year"].ToString()
+                        });
+                    }
+                }
+            }
+            model.FinancialYears = fyList;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddUpdateQuarter(QuarterData model)
+        {
+            try
+            {
+                if (model == null || string.IsNullOrWhiteSpace(model.Name) || model.FinancialYearID == 0)
+                    return Content("0");
+                if (model.StartDate == null || model.EndDate == null)
+                    return Content("0");
+
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                {
+                    conn.Open();
+                    if (model.ID == 0)
+                    {
+                        using (var cmd = new SqlCommand(
+                            "INSERT INTO dbo.Tbl_Quarters (Name, StartDate, EndDate, FinancialYearID, IsActive, IsDeleted, CreatedOn) VALUES (@Name, @StartDate, @EndDate, @FYID, 1, 0, GETDATE())", conn))
+                        {
+                            cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar, 100) { Value = model.Name.Trim() });
+                            cmd.Parameters.Add(new SqlParameter("@StartDate", SqlDbType.Date) { Value = model.StartDate.Value });
+                            cmd.Parameters.Add(new SqlParameter("@EndDate", SqlDbType.Date) { Value = model.EndDate.Value });
+                            cmd.Parameters.Add(new SqlParameter("@FYID", SqlDbType.Int) { Value = model.FinancialYearID });
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    else
+                    {
+                        using (var cmd = new SqlCommand(
+                            "UPDATE dbo.Tbl_Quarters SET Name=@Name, StartDate=@StartDate, EndDate=@EndDate, FinancialYearID=@FYID WHERE ID=@ID AND IsDeleted=0", conn))
+                        {
+                            cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar, 100) { Value = model.Name.Trim() });
+                            cmd.Parameters.Add(new SqlParameter("@StartDate", SqlDbType.Date) { Value = model.StartDate.Value });
+                            cmd.Parameters.Add(new SqlParameter("@EndDate", SqlDbType.Date) { Value = model.EndDate.Value });
+                            cmd.Parameters.Add(new SqlParameter("@FYID", SqlDbType.Int) { Value = model.FinancialYearID });
+                            cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = model.ID });
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+                return Content("1");
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "AddUpdateQuarter Failed");
+                return Content("Exception : " + exp.Message);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteQuarterRecord(int id)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand("UPDATE dbo.Tbl_Quarters SET IsDeleted=1, IsActive=0 WHERE ID=@ID", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = id });
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Error(ex, "DeleteQuarterRecord Failed");
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult QuarterDataHandler(DTParameters param, int FinancialYearID)
+        {
+            try
+            {
+                var dtsource = new List<QuarterGridRow>();
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand(
+                    @"SELECT q.ID, q.Name, q.StartDate, q.EndDate, q.FinancialYearID, q.CreatedOn,
+                             fy.[Year] AS FinancialYearName
+                      FROM dbo.Tbl_Quarters q
+                      LEFT JOIN dbo.Tbl_FinancialYear fy ON fy.ID = q.FinancialYearID
+                      WHERE q.IsDeleted = 0
+                        AND (@FYID = 0 OR q.FinancialYearID = @FYID)
+                      ORDER BY q.ID DESC", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@FYID", SqlDbType.Int) { Value = FinancialYearID });
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            dtsource.Add(new QuarterGridRow
+                            {
+                                ID = Convert.ToInt32(reader["ID"]),
+                                Name = reader["Name"].ToString(),
+                                StartDate = reader["StartDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["StartDate"]),
+                                EndDate = reader["EndDate"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["EndDate"]),
+                                FinancialYearID = Convert.ToInt32(reader["FinancialYearID"]),
+                                FinancialYearName = reader["FinancialYearName"] as string,
+                                CreatedOn = reader["CreatedOn"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["CreatedOn"])
+                            });
+                        }
+                    }
+                }
+
+                string search = param.Search != null ? (param.Search.Value ?? string.Empty) : string.Empty;
+                IEnumerable<QuarterGridRow> filtered = dtsource;
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    filtered = filtered.Where(x =>
+                        (x.Name ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0
+                     || (x.FinancialYearName ?? string.Empty).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+
+                int count = filtered.Count();
+                var data = filtered.Skip(param.Start).Take(param.Length).ToList();
+                return Json(new DTResult<QuarterGridRow>
+                {
+                    draw = param.Draw,
+                    data = data,
+                    recordsFiltered = count,
+                    recordsTotal = count
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
+        }
+
+        public JsonResult GetQuartersByFinancialYear(int financialYearID)
+        {
+            try
+            {
+                var list = new List<QuarterListItem>();
+                using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+                using (var cmd = new SqlCommand(
+                    "SELECT ID, Name FROM dbo.Tbl_Quarters WHERE FinancialYearID=@FYID AND IsDeleted=0 AND IsActive=1 ORDER BY StartDate, Name", conn))
+                {
+                    cmd.Parameters.Add(new SqlParameter("@FYID", SqlDbType.Int) { Value = financialYearID });
+                    conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new QuarterListItem
+                            {
+                                ID = Convert.ToInt32(reader["ID"]),
+                                Name = reader["Name"].ToString()
+                            });
+                        }
+                    }
+                }
+                return Json(list, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public class QuarterData
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public DateTime? StartDate { get; set; }
+            public DateTime? EndDate { get; set; }
+            public int FinancialYearID { get; set; }
+            public List<FinancialYearListItem> FinancialYears { get; set; }
+        }
+
+        public class QuarterGridRow
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public DateTime? StartDate { get; set; }
+            public DateTime? EndDate { get; set; }
+            public int FinancialYearID { get; set; }
+            public string FinancialYearName { get; set; }
+            public DateTime? CreatedOn { get; set; }
+        }
+
+        public class QuarterListItem
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+        }
+
+        #endregion Quarter
+
         #region AreaCoverage
 
         [CustomAuthorize]
@@ -2715,6 +3121,233 @@ namespace FOS.Web.UI.Controllers
         }
 
         #endregion AreaCoverage
+
+
+        #region KPIPerformanceReport
+
+        [CustomAuthorize]
+        public ActionResult KPIPerformanceReport()
+        {
+            var model = BuildKPIReportModel();
+            return View(model);
+        }
+
+        public ActionResult ExportKPIPerformanceReport(int FinancialYearID, string Quarter, int RegionalHeadID)
+        {
+            var rows = new List<KPIReportRow>();
+
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("dbo.usp_GetKPIExcelReport", conn))
+            {
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@FinancialYearID", FinancialYearID);
+                cmd.Parameters.AddWithValue("@Quarter", Quarter ?? "");
+                cmd.Parameters.AddWithValue("@RegionalHeadID", RegionalHeadID);
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        rows.Add(new KPIReportRow
+                        {
+                            Sr                      = Convert.ToInt32(reader["Sr"]),
+                            HeadName                = reader["HeadName"].ToString(),
+                            SOName                  = reader["SOName"].ToString(),
+                            SalesTarget             = Convert.ToDecimal(reader["SalesTarget"]),
+                            SalesActual             = Convert.ToDecimal(reader["SalesActual"]),
+                            PlatinumTarget          = Convert.ToDecimal(reader["PlatinumTarget"]),
+                            PlatinumActual          = Convert.ToDecimal(reader["PlatinumActual"]),
+                            PremiumTarget           = Convert.ToDecimal(reader["PremiumTarget"]),
+                            PremiumActual           = Convert.ToDecimal(reader["PremiumActual"]),
+                            DealerVisitsTarget      = Convert.ToDecimal(reader["DealerVisitsTarget"]),
+                            DealerVisitsActual      = Convert.ToDecimal(reader["DealerVisitsActual"]),
+                            SiteVisitsTarget        = Convert.ToDecimal(reader["SiteVisitsTarget"]),
+                            SiteVisitsActual        = Convert.ToDecimal(reader["SiteVisitsActual"]),
+                            ContractorVisitsTarget  = Convert.ToDecimal(reader["ContractorVisitsTarget"]),
+                            ContractorVisitsActual  = Convert.ToDecimal(reader["ContractorVisitsActual"]),
+                            CustSatisfactionTarget  = Convert.ToDecimal(reader["CustSatisfactionTarget"]),
+                            CustSatisfactionActual  = Convert.ToDecimal(reader["CustSatisfactionActual"]),
+                            AreaCoverageTarget      = Convert.ToDecimal(reader["AreaCoverageTarget"]),
+                            AreaCoverageActual      = Convert.ToDecimal(reader["AreaCoverageActual"]),
+                            AttendanceTarget        = Convert.ToDecimal(reader["AttendanceTarget"]),
+                            AttendanceActual        = Convert.ToDecimal(reader["AttendanceActual"]),
+                            ProdKnowTarget          = Convert.ToDecimal(reader["ProdKnowTarget"]),
+                            ProdKnowActual          = Convert.ToDecimal(reader["ProdKnowActual"]),
+                            TrainingTarget          = Convert.ToDecimal(reader["TrainingTarget"]),
+                            TrainingActual          = Convert.ToDecimal(reader["TrainingActual"]),
+                            CompFeedTarget          = Convert.ToDecimal(reader["CompFeedTarget"]),
+                            CompFeedActual          = Convert.ToDecimal(reader["CompFeedActual"]),
+                            TotalTarget             = Convert.ToDecimal(reader["TotalTarget"]),
+                            TotalActual             = Convert.ToDecimal(reader["TotalActual"])
+                        });
+                    }
+                }
+            }
+
+            var sb = new System.Text.StringBuilder();
+            sb.Append(@"<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='UTF-8'>
+<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+<x:Name>KPI Report</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+<style>
+  td { border: 1px solid #999; font-size: 11pt; font-family: Calibri; vertical-align: middle; text-align: center; }
+  .hdr1 { background-color: #1F3864; color: #FFFFFF; font-weight: bold; }
+  .hdr2 { background-color: #2E75B6; color: #FFFFFF; font-weight: bold; }
+  .left  { text-align: left; }
+</style></head><body>
+<table border='1' cellspacing='0' cellpadding='4'>
+<tr>
+  <td rowspan='2' class='hdr1'>Sr</td>
+  <td rowspan='2' class='hdr1'>Head Name</td>
+  <td rowspan='2' class='hdr1'>SO Name</td>
+  <td class='hdr1'>Sales Target</td>
+  <td class='hdr1'>Platinum</td>
+  <td class='hdr1'>Premium</td>
+  <td class='hdr1'>Dealer Visits</td>
+  <td class='hdr1'>Site Visits</td>
+  <td class='hdr1'>Contractor Visits</td>
+  <td class='hdr1'>Customer Satisfaction</td>
+  <td class='hdr1'>Area Coverage</td>
+  <td class='hdr1'>Attendance</td>
+  <td class='hdr1'>Product Knowledge</td>
+  <td class='hdr1'>Training</td>
+  <td class='hdr1'>Competitors Activities</td>
+  <td class='hdr1'>Total</td>
+</tr>
+<tr>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+  <td class='hdr2'>Target / Actual</td>
+</tr>
+");
+            foreach (var r in rows)
+            {
+                sb.AppendFormat(@"<tr>
+  <td>{0}</td>
+  <td class='left'>{1}</td>
+  <td class='left'>{2}</td>
+  <td>{3} / {4}</td>
+  <td>{5} / {6}</td>
+  <td>{7} / {8}</td>
+  <td>{9} / {10}</td>
+  <td>{11} / {12}</td>
+  <td>{13} / {14}</td>
+  <td>{15} / {16}</td>
+  <td>{17} / {18}</td>
+  <td>{19} / {20}</td>
+  <td>{21} / {22}</td>
+  <td>{23} / {24}</td>
+  <td>{25} / {26}</td>
+  <td>{27} / {28}</td>
+</tr>
+",
+                    r.Sr, r.HeadName, r.SOName,
+                    r.SalesTarget, r.SalesActual,
+                    r.PlatinumTarget, r.PlatinumActual,
+                    r.PremiumTarget, r.PremiumActual,
+                    r.DealerVisitsTarget, r.DealerVisitsActual,
+                    r.SiteVisitsTarget, r.SiteVisitsActual,
+                    r.ContractorVisitsTarget, r.ContractorVisitsActual,
+                    r.CustSatisfactionTarget, r.CustSatisfactionActual,
+                    r.AreaCoverageTarget, r.AreaCoverageActual,
+                    r.AttendanceTarget, r.AttendanceActual,
+                    r.ProdKnowTarget, r.ProdKnowActual,
+                    r.TrainingTarget, r.TrainingActual,
+                    r.CompFeedTarget, r.CompFeedActual,
+                    r.TotalTarget, r.TotalActual);
+            }
+            sb.Append("</table></body></html>");
+
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "application/vnd.ms-excel", "KPIPerformanceReport_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xls");
+        }
+
+        private KPIReportModel BuildKPIReportModel()
+        {
+            var financialYears = new List<FinancialYearListItem>();
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            using (var cmd = new SqlCommand("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE IsActive = 1 ORDER BY ID DESC", conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                        financialYears.Add(new FinancialYearListItem { ID = Convert.ToInt32(reader["ID"]), Year = reader["Year"].ToString() });
+                }
+            }
+
+            var userID = Convert.ToInt32(Session["UserID"]);
+            var regionalHeads = FOS.Setup.ManageRegionalHead.GetTerritorialRegionalHeadList(userID);
+            using (var conn = new SqlConnection(dbContext.Database.Connection.ConnectionString))
+            {
+                conn.Open();
+                var activeIds = new HashSet<int>();
+                using (var cmd = new SqlCommand("SELECT ID FROM dbo.RegionalHeads WHERE IsActive = 1 AND IsDeleted = 0", conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) activeIds.Add(Convert.ToInt32(reader["ID"]));
+                }
+                regionalHeads = regionalHeads.Where(r => r.ID != 0 && activeIds.Contains(r.ID)).ToList();
+            }
+
+            return new KPIReportModel
+            {
+                FinancialYears = financialYears,
+                RegionalHeads  = regionalHeads
+            };
+        }
+
+        public class KPIReportModel
+        {
+            public List<FinancialYearListItem>    FinancialYears { get; set; }
+            public List<RegionalHeadData>         RegionalHeads  { get; set; }
+        }
+
+        public class KPIReportRow
+        {
+            public int     Sr                     { get; set; }
+            public string  HeadName               { get; set; }
+            public string  SOName                 { get; set; }
+            public decimal SalesTarget            { get; set; }
+            public decimal SalesActual            { get; set; }
+            public decimal PlatinumTarget         { get; set; }
+            public decimal PlatinumActual         { get; set; }
+            public decimal PremiumTarget          { get; set; }
+            public decimal PremiumActual          { get; set; }
+            public decimal DealerVisitsTarget     { get; set; }
+            public decimal DealerVisitsActual     { get; set; }
+            public decimal SiteVisitsTarget       { get; set; }
+            public decimal SiteVisitsActual       { get; set; }
+            public decimal ContractorVisitsTarget { get; set; }
+            public decimal ContractorVisitsActual { get; set; }
+            public decimal CustSatisfactionTarget { get; set; }
+            public decimal CustSatisfactionActual { get; set; }
+            public decimal AreaCoverageTarget     { get; set; }
+            public decimal AreaCoverageActual     { get; set; }
+            public decimal AttendanceTarget       { get; set; }
+            public decimal AttendanceActual       { get; set; }
+            public decimal ProdKnowTarget         { get; set; }
+            public decimal ProdKnowActual         { get; set; }
+            public decimal TrainingTarget         { get; set; }
+            public decimal TrainingActual         { get; set; }
+            public decimal CompFeedTarget         { get; set; }
+            public decimal CompFeedActual         { get; set; }
+            public decimal TotalTarget            { get; set; }
+            public decimal TotalActual            { get; set; }
+        }
+
+        #endregion KPIPerformanceReport
 
 
     }

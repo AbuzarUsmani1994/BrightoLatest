@@ -87,6 +87,8 @@ namespace FOS.Web.UI.Models
         public int BoyID { get; set; }
         public int CityID { get; set; }
         public int RangeID { get; set; }
+        public int FinancialYearID { get; set; }
+        public string Quarter { get; set; }
         /// <summary>
         /// An array defining all columns in the table.
         /// </summary>

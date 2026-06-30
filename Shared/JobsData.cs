@@ -136,6 +136,7 @@ namespace FOS.Shared
         public virtual List<SOType> Roles { get; set; }
 
         public virtual List<Tbl_FocusArea> focusArea { get; set; }
+        public List<FinancialYearListItem> FinancialYears { get; set; }
         public virtual List<SaleOfficerData> SaleOfficers { get; set; }
         public virtual List<sp_GetSOListInDSRFinal_Result> SaleOfficerA { get; set; }
         public virtual List<DealerData> Dealer { get; set; }

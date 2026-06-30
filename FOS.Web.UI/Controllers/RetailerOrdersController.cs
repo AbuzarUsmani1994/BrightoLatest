@@ -2679,9 +2679,26 @@ namespace FOS.Web.UI.Controllers
             objJob.focusArea = Tbl_FocusAreaObj;
             objJob.Retailers = RetailerObj;
             objJob.RegionalHead = regionalHeadData;
-
             objJob.Range = ranges;
 
+            var fyList = new List<FOS.Shared.FinancialYearListItem>();
+            using (var conn = new System.Data.SqlClient.SqlConnection(db.Database.Connection.ConnectionString))
+            using (var cmd = new System.Data.SqlClient.SqlCommand("SELECT ID, [Year] FROM dbo.Tbl_FinancialYear WHERE IsActive = 1 ORDER BY ID DESC", conn))
+            {
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        fyList.Add(new FOS.Shared.FinancialYearListItem
+                        {
+                            ID = Convert.ToInt32(reader["ID"]),
+                            Year = reader["Year"].ToString()
+                        });
+                    }
+                }
+            }
+            objJob.FinancialYears = fyList;
 
             return View(objJob);
         }
@@ -2694,17 +2711,36 @@ namespace FOS.Web.UI.Controllers
             try
             {
                
+                   // Look up quarter date range from Tbl_Quarters
+                   DateTime dateFrom = new DateTime(1900, 1, 1);
+                   DateTime dateTo = new DateTime(2099, 12, 31);
+                   using (var conn = new System.Data.SqlClient.SqlConnection(db.Database.Connection.ConnectionString))
+                   using (var cmd = new System.Data.SqlClient.SqlCommand(
+                       "SELECT TOP 1 StartDate, EndDate FROM dbo.Tbl_Quarters WHERE FinancialYearID=@FYID AND Name=@Name AND IsDeleted=0 AND IsActive=1", conn))
+                   {
+                       cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter("@FYID", model.FinancialYearID));
+                       cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter("@Name", model.Quarter ?? ""));
+                       conn.Open();
+                       using (var reader = cmd.ExecuteReader())
+                       {
+                           if (reader.Read())
+                           {
+                               dateFrom = Convert.ToDateTime(reader["StartDate"]);
+                               dateTo = Convert.ToDateTime(reader["EndDate"]);
+                           }
+                       }
+                   }
+
                    //Create KPI record
                    var kpi = new Tbl_MasterKPIS
                    {
-                       DateFrom = DateTime.Parse(model.StartingDate1),
-                       DateTo = DateTime.Parse(model.StartingDate2),
+                       DateFrom = dateFrom,
+                       DateTo = dateTo,
                        HeadID = model.RegionalHeadID,
                        SOID = model.SaleOfficerID,
                        BusinessSegmentID = model.SegmentID,
                        RoleID = model.SORoleID,
                        CreatedOn = DateTime.UtcNow.AddHours(5)
-                       
                    };
 
                    // Save KPI to get ID
@@ -2763,7 +2799,28 @@ namespace FOS.Web.UI.Controllers
 
                 //if (regionalheadID == 0)
                 //{
-                dtsource = ManageJobs.GetKPISDetailForGrid(param.StartingDate1, param.StartingDate2, param.ZoneID, param.SOID);
+                // Resolve Financial Year + Quarter to a date range
+                string kpiFrom = "01-Jan-1900", kpiTo = "31-Dec-2099";
+                if (param.FinancialYearID > 0 && !string.IsNullOrEmpty(param.Quarter))
+                {
+                    using (var conn = new System.Data.SqlClient.SqlConnection(db.Database.Connection.ConnectionString))
+                    using (var cmd = new System.Data.SqlClient.SqlCommand(
+                        "SELECT TOP 1 StartDate, EndDate FROM dbo.Tbl_Quarters WHERE FinancialYearID=@FYID AND Name=@Name AND IsDeleted=0 AND IsActive=1", conn))
+                    {
+                        cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter("@FYID", param.FinancialYearID));
+                        cmd.Parameters.Add(new System.Data.SqlClient.SqlParameter("@Name", param.Quarter));
+                        conn.Open();
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                kpiFrom = Convert.ToDateTime(reader["StartDate"]).ToString("dd-MMM-yyyy");
+                                kpiTo   = Convert.ToDateTime(reader["EndDate"]).ToString("dd-MMM-yyyy");
+                            }
+                        }
+                    }
+                }
+                dtsource = ManageJobs.GetKPISDetailForGrid(kpiFrom, kpiTo, param.ZoneID, param.SOID);
                 //}
                 //else
                 //{
@@ -2809,8 +2866,8 @@ namespace FOS.Web.UI.Controllers
         // ViewModel classes
         public class KPISubmissionModel
         {
-            public string StartingDate1 { get; set; }
-            public string StartingDate2 { get; set; }
+            public int FinancialYearID { get; set; }
+            public string Quarter { get; set; }
             public int RegionalHeadID { get; set; }
             public int SaleOfficerID { get; set; }
             public int SegmentID { get; set; }
